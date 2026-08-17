@@ -24,17 +24,17 @@
     <rect
        x="-4.8"
        y="137.7"
-       width="700"
-       height="877"
+       width="686"
+       height="870"
        rx="30"
        transform="rotate(-10.5 -4.8 137.7)"
        id="rect1" />
     <!-- sheet-back-near -->
     <rect
-       x="224.1"
-       y="448"
-       width="673"
-       height="597"
+       x="199.1"
+       y="175"
+       width="686"
+       height="870"
        rx="30"
        transform="rotate(-15 224.1 448)"
        id="rect2" />
