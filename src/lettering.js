@@ -18,7 +18,7 @@ import { fileURLToPath } from 'node:url'
 import opentype from 'opentype.js'
 
 import { pen } from './path.js'
-import { round } from './emit.js'
+import { matrix } from './emit.js'
 import { INK } from './palette.js'
 
 /**
@@ -139,7 +139,8 @@ export class Wordmark {
   }
 
   /**
-   * The word mark as drawable elements, one per part being drawn.
+   * The word mark as drawable elements, one per part being drawn, and none at
+   * a level that draws no part of it.
    *
    * @returns {Array<{tag: string, attrs: Object}>} One path per part
    * @throws {Error} If the font sets the text as some other number of glyphs,
@@ -170,14 +171,15 @@ export class Wordmark {
     for (const name of drawn) {
       if (!parts.has(name)) throw new Error(`the word mark has no part called ${name}`)
     }
+    if (!drawn.length) return []
 
-    const transform = this.grown(extent(drawn.flatMap((name) => parts.get(name).boxes)))
+    const place = this.placed(extent(drawn.flatMap((name) => parts.get(name).boxes)))
     return drawn.map((name) => ({
       tag: 'path',
       attrs: {
         id: `${this.id}-${name}`,
         fill: this.fill,
-        ...(transform ? { transform } : {}),
+        transform: place,
         d: this.trace(parts.get(name).commands),
       },
     }))
@@ -210,68 +212,51 @@ export class Wordmark {
   }
 
   /**
-   * The transform that grows the parts being drawn into the width they are to
-   * fill.
+   * Where the parts being drawn end up: the sheet's own frame, grown so that
+   * what is drawn fills the width it is meant to.
    *
-   * Leaving a part out would otherwise leave a gap where it was. The parts
-   * that stay keep the outlines they were set with and are moved and scaled
-   * instead, which is a change one declaration can carry.
-   *
-   * It is written as a matrix, which is the one spelling a transform
-   * attribute and a style declaration both read the same way. Written as a
-   * translate and a scale it would need units to be a declaration and would
-   * have to go without them to be an attribute.
+   * The outlines stay in the sheet's own measure, so this one value carries
+   * everything about where the word mark sits: which way the sheet is turned,
+   * where it is, and how much the drawn parts had to grow to fill the width
+   * once a part was left out. A level can move, turn or grow the word mark by
+   * setting it, and needs no outlines of its own.
    *
    * @param {{x1: number, y1: number, x2: number, y2: number}} box What is
    *   being drawn, measured across and down the sheet
-   * @returns {string|null} Value for a transform attribute, or null if what is
-   *   drawn already fills the width
+   * @returns {string} Value for a transform attribute
    */
-  grown(box) {
+  placed(box) {
     const target = (this.fills ?? this.width) * this.sheet.width
     const factor = target / (box.x2 - box.x1)
-    if (Math.abs(factor - 1) < 1e-6) return null
 
     // where it has to end up: centred across the sheet and hanging the same
     // fraction of the sheet's height below its top edge as ever
     const across = (this.sheet.width - target) / 2 - box.x1 * factor
     const down = this.top * this.sheet.height - box.y1 * factor
 
-    // growing about the canvas origin, then the shift that lands it, which
-    // together are one matrix
-    const shift = this.sheet.frame.at(across, down)
-    const origin = this.sheet.frame.origin
-    const x = round(shift.x - factor * origin.x)
-    const y = round(shift.y - factor * origin.y)
-    const scale = round(factor)
-    return `matrix(${scale}, 0, 0, ${scale}, ${x}, ${y})`
+    const { axis, side } = this.sheet.frame
+    const at = this.sheet.frame.at(across, down)
+    return matrix(axis.x * factor, axis.y * factor, side.x * factor, side.y * factor, at.x, at.y)
   }
 
   /**
-   * Redraw glyph outlines onto the sheet.
+   * The glyph outlines as path data, in the sheet's own measure.
    *
-   * The letters arrive lying flat, measured across and down the sheet. Putting
-   * every point through the sheet's own frame lands them on the canvas already
-   * turned, so the path needs no transform of its own.
+   * The letters arrive lying flat, measured across and down the sheet, and stay
+   * that way. What puts them on the canvas is the transform, so the same
+   * outlines serve a sheet at any tilt, in any place, at any size.
    *
    * @param {Array<object>} commands The outlines as the font gives them
    * @returns {string} Path data
    */
   trace(commands) {
     const path = pen()
-    const on = (x, y) => this.sheet.frame.at(x, y)
     for (const step of commands) {
-      const to = on(step.x, step.y)
-      if (step.type === 'M') path.moveTo(to.x, to.y)
-      else if (step.type === 'L') path.lineTo(to.x, to.y)
-      else if (step.type === 'Q') {
-        const handle = on(step.x1, step.y1)
-        path.quadraticCurveTo(handle.x, handle.y, to.x, to.y)
-      } else if (step.type === 'C') {
-        const first = on(step.x1, step.y1)
-        const second = on(step.x2, step.y2)
-        path.bezierCurveTo(first.x, first.y, second.x, second.y, to.x, to.y)
-      } else if (step.type === 'Z') path.closePath()
+      if (step.type === 'M') path.moveTo(step.x, step.y)
+      else if (step.type === 'L') path.lineTo(step.x, step.y)
+      else if (step.type === 'Q') path.quadraticCurveTo(step.x1, step.y1, step.x, step.y)
+      else if (step.type === 'C') path.bezierCurveTo(step.x1, step.y1, step.x2, step.y2, step.x, step.y)
+      else if (step.type === 'Z') path.closePath()
     }
     return path.toString()
   }
