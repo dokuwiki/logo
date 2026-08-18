@@ -103,35 +103,40 @@ function putBack(attrs, id, name) {
 /**
  * The step from one level to the next.
  *
- * @param {Map<string, Object>} above The level one size up, or the markup
+ * The state is how each element stands after the levels above: the attributes
+ * it was last drawn with, and whether it is being drawn at all. An element a
+ * larger level dropped can come back, because the markup holds it either way
+ * and showing it again is one declaration.
+ *
+ * @param {Map<string, {attrs: Object, shown: boolean}>} state How each element
+ *   stands, which this updates
  * @param {Map<string, Object>} level This level's elements
  * @param {Map<string, Object>} markup The full drawing's elements
  * @returns {Map<string, Map<string, string>>} Declarations, by element id
- * @throws {Error} If the level draws something the level above it dropped, or
- *   changes an attribute no rule can carry
+ * @throws {Error} If the level changes an attribute no rule can carry
  */
-function changes(above, level, markup) {
-  for (const id of level.keys()) {
-    if (!above.has(id)) throw new Error(`${id} is dropped at a larger level, and a rule cannot bring it back`)
-  }
-
+function changes(state, level, markup) {
   const changed = new Map()
-  for (const [id, attrs] of above) {
+
+  for (const [id, was] of state) {
     const smaller = level.get(id)
     const declarations = new Map()
 
     if (!smaller) {
-      declarations.set('display', 'none')
+      if (was.shown) declarations.set('display', 'none')
+      was.shown = false
     } else {
-      for (const name of new Set([...Object.keys(attrs), ...Object.keys(smaller)])) {
+      if (!was.shown) declarations.set('display', UNSET.display)
+      for (const name of new Set([...Object.keys(was.attrs), ...Object.keys(smaller)])) {
         if (name === 'id') continue
-        if (written(attrs[name] ?? '') === written(smaller[name] ?? '')) continue
+        if (written(was.attrs[name] ?? '') === written(smaller[name] ?? '')) continue
         if (!PROPERTIES[name]) throw new Error(`${id} changes ${name}, which is no CSS property`)
         const value = smaller[name] === undefined
           ? putBack(markup.get(id), id, name)
           : PROPERTIES[name](smaller[name])
         declarations.set(name, value)
       }
+      state.set(id, { attrs: smaller, shown: true })
     }
 
     if (declarations.size) changed.set(id, declarations)
@@ -168,14 +173,14 @@ export function stylesheet(compositions) {
     'svg { container-type: size }',
   ]
 
-  let above = markup
+  const state = new Map([...markup].map(([id, attrs]) => [id, { attrs, shown: true }]))
   for (const level of smaller) {
     const elements = byId(level.elements)
     for (const id of elements.keys()) {
       if (!markup.has(id)) throw new Error(`${id} is drawn only at a smaller level, so the markup cannot hold it`)
     }
 
-    const rules = changes(above, elements, markup)
+    const rules = changes(state, elements, markup)
     const query = `(max-width: ${round(level.upTo)}px)`
     const inside = [...rules].map(([id, declarations]) => `  ${rule(`#${id}`, declarations)}`)
 
@@ -188,8 +193,6 @@ export function stylesheet(compositions) {
         return rule(selector, declarations)
       }),
     )
-
-    above = elements
   }
 
   return lines
