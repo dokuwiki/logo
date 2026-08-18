@@ -1,0 +1,15 @@
+{
+  "name": "dokuwiki-logo",
+  "version": "1.0.0",
+  "description": "Generator for the DokuWiki logo",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "node src/build.js"
+  },
+  "dependencies": {
+    "@mapbox/point-geometry": "^1.1.0",
+    "d3-path": "^3.1.0",
+    "opentype.js": "^2.0.0"
+  }
+}
