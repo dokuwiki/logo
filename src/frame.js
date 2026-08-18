@@ -7,7 +7,7 @@
  */
 
 import { direction, point } from './plane.js'
-import { round } from './emit.js'
+import { matrix } from './emit.js'
 
 /**
  * An origin, a direction and the right angle to it.
@@ -42,11 +42,16 @@ export class Frame {
   }
 
   /**
-   * Transform that turns whatever is drawn in this frame into place.
+   * The frame written as a transform, so that whatever is drawn in the frame's
+   * own measure lands in place.
+   *
+   * The frame is its two directions and its origin, which is what a matrix
+   * holds, so the two are the same thing said twice. A level of detail can
+   * therefore move and turn anything drawn this way by setting one property.
    *
    * @returns {string} Value for a transform attribute
    */
-  transform() {
-    return `rotate(${round(this.angle)} ${round(this.origin.x)} ${round(this.origin.y)})`
+  matrix() {
+    return matrix(this.axis.x, this.axis.y, this.side.x, this.side.y, this.origin.x, this.origin.y)
   }
 }

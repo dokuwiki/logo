@@ -158,6 +158,10 @@ export class Sheet {
   /**
    * The sheet as drawable elements.
    *
+   * The rect is drawn at the frame's origin and placed by the frame itself, so
+   * where the sheet is and how far it is turned are one attribute rather than
+   * three.
+   *
    * @returns {Array<{tag: string, attrs: Object}>} One rect
    */
   elements() {
@@ -166,12 +170,10 @@ export class Sheet {
         tag: 'rect',
         attrs: {
           id: this.id,
-          x: this.frame.origin.x,
-          y: this.frame.origin.y,
           width: this.width,
           height: this.height,
           rx: this.radius,
-          transform: this.frame.transform(),
+          transform: this.frame.matrix(),
           fill: this.fill,
         },
       },

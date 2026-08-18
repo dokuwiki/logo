@@ -13,6 +13,28 @@ export function round(value) {
 }
 
 /**
+ * Format a transform matrix.
+ *
+ * The four numbers that turn and scale are kept to more decimals than a
+ * coordinate is, because each of them multiplies a distance: three decimals of
+ * a cosine would move the far corner of a sheet by a quarter of a unit. The
+ * commas matter as well, because a matrix written this way is the one spelling
+ * a transform attribute and a style declaration both read the same way.
+ *
+ * @param {number} a How much of x the new x takes
+ * @param {number} b How much of x the new y takes
+ * @param {number} c How much of y the new x takes
+ * @param {number} d How much of y the new y takes
+ * @param {number} e How far it moves across
+ * @param {number} f How far it moves down
+ * @returns {string} Value for a transform attribute
+ */
+export function matrix(a, b, c, d, e, f) {
+  const turn = (value) => String(Number(value.toFixed(6)))
+  return `matrix(${turn(a)}, ${turn(b)}, ${turn(c)}, ${turn(d)}, ${round(e)}, ${round(f)})`
+}
+
+/**
  * Escape the characters that cannot appear in XML text or in an attribute
  * value.
  *
