@@ -23,13 +23,19 @@ That writes `dokuwiki-logo-new.svg`.
 The word mark is set from `fonts/LiberationSans-Bold.ttf`, which ships with the
 repository so the letters come out the same everywhere.
 
-## Compare against the old logo
+## Look at it
 
 ```
 npm run serve
 ```
 
-Then open <http://localhost:8731/>. It shows the old `dokuwiki-logo.svg` beside
-the generated one, whole and zoomed in on the parts worth watching. Rebuild and
-reload to see a change. The server is for this page only: it binds to localhost
-and serves nothing outside the project directory.
+The server is for these two pages only: it binds to localhost and serves nothing
+outside the project directory. Rebuild and reload to see a change.
+
+<http://localhost:8731/> shows the old `dokuwiki-logo.svg` beside the generated
+one, whole and zoomed in on the parts worth watching.
+
+<http://localhost:8731/src/serve/sizes.html> draws the generated file at the
+sizes each level of detail serves. Every size appears three times, once for each
+way a level can be reached: as its own document, pasted into a page, and told
+its level by a class on the root.

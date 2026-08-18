@@ -1,0 +1,144 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>DokuWiki logo at every size</title>
+<style>
+  body { margin:0; padding:14px 16px 40px; background:#fff; font:13px system-ui; color:#222; }
+  h1 { font-size:15px; margin:0 0 8px; }
+  h2 { font-size:12px; font-weight:600; margin:22px 0 6px; color:#444; }
+  p { max-width:78ch; margin:6px 0; color:#555; }
+  code { font:12px ui-monospace, monospace; }
+  table { border-collapse:collapse; }
+  th { font:11px system-ui; font-weight:600; color:#666; text-align:left; padding:0 14px 5px 0; }
+  td { padding:5px 14px 5px 0; vertical-align:bottom; }
+  .size { font:11px ui-monospace, monospace; color:#666; }
+  .cell { display:inline-block; outline:1px solid #ddd; }
+  .cell > * { display:block; }
+  .missing { color:#a33; }
+  /* The class column has to answer for the class rules on its own, so the
+     container query is switched off inside it. Without this both mechanisms
+     would fire in the same cell and neither could be told apart. */
+  .by-class svg { container-type: normal; }
+</style>
+<body>
+<h1>dokuwiki-logo-new.svg at every size</h1>
+<p>
+  Each row draws the one file at one size, three times over, once per mechanism
+  that can reach into it. They should look the same. Where they do not, that
+  mechanism is not working.
+</p>
+<p>
+  <b>img</b> loads the file as its own document, so its media queries measure
+  the drawing. <b>inline, container</b> pastes the markup into this page, where
+  a media query would measure the window instead and only a container query
+  measures the drawing. <b>inline, class</b> pastes it in and sets the level's
+  class, which is what a host does when nothing can measure for it.
+</p>
+<script type="module">
+  /**
+   * The file under review.
+   */
+  const FILE = '/dokuwiki-logo-new.svg'
+
+  /**
+   * The levels of detail and the sizes each one serves, largest first.
+   */
+  const BANDS = [
+    { name: 'full', className: null, upTo: null, sizes: [256, 128] },
+    { name: 'md', className: 'sz-md', upTo: 96, sizes: [96, 64, 48] },
+    { name: 'sm', className: 'sz-sm', upTo: 40, sizes: [40, 32, 24] },
+    { name: 'xs', className: 'sz-xs', upTo: 20, sizes: [20, 16] },
+  ]
+
+  const source = await fetch(FILE).then((response) => response.text())
+  const parsed = new DOMParser().parseFromString(source, 'image/svg+xml')
+
+  /**
+   * Build an element.
+   *
+   * @param {string} tag What to build
+   * @param {object} props Properties to set on it
+   * @param {Array<Node|string>} children What goes inside
+   * @returns {Element} The element
+   */
+  function el(tag, props = {}, children = []) {
+    const node = Object.assign(document.createElement(tag), props)
+    node.append(...children)
+    return node
+  }
+
+  /**
+   * A copy of the logo markup, sized, and told its level if it is to carry one.
+   *
+   * @param {number} size Edge length in pixels
+   * @param {string|null} className Level class to set on the root
+   * @returns {Element} The copy
+   */
+  function copy(size, className) {
+    const svg = document.importNode(parsed.documentElement, true)
+    svg.style.width = svg.style.height = `${size}px`
+    if (className) svg.classList.add(className)
+    return svg
+  }
+
+  /**
+   * One drawing, outlined so the paper can be seen against the page.
+   *
+   * @param {Element} drawing What to show
+   * @param {string} [className] Extra class for the cell
+   * @returns {Element} A table cell
+   */
+  function shown(drawing, className = '') {
+    return el('td', {}, [el('div', { className: `cell ${className}` }, [drawing])])
+  }
+
+  /**
+   * The file's own row of a band: the same size drawn three ways.
+   *
+   * @param {number} size Edge length in pixels
+   * @param {string|null} className Level class for the third cell
+   * @returns {Element} A table row
+   */
+  function row(size, className) {
+    const image = el('img', { src: FILE })
+    image.style.width = image.style.height = `${size}px`
+    return el('tr', {}, [
+      el('td', { className: 'size', textContent: `${size}px` }),
+      shown(image),
+      shown(copy(size, null)),
+      shown(copy(size, className), 'by-class'),
+    ])
+  }
+
+  /**
+   * The heading of a band, saying whether the file draws that level.
+   *
+   * A level the file does not draw yet still answers to its class, because the
+   * levels above it are written for it, so what the class column shows is the
+   * nearest larger level.
+   *
+   * @param {object} band One entry of BANDS
+   * @returns {Element} A heading
+   */
+  function heading(band) {
+    if (!band.className) return el('h2', { textContent: 'full — no rules, the drawing as the markup holds it' })
+    const drawn = source.includes(`(max-width: ${band.upTo}px)`)
+    const said = drawn ? `class .${band.className}` : `class .${band.className}, no level of its own yet`
+    return el('h2', { className: drawn ? '' : 'missing' }, [
+      `${band.name} — ${band.upTo}px and below — ${said}`,
+    ])
+  }
+
+  for (const band of BANDS) {
+    const head = el('tr', {}, [
+      el('th', { textContent: 'size' }),
+      el('th', { textContent: 'img, media query' }),
+      el('th', { textContent: 'inline, container query' }),
+      el('th', { textContent: band.className ? `inline, .${band.className}` : 'inline, no class' }),
+    ])
+    document.body.append(
+      heading(band),
+      el('table', {}, [head, ...band.sizes.map((size) => row(size, band.className))]),
+    )
+  }
+</script>
+</body>
