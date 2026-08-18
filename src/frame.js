@@ -47,11 +47,23 @@ export class Frame {
    *
    * The frame is its two directions and its origin, which is what a matrix
    * holds, so the two are the same thing said twice. A level of detail can
-   * therefore move and turn anything drawn this way by setting one property.
+   * therefore move, turn and grow anything drawn this way by setting one
+   * property.
    *
+   * @param {number} [scale] How much larger than its own measure to draw it
+   * @param {number} [along] How far along the axis to start instead
+   * @param {number} [across] How far across the axis to start instead
    * @returns {string} Value for a transform attribute
    */
-  matrix() {
-    return matrix(this.axis.x, this.axis.y, this.side.x, this.side.y, this.origin.x, this.origin.y)
+  matrix(scale = 1, along = 0, across = 0) {
+    const start = this.at(along, across)
+    return matrix(
+      this.axis.x * scale,
+      this.axis.y * scale,
+      this.side.x * scale,
+      this.side.y * scale,
+      start.x,
+      start.y,
+    )
   }
 }

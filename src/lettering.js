@@ -18,7 +18,6 @@ import { fileURLToPath } from 'node:url'
 import opentype from 'opentype.js'
 
 import { pen } from './path.js'
-import { matrix } from './emit.js'
 import { INK } from './palette.js'
 
 /**
@@ -234,9 +233,7 @@ export class Wordmark {
     const across = (this.sheet.width - target) / 2 - box.x1 * factor
     const down = this.top * this.sheet.height - box.y1 * factor
 
-    const { axis, side } = this.sheet.frame
-    const at = this.sheet.frame.at(across, down)
-    return matrix(axis.x * factor, axis.y * factor, side.x * factor, side.y * factor, at.x, at.y)
+    return this.sheet.frame.matrix(factor, across, down)
   }
 
   /**

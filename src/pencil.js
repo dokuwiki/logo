@@ -16,7 +16,15 @@
 import { Frame } from './frame.js'
 import { ellipse, inset, outline } from './path.js'
 import { PAPER } from './palette.js'
-import { point } from './plane.js'
+import { Point } from './plane.js'
+
+/**
+ * The pencil's own axis, which is where its parts are drawn: along it and
+ * across it, with the frame putting them on the canvas afterwards.
+ *
+ * @type {Point}
+ */
+const ALONG = new Point(1, 0)
 
 /**
  * One pencil.
@@ -59,9 +67,12 @@ export class Pencil {
    * @param {number} spec.lean How much nearer the viewer its far end is, as a
    *   fraction of the pencil's own width
    * @param {string} [spec.paper] Colour of the bare wood and the band's face
+   * @param {number} [spec.scale] How much larger than a standard pencil this
+   *   one is drawn, which its frame carries rather than its proportions, so
+   *   that a pencil of any size is the same shape drawn larger
    */
-  constructor({ id, colour, at, angle, lean = 0, paper = PAPER, ...proportions }) {
-    Object.assign(this, Pencil.proportions, proportions, { id, colour, lean, paper })
+  constructor({ id, colour, at, angle, lean = 0, paper = PAPER, scale = 1, ...proportions }) {
+    Object.assign(this, Pencil.proportions, proportions, { id, colour, lean, paper, scale })
     /** @type {Frame} The pencil's own frame, running along it then across */
     this.frame = new Frame(at, angle)
   }
@@ -78,14 +89,20 @@ export class Pencil {
   }
 
   /**
-   * A point on the pencil, seen from where the viewer stands.
+   * A point on the pencil, seen from where the viewer stands, in the pencil's
+   * own measure.
+   *
+   * Every part of the pencil is drawn this way and the frame puts the whole of
+   * it on the canvas, so where the pencil lies and how large it is drawn are
+   * one attribute rather than a set of outlines of their own.
    *
    * @param {number} along Distance from the sharpened point
    * @param {number} across Distance from the axis on the pencil itself
-   * @returns {import('./plane.js').Point} Where it lands on the canvas
+   * @returns {import('./plane.js').Point} The point, along the pencil and
+   *   across it
    */
   at(along, across) {
-    return this.frame.at(along, across * this.nearness(along))
+    return new Point(along, across * this.nearness(along))
   }
 
   /**
@@ -216,7 +233,7 @@ export class Pencil {
     const core = ellipse(
       middle,
       { x: this.coreLength / 2, y: (this.coreWidth / 2) * (1 + this.lean * along) },
-      this.frame.axis,
+      ALONG,
     )
     return `${face} ${core}`
   }
@@ -227,14 +244,16 @@ export class Pencil {
    * @returns {Array<{tag: string, attrs: Object}>} The barrel and the paper parts
    */
   elements() {
+    const place = this.frame.matrix(this.scale)
     return [
-      { tag: 'path', attrs: { id: `${this.id}-body`, fill: this.colour, d: this.barrel() } },
+      { tag: 'path', attrs: { id: `${this.id}-body`, fill: this.colour, transform: place, d: this.barrel() } },
       {
         tag: 'path',
         attrs: {
           id: `${this.id}-paper`,
           fill: this.paper,
           'fill-rule': 'evenodd',
+          transform: place,
           d: `${this.wood()} ${this.band()}`,
         },
       },
