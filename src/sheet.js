@@ -30,18 +30,25 @@ export class Sheet {
    * @param {{x: number, y: number}} spec.corner Top left corner
    * @param {number} spec.tilt How far the sheet is turned, in degrees
    * @param {string} [spec.fill] Paper colour
+   * @param {string} [spec.stroke] Outline colour, for a sheet that needs its
+   *   edge shown against a pale surface
+   * @param {number} [spec.strokeWidth] Outline width
    * @param {number} [spec.width] Width before tilting
    * @param {number} [spec.height] Height before tilting
    * @param {number} [spec.radius] Corner radius
    */
   constructor(spec) {
-    const { id, corner, tilt, fill = PAPER, ...rest } = { ...Sheet.proportions, ...spec }
+    const { id, corner, tilt, fill = PAPER, stroke, strokeWidth, ...rest } = { ...Sheet.proportions, ...spec }
     /** @type {string} Element id */
     this.id = id
     /** @type {number} How far the sheet is turned, in degrees */
     this.tilt = tilt
     /** @type {string} Paper colour */
     this.fill = fill
+    /** @type {string|undefined} Outline colour */
+    this.stroke = stroke
+    /** @type {number|undefined} Outline width */
+    this.strokeWidth = strokeWidth
     /** @type {number} Width before tilting */
     this.width = rest.width
     /** @type {number} Height before tilting */
@@ -121,14 +128,18 @@ export class Sheet {
    * @param {number} offset.x How far it sits to the right, in this sheet's frame
    * @param {number} offset.y How far it sits down, in this sheet's frame
    * @param {string} [offset.fill] Paper colour
+   * @param {string} [offset.stroke] Outline colour
+   * @param {number} [offset.strokeWidth] Outline width
    * @returns {Sheet} The sheet behind
    */
-  behind({ id, tilt, x, y, fill }) {
+  behind({ id, tilt, x, y, fill, stroke, strokeWidth }) {
     return new Sheet({
       id,
       corner: this.frame.at(x, y),
       tilt: this.tilt + tilt,
       fill,
+      stroke,
+      strokeWidth,
       width: this.width,
       height: this.height,
       radius: this.radius,
@@ -165,6 +176,7 @@ export class Sheet {
    * @returns {Array<{tag: string, attrs: Object}>} One rect
    */
   elements() {
+    const outline = this.stroke ? { stroke: this.stroke, 'stroke-width': this.strokeWidth } : {}
     return [
       {
         tag: 'rect',
@@ -175,6 +187,7 @@ export class Sheet {
           rx: this.radius,
           transform: this.frame.matrix(),
           fill: this.fill,
+          ...outline,
         },
       },
     ]

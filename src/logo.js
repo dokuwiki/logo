@@ -11,7 +11,7 @@
 
 import { Pencil } from './pencil.js'
 import { Sheet } from './sheet.js'
-import { GREEN, PAPER_BACK, RED } from './palette.js'
+import { GREEN, INK, PAPER_BACK, RED } from './palette.js'
 
 /**
  * Edge length of the square canvas.
@@ -79,7 +79,29 @@ const LADDER = [
       arrows: { width: 29 },
     },
   },
-  { name: 'sm', className: 'sz-sm', upTo: 40 },
+  {
+    // The first change of pose. The tilted fan and the tight arrow loops are
+    // what stop working here: a loop encloses a gap of a pixel or two, and the
+    // pale paper needs an outline to be seen at all. So the stack stands
+    // upright and compact, two sheets rather than three, and each arrow keeps
+    // its curve but opens it out: it comes out from behind the paper's edge,
+    // hooks clear of it and sweeps across the sheet, red pointing right above
+    // and green pointing left below. The word mark keeps the room at the top of
+    // the sheet, so the arrows sit under it. The pencils are past reading and
+    // go.
+    name: 'sm',
+    className: 'sz-sm',
+    upTo: 40,
+    detail: {
+      front: { corner: { x: 169, y: 49 }, tilt: 0, stroke: INK, strokeWidth: 24 },
+      behind: [{ id: 'sheet-back-near', tilt: 0, x: 40, y: 60, stroke: INK, strokeWidth: 16 }],
+      wordmark: { draws: ['letters'], fills: 0.76 },
+      arrows: { width: 64, headLength: 130, headSpread: 38 },
+      red: { from: 0.42, to: { u: 0.8, v: 0.58 }, swing: 300, approach: 320 },
+      green: { from: 0.68, to: { u: 0.2, v: 0.86 }, swing: 300, approach: 320 },
+      pencils: [],
+    },
+  },
   { name: 'xs', className: 'sz-xs', upTo: 20 },
 ]
 
