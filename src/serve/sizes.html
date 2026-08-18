@@ -8,7 +8,8 @@
   p { max-width:78ch; margin:6px 0; color:#555; }
   code { font:12px ui-monospace, monospace; }
   table { border-collapse:collapse; }
-  th { font:11px system-ui; font-weight:600; color:#666; text-align:left; padding:0 14px 5px 0; }
+  .band { display:flex; gap:18px; align-items:flex-start; }
+  th, .label { font:11px system-ui; font-weight:600; color:#666; text-align:left; padding:0 14px 5px 0; }
   td { padding:5px 14px 5px 0; vertical-align:bottom; }
   .size { font:11px ui-monospace, monospace; color:#666; }
   .cell { display:inline-block; outline:1px solid #ddd; }
@@ -31,13 +32,21 @@
   the drawing. <b>inline, container</b> pastes the markup into this page, where
   a media query would measure the window instead and only a container query
   measures the drawing. <b>inline, class</b> pastes it in and sets the level's
-  class, which is what a host does when nothing can measure for it.
+  class, which is what a host does when nothing can measure for it. Beside each
+  band the same class is drawn large, once, because a shape cannot be judged at
+  the size it is meant for.
 </p>
 <script type="module">
   /**
    * The file under review.
    */
   const FILE = '/dokuwiki-logo-new.svg'
+
+  /**
+   * The size a level is drawn at for a close look, where its shapes can be
+   * told apart.
+   */
+  const CLOSE_UP = 256
 
   /**
    * The levels of detail and the sizes each one serves, largest first.
@@ -85,10 +94,21 @@
    *
    * @param {Element} drawing What to show
    * @param {string} [className] Extra class for the cell
+   * @returns {Element} The cell
+   */
+  function cell(drawing, className = '') {
+    return el('div', { className: `cell ${className}` }, [drawing])
+  }
+
+  /**
+   * One drawing in a table cell.
+   *
+   * @param {Element} drawing What to show
+   * @param {string} [className] Extra class for the cell
    * @returns {Element} A table cell
    */
   function shown(drawing, className = '') {
-    return el('td', {}, [el('div', { className: `cell ${className}` }, [drawing])])
+    return el('td', {}, [cell(drawing, className)])
   }
 
   /**
@@ -106,6 +126,20 @@
       shown(image),
       shown(copy(size, null)),
       shown(copy(size, className), 'by-class'),
+    ])
+  }
+
+  /**
+   * The level of a band drawn large, once, beside its sizes.
+   *
+   * @param {object} band One entry of BANDS
+   * @returns {Element} The drawing, labelled
+   */
+  function closeUp(band) {
+    const said = band.className ? `.${band.className}` : 'no class'
+    return el('div', {}, [
+      el('div', { className: 'label', textContent: `${said} at ${CLOSE_UP}px` }),
+      cell(copy(CLOSE_UP, band.className), 'by-class'),
     ])
   }
 
@@ -135,10 +169,8 @@
       el('th', { textContent: 'inline, container query' }),
       el('th', { textContent: band.className ? `inline, .${band.className}` : 'inline, no class' }),
     ])
-    document.body.append(
-      heading(band),
-      el('table', {}, [head, ...band.sizes.map((size) => row(size, band.className))]),
-    )
+    const table = el('table', {}, [head, ...band.sizes.map((size) => row(size, band.className))])
+    document.body.append(heading(band), el('div', { className: 'band' }, [table, closeUp(band)]))
   }
 </script>
 </body>
