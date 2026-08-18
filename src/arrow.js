@@ -11,7 +11,7 @@
  * takes one cap for both of its ends, so one path cannot do both.
  */
 
-import { pen } from './path.js'
+import { outline, pen } from './path.js'
 import { radians } from './plane.js'
 
 /**
@@ -21,9 +21,12 @@ export class Arrow {
   /**
    * The look every arrow shares, used unless an arrow is given its own.
    *
-   * @type {{width: number, headLength: number, headSpread: number}}
+   * The bevel softens the corners of a solid head, and does nothing to a head
+   * drawn as two strokes, whose corners are round already.
+   *
+   * @type {{width: number, headLength: number, headSpread: number, headBevel: number}}
    */
-  static proportions = { width: 24, headLength: 98, headSpread: 34.5 }
+  static proportions = { width: 24, headLength: 98, headSpread: 34.5, headBevel: 70 }
 
   /**
    * Attach an arrow to a sheet.
@@ -40,6 +43,13 @@ export class Arrow {
    * @param {number} [spec.width] Stroke width
    * @param {number} [spec.headLength] Length of each head arm
    * @param {number} [spec.headSpread] Angle between an arm and the shaft, in degrees
+   * @param {number} [spec.headBevel] How far back from a solid head's corners
+   *   the rounding starts
+   * @param {string[]} [spec.draws] Which parts to draw, the shaft and the head
+   *   by default
+   * @param {boolean} [spec.solid] Whether the head is a filled triangle rather
+    *   than two strokes, which is what it has to be where the head is all that
+   *   is left of the arrow
    */
   constructor(sheet, spec) {
     /** @type {import('./sheet.js').Sheet} Sheet the arrow comes out from */
@@ -70,17 +80,19 @@ export class Arrow {
    *
    * @param {string} part What to call this part
    * @param {string} cap How its stroke ends
+   * @param {string} fill What fills it, if anything
+   * @param {number} width How wide its stroke is
    * @param {string} data Path data
    * @returns {{tag: string, attrs: Object}} Element
    */
-  stroke(part, cap, data) {
+  stroke(part, cap, fill, width, data) {
     return {
       tag: 'path',
       attrs: {
         id: `${this.id}-${part}`,
-        fill: 'none',
+        fill,
         stroke: this.colour,
-        'stroke-width': this.width,
+        'stroke-width': width,
         'stroke-linecap': cap,
         'stroke-linejoin': 'round',
         d: data,
@@ -89,32 +101,69 @@ export class Arrow {
   }
 
   /**
-   * The arrow as drawable elements.
+   * Which way the arrow reads: back along the sheet from the head.
    *
-   * @returns {Array<{tag: string, attrs: Object}>} The shaft and the head
+   * @returns {import('./plane.js').Point} Direction
    */
-  elements() {
-    const { tail, tip } = this
-    const outward = this.sheet.edge(this.edge).outward
-    const backwards = this.edge === 'left' ? this.sheet.across.mult(-1) : this.sheet.across
-    const arm = (turn) => tip.add(backwards.rotate(radians(turn)).mult(this.headLength))
+  get backwards() {
+    return this.edge === 'left' ? this.sheet.across.mult(-1) : this.sheet.across
+  }
 
-    const shaft = pen()
-    const swing = tail.add(outward.mult(this.swing))
+  /**
+   * The shaft: out from behind the sheet's edge, round and back across it.
+   *
+   * @returns {{tag: string, attrs: Object}} Element
+   */
+  shaftElement() {
+    const { tail, tip, backwards } = this
+    const swing = tail.add(this.sheet.edge(this.edge).outward.mult(this.swing))
     const approach = tip.add(backwards.mult(this.approach))
-    shaft.moveTo(tail.x, tail.y)
-    shaft.bezierCurveTo(swing.x, swing.y, approach.x, approach.y, tip.x, tip.y)
 
-    const head = pen()
+    const path = pen()
+    path.moveTo(tail.x, tail.y)
+    path.bezierCurveTo(swing.x, swing.y, approach.x, approach.y, tip.x, tip.y)
+    return this.stroke('shaft', 'butt', 'none', this.width, path.toString())
+  }
+
+  /**
+   * The head: two arms meeting at the tip, or the triangle between them where
+   * the head has to stand for the whole arrow.
+   *
+   * A solid head carries no stroke. Its corners are cut back and bridged in the
+   * path itself, the way a pencil's are, because the stroke that would round
+   * them also caps the arms and leaves a nub on each of the head's own corners.
+   *
+   * @returns {{tag: string, attrs: Object}} Element
+   */
+  headElement() {
+    const { tip, backwards } = this
+    const arm = (turn) => tip.add(backwards.rotate(radians(turn)).mult(this.headLength))
     const start = arm(-this.headSpread)
     const end = arm(this.headSpread)
-    head.moveTo(start.x, start.y)
-    head.lineTo(tip.x, tip.y)
-    head.lineTo(end.x, end.y)
 
-    return [
-      this.stroke('shaft', 'butt', shaft.toString()),
-      this.stroke('head', 'round', head.toString()),
-    ]
+    if (this.solid) {
+      return this.stroke('head', 'round', this.colour, 0, outline([start, tip, end], this.headBevel))
+    }
+
+    const path = pen()
+    path.moveTo(start.x, start.y)
+    path.lineTo(tip.x, tip.y)
+    path.lineTo(end.x, end.y)
+    return this.stroke('head', 'round', 'none', this.width, path.toString())
+  }
+
+  /**
+   * The arrow as drawable elements.
+   *
+   * @returns {Array<{tag: string, attrs: Object}>} The parts this arrow draws
+   * @throws {Error} If a part being drawn is not one of an arrow's own
+   */
+  elements() {
+    const parts = { shaft: () => this.shaftElement(), head: () => this.headElement() }
+    const drawn = this.draws ?? Object.keys(parts)
+    for (const name of drawn) {
+      if (!parts[name]) throw new Error(`an arrow has no part called ${name}`)
+    }
+    return drawn.map((name) => parts[name]())
   }
 }
