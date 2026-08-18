@@ -102,7 +102,32 @@ const LADDER = [
       pencils: [],
     },
   },
-  { name: 'xs', className: 'sz-xs', upTo: 20 },
+  {
+    // A mark that stands for the logo rather than the logo made small. One
+    // sheet, nearly the whole canvas, outlined 64 units wide, which is a pixel
+    // at 16 and the thinnest line worth drawing. Each arrow is down to its head,
+    // grown large and filled so it reads as a triangle rather than as two
+    // strokes. Each stands one outline's width in from the canvas edge its arrow
+    // comes from and points into the paper: red on the left pointing right
+    // above, green on the right pointing left below, their tips passing each
+    // other across the middle as the arrows do in the whole drawing. The
+    // pencils are past reading and go.
+    // Every shape is drawn with its edges where they fall rather than smoothed,
+    // there being too few pixels for smoothing to help.
+    name: 'xs',
+    className: 'sz-xs',
+    upTo: 20,
+    detail: {
+      front: { corner: { x: 157, y: 62 }, tilt: 0, width: 710, height: 900, stroke: INK, strokeWidth: 64 },
+      behind: [],
+      wordmark: { draws: [] },
+      crisp: true,
+      arrows: { headLength: 600, headSpread: 30, draws: ['head'], solid: true },
+      red: { to: { u: 0.601, v: 0.36 } },
+      green: { to: { u: 0.399, v: 0.64 } },
+      pencils: [],
+    },
+  },
 ]
 
 /**
@@ -161,5 +186,13 @@ export function logo(level = 'full') {
     ...detail.pencils.map((pencil) => new Pencil(pencil)),
   ]
 
-  return parts.flatMap((part) => part.elements())
+  const elements = parts.flatMap((part) => part.elements())
+  if (!detail.crisp) return elements
+
+  // a shape this small covers so few pixels that smoothing greys out more of it
+  // than it draws, so its edges are asked for where they fall
+  return elements.map((element) => ({
+    ...element,
+    attrs: { ...element.attrs, 'shape-rendering': 'crispEdges' },
+  }))
 }

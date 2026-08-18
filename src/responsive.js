@@ -31,7 +31,10 @@ import { round } from './emit.js'
  *
  * An attribute that is not here is not a CSS property, so no rule could carry
  * it. A level that changes one stops the build rather than losing the change
- * without saying so.
+ * without saying so. Width and height are on the list because a shape's size is
+ * a property in SVG 2, which is how a level can draw a sheet larger. They are
+ * written with a unit, because a length in a declaration needs one where the
+ * attribute of the same name does without.
  *
  * @type {Object<string, function(string|number): string>}
  */
@@ -39,9 +42,12 @@ const PROPERTIES = {
   d: (value) => `path("${written(value)}")`,
   display: written,
   fill: written,
+  height: (value) => `${written(value)}px`,
+  'shape-rendering': written,
   stroke: written,
   'stroke-width': written,
   transform: written,
+  width: (value) => `${written(value)}px`,
 }
 
 /**
