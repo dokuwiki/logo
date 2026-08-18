@@ -5,6 +5,12 @@
 piece looks belongs to the piece, in `src/sheet.js`, `src/arrow.js`,
 `src/pencil.js` and `src/lettering.js`.
 
+The picture is drawn at several levels of detail, so that it still reads when it
+is small. The markup in the file is the whole drawing, and a stylesheet takes
+detail away as the drawing gets smaller. `src/responsive.js` writes that
+stylesheet by comparing each level with the one a size above it, so no rule is
+written by hand. A renderer that ignores the stylesheet draws the whole logo.
+
 ## Build
 
 ```
