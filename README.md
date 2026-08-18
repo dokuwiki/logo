@@ -16,3 +16,14 @@ That writes `dokuwiki-logo-new.svg`.
 
 The word mark is set from `fonts/LiberationSans-Bold.ttf`, which ships with the
 repository so the letters come out the same everywhere.
+
+## Compare against the old logo
+
+```
+npm run serve
+```
+
+Then open <http://localhost:8731/>. It shows the old `dokuwiki-logo.svg` beside
+the generated one, whole and zoomed in on the parts worth watching. Rebuild and
+reload to see a change. The server is for this page only: it binds to localhost
+and serves nothing outside the project directory.
