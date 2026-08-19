@@ -19,8 +19,9 @@ librsvg, Inkscape and the tools built on them read no queries.
 
 A PNG goes with each size the compare page draws, `dist/dokuwiki-logo-256.png`
 down to `-16.png`, rasterised from the level that serves that size, on a clear
-background. `@resvg/resvg-js` draws them, which is the one thing the build needs
-that is not in this repository.
+background. `dist/favicon.ico` holds the 16, 32 and 48 pixel drawings in the one
+file a browser asks for by that name. `@resvg/resvg-js` draws the pixels and
+`png-to-ico` packs the icon.
 
 `classic/dokuwiki-logo.svg` is the logo DokuWiki uses today. It is kept to
 compare the new drawing against.
@@ -45,7 +46,8 @@ npm run serve
 ```
 
 The server is for these three pages only: it binds to localhost and serves
-nothing outside the project directory. Rebuild and reload to see a change.
+nothing outside the project directory. Rebuild and reload to see a change. Each
+page wears `dist/favicon.ico`, so a tab shows the logo the page is about.
 
 <http://localhost:8731/> draws the generated file at the sizes each level of
 detail serves. Every size appears three times, once for each way a level can be

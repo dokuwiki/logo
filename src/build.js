@@ -5,14 +5,16 @@
  *
  * One file carries every level of detail and switches between them as it is
  * drawn smaller. Beside it goes a flat file per level, in attributes alone, for
- * the renderers that read no stylesheet, and a PNG per size for the places that
- * take no vectors at all.
+ * the renderers that read no stylesheet, a PNG per size for the places that take
+ * no vectors at all, and an icon holding the sizes a browser asks a favicon
+ * for.
  */
 
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import pngToIco from 'png-to-ico'
 import { Resvg } from '@resvg/resvg-js'
 
 import { CANVAS, LEVELS, logo } from './logo.js'
@@ -32,6 +34,17 @@ const DIST = join(dirname(fileURLToPath(import.meta.url)), '..', 'dist')
  * @type {number[]}
  */
 const SIZES = [256, 128, 96, 64, 48, 40, 32, 24, 20, 16]
+
+/**
+ * The sizes favicon.ico carries, smallest first, which are the ones a browser
+ * picks between for a tab, a bookmark and a shortcut.
+ *
+ * Each has to be a size a PNG is drawn at, because the icon is packed from
+ * those.
+ *
+ * @type {number[]}
+ */
+const ICON = [16, 32, 48]
 
 /**
  * The header comment of one file: where it came from, what it holds, and how
@@ -150,7 +163,11 @@ for (const level of compositions) {
   write(fileOf(level), svg, `level ${level.name}, ${level.elements.length} elements`)
 }
 
+const pngs = new Map()
 for (const size of SIZES) {
   const level = levelAt(compositions, size)
-  write(`dokuwiki-logo-${size}.png`, raster(flat.get(level), size), `level ${level.name} at ${size}px`)
+  pngs.set(size, raster(flat.get(level), size))
+  write(`dokuwiki-logo-${size}.png`, pngs.get(size), `level ${level.name} at ${size}px`)
 }
+
+write('favicon.ico', await pngToIco(ICON.map((size) => pngs.get(size))), `${ICON.join(', ')}px`)
