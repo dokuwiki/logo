@@ -1,46 +1,9 @@
 /**
- * The logo's colours.
+ * How light falls on the logo's colours.
+ *
+ * The colours themselves are named in logo.yaml, which is where the design
+ * chooses what each part is painted.
  */
-
-/**
- * Front of a sheet of paper.
- *
- * @type {string}
- */
-export const PAPER = '#faf4dc'
-
-/**
- * Back of a sheet of paper, used for the sheets behind the front one.
- *
- * @type {string}
- */
-export const PAPER_BACK = '#ece5c8'
-
-/**
- * The red pencil and the red arrow, unlit.
- *
- * Light enough to hold its own against a dark page, because the arrow's loop
- * swings off the paper.
- *
- * @type {string}
- */
-export const RED = '#a62d2a'
-
-/**
- * The green pencil and the green arrow, unlit.
- *
- * Dark enough to carry the same weight as the red beside it.
- *
- * @type {string}
- */
-export const GREEN = '#326633'
-
-/**
- * Writing on the paper.
- *
- * @type {string}
- */
-export const INK = '#4a6174'
 
 /**
  * How much brighter a colour is where its surface faces the light.

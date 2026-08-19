@@ -3,7 +3,7 @@
  *
  * Points and directions are the same object, a Point from
  * @mapbox/point-geometry. This module adapts it to angles written in degrees
- * and to a design written as plain data.
+ * and to a design written as plain data, and measures boxes on the plane.
  */
 
 import Point from '@mapbox/point-geometry'
@@ -38,4 +38,19 @@ export function point(data) {
  */
 export function direction(degrees) {
   return new Point(1, 0).rotate(radians(degrees))
+}
+
+/**
+ * The one box that holds all of the given ones.
+ *
+ * @param {Array<{x1: number, y1: number, x2: number, y2: number}>} boxes The boxes
+ * @returns {{x1: number, y1: number, x2: number, y2: number}} Their extent
+ */
+export function extent(boxes) {
+  return {
+    x1: Math.min(...boxes.map((box) => box.x1)),
+    y1: Math.min(...boxes.map((box) => box.y1)),
+    x2: Math.max(...boxes.map((box) => box.x2)),
+    y2: Math.max(...boxes.map((box) => box.y2)),
+  }
 }

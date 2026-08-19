@@ -5,66 +5,50 @@
  * it are made from it, so they follow wherever the sheet goes.
  */
 
-import { Frame } from './frame.js'
+import { Frame } from '../frame.js'
 import { Arrow } from './arrow.js'
-import { Wordmark } from './lettering.js'
-import { PAPER } from './palette.js'
+import { Wordmark } from './wordmark.js'
 
 /**
  * One sheet of paper, placed by its top left corner and turned about it.
  */
 export class Sheet {
   /**
-   * Proportions of a sheet, used unless a sheet is given its own.
-   *
-   * The paper is a shade smaller than the space it is drawn in, because an
-   * outline sits half outside the edge it follows and needs the room.
-   *
-   * @type {{width: number, height: number, radius: number}}
-   */
-  static proportions = { width: 664, height: 842, radius: 29 }
-
-  /**
    * Place a sheet.
    *
    * @param {object} spec Where the sheet goes
    * @param {string} spec.id Element id
-   * @param {{x: number, y: number}} spec.corner Top left corner
-   * @param {number} spec.tilt How far the sheet is turned, in degrees
-   * @param {string} [spec.fill] Paper colour
-   * @param {string} [spec.stroke] Outline colour, for a sheet that needs its
-   *   edge shown against a pale surface
-   * @param {number} [spec.strokeWidth] Outline width
-   * @param {number} [spec.width] Width before tilting
-   * @param {number} [spec.height] Height before tilting
-   * @param {number} [spec.radius] Corner radius
+   * @param {{x: number, y: number}} spec.at Top left corner
+   * @param {number} spec.turn How far the sheet is turned, in degrees
+   * @param {{w: number, h: number}} spec.size Width and height before turning
+   * @param {number} spec.radius Corner radius
+   * @param {string} spec.fill Paper colour
+   * @param {{colour: string, width: number}} [spec.stroke] Outline, for a sheet
+   *   that needs its edge shown against a pale surface
    */
-  constructor(spec) {
-    const { id, corner, tilt, fill = PAPER, stroke, strokeWidth, ...rest } = { ...Sheet.proportions, ...spec }
+  constructor({ id, at, turn, size, radius, fill, stroke }) {
     /** @type {string} Element id */
     this.id = id
     /** @type {number} How far the sheet is turned, in degrees */
-    this.tilt = tilt
+    this.turn = turn
+    /** @type {number} Width before turning */
+    this.width = size.w
+    /** @type {number} Height before turning */
+    this.height = size.h
+    /** @type {number} Corner radius */
+    this.radius = radius
     /** @type {string} Paper colour */
     this.fill = fill
-    /** @type {string|undefined} Outline colour */
+    /** @type {{colour: string, width: number}|undefined} Outline */
     this.stroke = stroke
-    /** @type {number|undefined} Outline width */
-    this.strokeWidth = strokeWidth
-    /** @type {number} Width before tilting */
-    this.width = rest.width
-    /** @type {number} Height before tilting */
-    this.height = rest.height
-    /** @type {number} Corner radius */
-    this.radius = rest.radius
     /** @type {Frame} The sheet's own frame, running across then down */
-    this.frame = new Frame(corner, tilt)
+    this.frame = new Frame(at, turn)
   }
 
   /**
    * Unit direction across the sheet.
    *
-   * @returns {import('./plane.js').Point} Direction
+   * @returns {import('../plane.js').Point} Direction
    */
   get across() {
     return this.frame.axis
@@ -73,7 +57,7 @@ export class Sheet {
   /**
    * Unit direction down the sheet.
    *
-   * @returns {import('./plane.js').Point} Direction
+   * @returns {import('../plane.js').Point} Direction
    */
   get down() {
     return this.frame.side
@@ -84,7 +68,7 @@ export class Sheet {
    *
    * @param {number} u Fraction across, 0 at the left edge and 1 at the right
    * @param {number} v Fraction down, 0 at the top edge and 1 at the bottom
-   * @returns {import('./plane.js').Point} The point
+   * @returns {import('../plane.js').Point} The point
    */
   at(u, v) {
     return this.frame.at(u * this.width, v * this.height)
@@ -94,9 +78,9 @@ export class Sheet {
    * One of the sheet's four edges.
    *
    * @param {'left'|'right'|'top'|'bottom'} name Which edge
-   * @returns {{from: import('./plane.js').Point,
-   *   along: import('./plane.js').Point,
-   *   outward: import('./plane.js').Point, length: number}} Where the edge
+   * @returns {{from: import('../plane.js').Point,
+   *   along: import('../plane.js').Point,
+   *   outward: import('../plane.js').Point, length: number}} Where the edge
    *   starts, the direction along it, the direction out of the sheet, and how
    *   long it is
    */
@@ -117,7 +101,7 @@ export class Sheet {
    *
    * @param {'left'|'right'|'top'|'bottom'} name Which edge
    * @param {number} fraction How far along the edge, from 0 to 1
-   * @returns {import('./plane.js').Point} The point
+   * @returns {import('../plane.js').Point} The point
    */
   onEdge(name, fraction) {
     const edge = this.edge(name)
@@ -126,29 +110,27 @@ export class Sheet {
 
   /**
    * Another sheet tucked behind this one, offset and turned in this sheet's
-   * frame so it follows wherever this sheet goes.
+   * frame so it follows wherever this sheet goes. It is cut to this sheet's own
+   * measure unless it is given one.
    *
-   * @param {object} offset Where it peeks out
-   * @param {string} offset.id Element id
-   * @param {number} offset.tilt How much further it is turned, in degrees
-   * @param {number} offset.x How far it sits to the right, in this sheet's frame
-   * @param {number} offset.y How far it sits down, in this sheet's frame
-   * @param {string} [offset.fill] Paper colour
-   * @param {string} [offset.stroke] Outline colour
-   * @param {number} [offset.strokeWidth] Outline width
+   * @param {object} spec Where it peeks out
+   * @param {string} spec.id Element id
+   * @param {{x: number, y: number}} spec.at How far it sits to the right and
+   *   down, in this sheet's frame
+   * @param {number} spec.turn How much further it is turned, in degrees
+   * @param {string} spec.fill Paper colour
+   * @param {{w: number, h: number}} [spec.size] Width and height before turning
+   * @param {number} [spec.radius] Corner radius
+   * @param {{colour: string, width: number}} [spec.stroke] Outline
    * @returns {Sheet} The sheet behind
    */
-  behind({ id, tilt, x, y, fill, stroke, strokeWidth }) {
+  behind(spec) {
     return new Sheet({
-      id,
-      corner: this.frame.at(x, y),
-      tilt: this.tilt + tilt,
-      fill,
-      stroke,
-      strokeWidth,
-      width: this.width,
-      height: this.height,
-      radius: this.radius,
+      ...spec,
+      at: this.frame.at(spec.at.x, spec.at.y),
+      turn: this.turn + spec.turn,
+      size: spec.size ?? { w: this.width, h: this.height },
+      radius: spec.radius ?? this.radius,
     })
   }
 
@@ -181,7 +163,7 @@ export class Sheet {
    * @returns {Array<{tag: string, attrs: Object}>} One rect
    */
   elements() {
-    const outline = this.stroke ? { stroke: this.stroke, 'stroke-width': this.strokeWidth } : {}
+    const outline = this.stroke ? { stroke: this.stroke.colour, 'stroke-width': this.stroke.width } : {}
     return [
       {
         tag: 'rect',

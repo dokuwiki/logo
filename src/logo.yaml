@@ -1,0 +1,236 @@
+# The logo, composed from its parts.
+#
+# This is the whole design: what the picture is made of, where each piece goes,
+# and what each level of detail changes. Everything else about how a piece looks
+# belongs to the piece, one class per kind in the parts directory.
+#
+# Every part is said the same way, so four questions have one answer each:
+# "at" moves it, "size" makes it larger or smaller, "stroke.width" sets how
+# heavy its outline is, and "show" hides or shows it.
+
+# The colours the drawing is painted in.
+#
+# Hex has to be quoted, because a "#" after a space starts a comment.
+palette:
+  # front of a sheet of paper
+  paper: '#faf4dc'
+  # back of a sheet, which is what the sheets behind the front one show
+  paper-back: '#ece5c8'
+  # the red pencil and the red arrow, light enough to hold its own against a
+  # dark page, because the arrow's loop swings off the paper
+  red: '#a62d2a'
+  # the green pencil and the green arrow, dark enough to carry the same weight
+  # as the red beside it
+  green: '#326633'
+  # writing on the paper, and the paper's own outline
+  ink: '#4a6174'
+
+# Edge length of the square canvas.
+canvas: 1024
+
+# The parts, back to front.
+#
+# "is" says what kind of part it is, and so what draws it and what else it can
+# be told: a sheet of paper, a pencil, an arrow, or a word mark. How each kind
+# looks belongs to the kind, in parts/sheet.js, parts/pencil.js, parts/arrow.js
+# and parts/wordmark.js.
+#
+# "in" says which frame the part hangs in. "in: sheet-front" means it is placed
+# in the front sheet's own frame and follows it wherever it goes, so only the
+# front sheet and the pencils are placed against the canvas itself. An arrow and
+# a word mark have to lie on a sheet, a pencil lies on the canvas, and a sheet
+# does either, taking the measure of the sheet it lies on.
+#
+# A point is written either way, whichever reads better for the part. "x" and
+# "y" are a distance across the frame and down it, in the frame's own measure.
+# "u" and "v" are those same two as fractions of the frame's width and height. A
+# fraction still means the same place when the frame is cut to another size,
+# which is why the word mark and the arrow heads are written that way: they hold
+# their place on the paper where sm cuts it larger. An arrow's tail is one
+# number, not a point, and is always a fraction down the edge it leaves.
+#
+# "id" names the part, both in the file that is drawn and to the levels below,
+# which say what they change by naming it.
+#
+# The whole drawing is composed a shade inside the canvas, so the outlines and
+# the pencils' ends have somewhere to go.
+parts:
+  # A sheet behind the front one, so the stack reads as more than one page. It
+  # is placed in the front sheet's frame and cut to the same measure, so it
+  # follows the paper wherever the paper goes.
+  - id: sheet-back-far
+    is: sheet
+    in: sheet-front
+    at: {x: -126.3, y: 59.7}          # from the front sheet's corner, across and down
+    turn: -5.2                        # degrees, on top of the front sheet's own turn
+    fill: paper-back                  # a sheet seen from behind shows its darker side
+    stroke: {colour: ink, width: 8}   # its edge, or pale paper on pale paper is not seen
+
+  - id: sheet-back-near
+    is: sheet
+    in: sheet-front
+    at: {x: -1.7, y: 122.8}
+    turn: -9.7
+    fill: paper-back
+    stroke: {colour: ink, width: 8}
+
+  # The page everything else is placed on. The paper is a shade smaller than the
+  # space it is drawn in, because an outline sits half outside the edge it
+  # follows and needs the room.
+  - id: sheet-front
+    is: sheet
+    in: canvas
+    at: {x: 132, y: 78.6}              # where its top left corner sits on the canvas
+    turn: -5.3                         # degrees, clockwise, about that same corner
+    size: {w: 664, h: 842}             # how wide and how tall the paper is, before turning
+    radius: 29                         # the radius its corners are rounded to
+    fill: paper
+    stroke: {colour: ink, width: 12}
+
+  # The word mark, set in named runs so that a level can leave runs out. It is
+  # placed and sized against the paper, so it follows the paper.
+  - id: wordmark
+    is: wordmark
+    in: sheet-front
+    # centred on u across the paper, with the top of the letters at v down it
+    at: {u: 0.5, v: 0.113}
+    size: 0.769                  # what all six characters fill, of the paper's width
+    fill: ink
+    draws: [brackets, letters]   # which runs from the text below to draw
+    # the whole mark in reading order; runs sharing a name make one element
+    text:
+      - {name: brackets, text: '[['}
+      - {name: letters, text: DW}
+      - {name: brackets, text: ']]'}
+
+  # An arrow looping out from behind the paper and back onto it. Its tail is cut
+  # flat against the paper's edge, so it reads as coming out from behind.
+  - id: arrow-red
+    is: arrow
+    in: sheet-front
+    from: {edge: left, along: 0.34}    # which edge the tail leaves, and how far down it
+    to: {u: 0.404, v: 0.531}           # where the head points, on the paper
+    swing: 260                         # how far the loop reaches out past that edge
+    approach: 430                      # how long and straight the run into the head is
+    stroke: {colour: red, width: 24}   # an arrow is all stroke, so this is its line weight
+
+  - id: arrow-green
+    is: arrow
+    in: sheet-front
+    from: {edge: right, along: 0.571}
+    to: {u: 0.431, v: 0.691}
+    swing: 190
+    approach: 480
+    stroke: {colour: green, width: 24}
+
+  # Both pencils are one component seen from different distances. The pencil
+  # itself is straight and even; the lean is what sets the two apart.
+  - id: pencil-red
+    is: pencil
+    in: canvas
+    at: {x: 464.8, y: 496.7}   # where its sharpened point sits on the canvas
+    turn: -40                  # which way it points, in degrees
+    size: 0.968                # how much larger than a standard pencil it is drawn
+    lean: 0.42                 # how much nearer the viewer its blunt end is, so it widens
+    fill: red                  # the barrel's paint; the light on its facet comes from this
+    bare: paper                # the bare wood, at the point and at the blunt end
+
+  - id: pencil-green
+    is: pencil
+    in: canvas
+    at: {x: 220.9, y: 652.4}
+    turn: 24.9
+    size: 0.968
+    lean: 0.54
+    fill: green
+    bare: paper
+
+# Every level of detail, largest first.
+#
+# The picture is drawn at several levels so that it still reads when it is
+# small. A level says only what it changes, part by part under the name each one
+# is given above, and each level builds on the level above it. Saying a value
+# always wins; leaving one out never puts it back, so a level that wants an
+# earlier value again says it.
+levels:
+  - name: full
+    title: 'Red and green pencils and arrows over a stack of [[DW]] pages'
+
+  # The ink already thinner than a pixel at 96px goes: the word mark loses its
+  # brackets, its thinnest strokes, and its letters grow to fill most of the
+  # width all six characters had. The arrows thicken by a fifth and the sheets'
+  # outlines by more than half, because by 48px, the smallest size this level
+  # serves, the paper's edge is half a pixel and breaks up.
+  - name: md
+    class: sz-md
+    upTo: 96
+    title: Red and green pencils and arrows over a stack of DW pages
+    overrides:
+      sheet-back-far: {stroke: {width: 14}}
+      sheet-back-near: {stroke: {width: 14}}
+      sheet-front: {stroke: {width: 20}}
+      # fills: what the letters left over grow to, of the paper's width
+      wordmark: {draws: [letters], fills: 0.7}
+      arrow-red: {stroke: {width: 29}}
+      arrow-green: {stroke: {width: 29}}
+
+  # The first change of pose. An arrow's loop encloses a gap of a pixel or two,
+  # so the arrows go and the pencils carry the mark. The pale paper needs an
+  # outline to be seen, which a tilted fan of three sheets turns into a tangle
+  # of lines, so the stack stands upright and compact: two sheets, cut larger
+  # than the paper's own measure, with the outline on the canvas's own edge. The
+  # pencils keep the slant and the arrangement the whole drawing gives them, red
+  # steep and above, green shallow and below it and further left, because the
+  # mark is known by that. Each is grown from the blunt end that rests on the
+  # canvas edge, both at one size, and both lie flat, because a pared down
+  # pencil has no facets left to place in space. The pair can grow no further
+  # than the strip of paper between red's point and green's barrel allows, which
+  # is down to a pixel and a third at 24px. The paper's corners are rounded more
+  # than twice as hard, or the round the whole drawing keeps is a pixel at 40px
+  # and reads as a plain rectangle.
+  - name: sm
+    class: sz-sm
+    upTo: 40
+    title: Red and green pencils over a stack of DW pages
+    overrides:
+      sheet-back-far: {show: false}
+      sheet-back-near: {at: {x: 38.7, y: 58.1}, turn: 0, stroke: {width: 16}}
+      sheet-front:
+        at: {x: 12, y: 12}
+        turn: 0
+        size: {w: 720, h: 913}
+        radius: 64
+        stroke: {width: 24}
+      wordmark: {fills: 0.76}
+      arrow-red: {show: false}
+      arrow-green: {show: false}
+      pencil-red:
+        shape: plain               # a pared down pencil, from the shapes a pencil holds
+        at: {x: 395.5, y: 568.1}
+        size: 1.28
+        lean: 0                    # flat: a pared down pencil has no facet to place
+        draws: [barrel, point]     # a pencil draws barrel, facet, point and end
+      pencil-green:
+        shape: plain
+        at: {x: 159.2, y: 625.7}
+        size: 1.28
+        lean: 0
+        draws: [barrel, point]
+
+  # This level takes sm's pose and drops the two pieces of it that stop reading
+  # at 20px. The word mark goes: its letters stand four pixels tall and their
+  # strokes are finer than one, so they close up into a smudge. The sheet behind
+  # goes too: it peeks three quarters of a pixel out at the side under an
+  # outline a third of a pixel wide, too close to the front sheet's edge to read
+  # as another sheet. The paper is cut back to its own measure and set down and
+  # right by what it lost, so its right and bottom edges lie where sm's do. Both
+  # pencils stay where sm puts them, and each hangs further off the paper for
+  # it.
+  - name: xs
+    class: sz-xs
+    upTo: 20
+    title: A red and a green pencil on a page
+    overrides:
+      sheet-back-near: {show: false}
+      sheet-front: {at: {x: 68, y: 83}, size: {w: 664, h: 842}}
+      wordmark: {show: false}

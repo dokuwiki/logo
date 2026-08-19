@@ -1,26 +1,14 @@
 /**
  * A word mark written on a sheet.
  *
- * opentype.js sets the text from a font and turns it into path data; this
- * component works out where that path goes on its sheet. The text is set in
- * named parts, and a level of detail can leave parts out.
+ * The font sets the text and turns it into path data; this part works out where
+ * that path goes on its sheet. The text is set in named runs, and a level of
+ * detail can leave runs out.
  */
 
-import { existsSync, readFileSync } from 'node:fs'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
-
-import opentype from 'opentype.js'
-
-import { pen } from './path.js'
-import { INK } from './palette.js'
-
-/**
- * Fonts already read from disk, so a rebuild parses each one once.
- *
- * @type {Map<string, object>}
- */
-const loaded = new Map()
+import { checkCoverage, loadFont, VENDORED } from '../font.js'
+import { pen } from '../path.js'
+import { extent } from '../plane.js'
 
 /**
  * The type size the text is measured at before its real size is worked out.
@@ -28,61 +16,6 @@ const loaded = new Map()
  * @type {number}
  */
 const MEASURE = 100
-
-/**
- * The font that ships with this repository, so a build draws the same letters
- * wherever it runs.
- *
- * @type {string}
- */
-const VENDORED = join(dirname(fileURLToPath(import.meta.url)), '..', 'fonts', 'LiberationSans-Bold.ttf')
-
-/**
- * Read a font file.
- *
- * @param {string} path The font file
- * @returns {object} The parsed font
- * @throws {Error} If the file is not there
- */
-function loadFont(path) {
-  if (!existsSync(path)) throw new Error(`no font at ${path}`)
-  if (!loaded.has(path)) {
-    const file = readFileSync(path)
-    const bytes = file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength)
-    loaded.set(path, opentype.parse(bytes))
-  }
-  return loaded.get(path)
-}
-
-/**
- * Check that the font can draw every letter of the text.
- *
- * @param {object} font The parsed font
- * @param {string} text What is to be set
- * @param {string} path Where the font came from, for the message
- * @throws {Error} If a letter is missing
- */
-function checkCoverage(font, text, path) {
-  const missing = [...new Set(text)].filter((letter) => !font.charToGlyphIndex(letter))
-  if (missing.length) {
-    throw new Error(`${path} has no glyph for ${missing.map((l) => `"${l}"`).join(', ')}`)
-  }
-}
-
-/**
- * The one box that holds all of the given ones.
- *
- * @param {Array<{x1: number, y1: number, x2: number, y2: number}>} boxes The boxes
- * @returns {{x1: number, y1: number, x2: number, y2: number}} Their extent
- */
-function extent(boxes) {
-  return {
-    x1: Math.min(...boxes.map((box) => box.x1)),
-    y1: Math.min(...boxes.map((box) => box.y1)),
-    x2: Math.max(...boxes.map((box) => box.x2)),
-    y2: Math.max(...boxes.map((box) => box.y2)),
-  }
-}
 
 /**
  * Text set across a sheet.
@@ -94,12 +27,11 @@ export class Wordmark {
    * The original was drawn in Arial Bold. Liberation Sans Bold carries the same
    * metrics.
    *
-   * @type {{font: string, tracking: number, fill: string}}
+   * @type {{font: string, tracking: number}}
    */
   static proportions = {
     font: VENDORED,
     tracking: 0.054,
-    fill: INK,
   }
 
   /**
@@ -111,16 +43,18 @@ export class Wordmark {
    * @param {import('./sheet.js').Sheet} sheet Sheet to write on
    * @param {object} spec What to write and where
    * @param {string} spec.id Element id, used as a prefix for the parts
-   * @param {Array<{name: string, text: string}>} spec.parts The word mark in
+   * @param {Array<{name: string, text: string}>} spec.text The word mark in
    *   reading order; runs that share a name make one element
-   * @param {number} spec.width How much of the sheet's width to fill, from 0 to 1
-   * @param {number} spec.top How far down the sheet to start, from 0 to 1
+   * @param {{x: number, y: number}} spec.at Where it sits on the sheet, in the
+   *   sheet's own measure: the point across it the text is centred on, and how
+   *   far down it the text starts
+   * @param {number} spec.size How much of the sheet's width to fill, from 0 to 1
+   * @param {string} spec.fill Ink colour
    * @param {string[]} [spec.draws] Which parts to draw, all of them by default
    * @param {number} [spec.fills] How much of the sheet's width the parts being
    *   drawn fill, as much as the whole word mark by default
    * @param {string} [spec.font] Font file to set the text from
    * @param {number} [spec.tracking] Extra space between letters, as a fraction of the type size
-   * @param {string} [spec.fill] Ink colour
    */
   constructor(sheet, spec) {
     /** @type {import('./sheet.js').Sheet} Sheet to write on */
@@ -137,19 +71,19 @@ export class Wordmark {
    */
   elements() {
     const font = loadFont(this.font)
-    const text = this.parts.map((part) => part.text).join('')
+    const text = this.text.map((part) => part.text).join('')
     checkCoverage(font, text, this.font)
     const options = { kerning: true, letterSpacing: this.tracking }
 
     // set once to measure, then again at the size and place it wants
     const box = font.getPath(text, 0, 0, MEASURE, options).getBoundingBox()
-    const wanted = this.width * this.sheet.width
-    const size = (MEASURE * wanted) / (box.x2 - box.x1)
-    const scale = size / MEASURE
-    const left = (this.sheet.width - wanted) / 2 - box.x1 * scale
-    const top = this.top * this.sheet.height - box.y1 * scale
+    const wanted = this.size * this.sheet.width
+    const type = (MEASURE * wanted) / (box.x2 - box.x1)
+    const scale = type / MEASURE
+    const left = this.at.x - wanted / 2 - box.x1 * scale
+    const top = this.at.y - box.y1 * scale
 
-    const glyphs = font.getPaths(text, left, top, size, options)
+    const glyphs = font.getPaths(text, left, top, type, options)
     if (glyphs.length !== text.length) {
       throw new Error(`${this.font} sets ${text} as ${glyphs.length} shapes, so they cannot be shared out one per letter`)
     }
@@ -187,7 +121,7 @@ export class Wordmark {
     const parts = new Map()
     let taken = 0
 
-    for (const part of this.parts) {
+    for (const part of this.text) {
       const mine = glyphs.slice(taken, taken + part.text.length)
       taken += part.text.length
       const found = parts.get(part.name) ?? { commands: [], boxes: [] }
@@ -211,12 +145,12 @@ export class Wordmark {
    * @returns {string} Value for a transform attribute
    */
   placed(box) {
-    const target = (this.fills ?? this.width) * this.sheet.width
+    const target = (this.fills ?? this.size) * this.sheet.width
     const factor = target / (box.x2 - box.x1)
 
-    // centred across the sheet, hanging the same fraction of its height down
-    const across = (this.sheet.width - target) / 2 - box.x1 * factor
-    const down = this.top * this.sheet.height - box.y1 * factor
+    // centred on the same point across the sheet, starting the same way down it
+    const across = this.at.x - target / 2 - box.x1 * factor
+    const down = this.at.y - box.y1 * factor
 
     return this.sheet.frame.matrix(factor, across, down)
   }

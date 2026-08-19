@@ -1,9 +1,26 @@
 # DokuWiki logo
 
 `dist/dokuwiki-logo.svg` is generated, not drawn by hand. The design lives in
-`src/logo.js`: what the picture is made of and where each piece goes. How a
-piece looks belongs to the piece, in `src/sheet.js`, `src/arrow.js`,
-`src/pencil.js` and `src/lettering.js`.
+`src/logo.yaml`: the colours, what the picture is made of, where each piece
+goes, and what each level of detail changes about it. How a piece looks belongs
+to the piece, one class per kind under `src/parts/`, named for the kind the
+design asks for by name. `src/logo.js` reads the design and makes the pieces.
+
+Each piece says what it is and what it is placed in. `is` picks the kind that
+draws it, one of a sheet, a pencil, an arrow or a word mark, and `in` names the
+frame it hangs in, either the canvas or another piece it then follows.
+
+Beyond that every piece is said the same way, so four edits look the same
+wherever they are made: `at` moves a piece, `size` makes it larger or smaller,
+`stroke.width` sets how heavy its outline is, and `show` hides or shows it. A
+level of detail says only what it changes, so saying a value there wins and
+leaving one out never puts it back.
+
+A point is written either way. `x` and `y` are a distance across the frame and
+down it, in the frame's own measure; `u` and `v` are those same two as fractions
+of the frame's width and height. Both mean the same place, but a fraction still
+means it when the frame is cut to another size, which is how the word mark stays
+centred on the paper where a smaller level cuts the paper larger.
 
 The picture is drawn at several levels of detail, so that it still reads when it
 is small. The markup in the file is the whole drawing, and a stylesheet takes

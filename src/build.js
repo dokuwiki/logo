@@ -15,8 +15,7 @@ import { fileURLToPath } from 'node:url'
 import pngToIco from 'png-to-ico'
 import { Resvg } from '@resvg/resvg-js'
 
-import { CANVAS, LEVELS, logo } from './logo.js'
-import { GREEN, INK, PAPER, PAPER_BACK, RED } from './palette.js'
+import { CANVAS, LEVELS, logo, PALETTE } from './logo.js'
 
 import { round, serialiseDocument, shorten } from './emit.js'
 import { stylesheet } from './responsive.js'
@@ -56,11 +55,11 @@ const ICON = [16, 32, 48]
  */
 function notes(about) {
   return [
-    'Built by build.js. Change the design in src/logo.js, not this file.',
+    'Built by build.js. Change the design in src/logo.yaml, not this file.',
     ...about,
     'An id is the initials of the name the design gives it: ars is arrow-red-shaft.',
-    `palette: paper ${PAPER}, paper back ${PAPER_BACK},`,
-    `red ${RED}, green ${GREEN}, ink ${INK}`,
+    `palette: paper ${PALETTE.paper}, paper back ${PALETTE['paper-back']},`,
+    `red ${PALETTE.red}, green ${PALETTE.green}, ink ${PALETTE.ink}`,
   ]
 }
 

@@ -6,8 +6,8 @@
  * one cap for both of its ends.
  */
 
-import { outline, pen } from './path.js'
-import { radians } from './plane.js'
+import { outline, pen } from '../path.js'
+import { radians } from '../plane.js'
 
 /**
  * One arrow, made from the sheet it belongs to.
@@ -16,9 +16,9 @@ export class Arrow {
   /**
    * The look every arrow shares, used unless an arrow is given its own.
    *
-   * @type {{width: number, headLength: number, headSpread: number, headBevel: number}}
+   * @type {{headLength: number, headSpread: number, headBevel: number}}
    */
-  static proportions = { width: 24, headLength: 98, headSpread: 34.5, headBevel: 70 }
+  static proportions = { headLength: 98, headSpread: 34.5, headBevel: 70 }
 
   /**
    * Attach an arrow to a sheet.
@@ -26,14 +26,15 @@ export class Arrow {
    * @param {import('./sheet.js').Sheet} sheet Sheet the arrow comes out from
    * @param {object} spec What this arrow does
    * @param {string} spec.id Element id
-   * @param {string} spec.colour Stroke colour
-   * @param {'left'|'right'} spec.edge Edge the tail comes out of
-   * @param {number} spec.from How far down that edge the tail sits, from 0 to 1
-   * @param {{u: number, v: number}} spec.to Where the head lands on the sheet
+   * @param {{edge: 'left'|'right', along: number}} spec.from Which edge the tail
+   *   comes out of, and how far down it the tail sits, from 0 to 1
+   * @param {{x: number, y: number}} spec.to Where the head lands on the sheet, in
+   *   the sheet's own measure
    * @param {number} spec.swing How far the loop reaches out past the edge,
    *   measured from the edge itself
    * @param {number} spec.approach How straight the run into the head is
-   * @param {number} [spec.width] Stroke width
+   * @param {{colour: string, width: number}} spec.stroke What the arrow is drawn
+   *   in and how heavy it is
    * @param {number} [spec.headLength] Length of each head arm
    * @param {number} [spec.headSpread] Angle between an arm and the shaft, in degrees
    * @param {number} [spec.headBevel] How far back from a solid head's corners
@@ -56,21 +57,21 @@ export class Arrow {
    * against the outside of that line and the arrow reads as coming out from
    * behind the paper.
    *
-   * @returns {import('./plane.js').Point} The point
+   * @returns {import('../plane.js').Point} The point
    */
   get tail() {
-    const edge = this.sheet.edge(this.edge)
-    const clear = (this.sheet.strokeWidth ?? 0) / 2
-    return this.sheet.onEdge(this.edge, this.from).add(edge.outward.mult(clear))
+    const edge = this.sheet.edge(this.from.edge)
+    const clear = (this.sheet.stroke?.width ?? 0) / 2
+    return this.sheet.onEdge(this.from.edge, this.from.along).add(edge.outward.mult(clear))
   }
 
   /**
    * Where the head points.
    *
-   * @returns {import('./plane.js').Point} The point
+   * @returns {import('../plane.js').Point} The point
    */
   get tip() {
-    return this.sheet.at(this.to.u, this.to.v)
+    return this.sheet.frame.at(this.to.x, this.to.y)
   }
 
   /**
@@ -83,13 +84,13 @@ export class Arrow {
    * @param {string} data Path data
    * @returns {{tag: string, attrs: Object}} Element
    */
-  stroke(part, cap, fill, width, data) {
+  painted(part, cap, fill, width, data) {
     return {
       tag: 'path',
       attrs: {
         id: `${this.id}-${part}`,
         fill,
-        stroke: this.colour,
+        stroke: this.stroke.colour,
         'stroke-width': width,
         'stroke-linecap': cap,
         'stroke-linejoin': 'round',
@@ -101,10 +102,10 @@ export class Arrow {
   /**
    * Which way the arrow reads: back along the sheet from the head.
    *
-   * @returns {import('./plane.js').Point} Direction
+   * @returns {import('../plane.js').Point} Direction
    */
   get backwards() {
-    return this.edge === 'left' ? this.sheet.across.mult(-1) : this.sheet.across
+    return this.from.edge === 'left' ? this.sheet.across.mult(-1) : this.sheet.across
   }
 
   /**
@@ -114,14 +115,14 @@ export class Arrow {
    */
   shaftElement() {
     const { tail, tip, backwards } = this
-    const outward = this.sheet.edge(this.edge).outward
-    const swing = this.sheet.onEdge(this.edge, this.from).add(outward.mult(this.swing))
+    const outward = this.sheet.edge(this.from.edge).outward
+    const swing = this.sheet.onEdge(this.from.edge, this.from.along).add(outward.mult(this.swing))
     const approach = tip.add(backwards.mult(this.approach))
 
     const path = pen()
     path.moveTo(tail.x, tail.y)
     path.bezierCurveTo(swing.x, swing.y, approach.x, approach.y, tip.x, tip.y)
-    return this.stroke('shaft', 'butt', 'none', this.width, path.toString())
+    return this.painted('shaft', 'butt', 'none', this.stroke.width, path.toString())
   }
 
   /**
@@ -141,14 +142,14 @@ export class Arrow {
     const end = arm(this.headSpread)
 
     if (this.solid) {
-      return this.stroke('head', 'round', this.colour, 0, outline([start, tip, end], this.headBevel))
+      return this.painted('head', 'round', this.stroke.colour, 0, outline([start, tip, end], this.headBevel))
     }
 
     const path = pen()
     path.moveTo(start.x, start.y)
     path.lineTo(tip.x, tip.y)
     path.lineTo(end.x, end.y)
-    return this.stroke('head', 'round', 'none', this.width, path.toString())
+    return this.painted('head', 'round', 'none', this.stroke.width, path.toString())
   }
 
   /**
