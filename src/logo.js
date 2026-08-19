@@ -50,10 +50,10 @@ const LADDER = [
     className: null,
     upTo: null,
     detail: {
-      front: { corner: { x: 119.4, y: 64.2 }, tilt: -5.3 },
+      front: { corner: { x: 119.4, y: 64.2 }, tilt: -5.3, stroke: INK, strokeWidth: 12 },
       behind: [
-        { id: 'sheet-back-far', tilt: -5.2, x: -130.5, y: 61.7 },
-        { id: 'sheet-back-near', tilt: -9.7, x: -1.8, y: 126.9 },
+        { id: 'sheet-back-far', tilt: -5.2, x: -130.5, y: 61.7, stroke: INK, strokeWidth: 8 },
+        { id: 'sheet-back-near', tilt: -9.7, x: -1.8, y: 126.9, stroke: INK, strokeWidth: 8 },
       ],
       wordmark: { draws: ['brackets', 'letters'] },
       arrows: { width: 24 },
@@ -70,11 +70,19 @@ const LADDER = [
     // keeps its letters and loses its brackets, which are its thinnest
     // strokes, and the letters grow to fill most of the width all six
     // characters had. The arrows are a fifth thicker so their shafts do not
-    // fade.
+    // fade, and the sheets are outlined half again as heavily, or by 48, where
+    // this level hands over, the paper's edge is half a pixel and breaks up.
+    // The sheets lie where they lie in the whole drawing; they are written out
+    // again only to carry that outline.
     name: 'md',
     className: 'sz-md',
     upTo: 96,
     detail: {
+      front: { corner: { x: 119.4, y: 64.2 }, tilt: -5.3, stroke: INK, strokeWidth: 20 },
+      behind: [
+        { id: 'sheet-back-far', tilt: -5.2, x: -130.5, y: 61.7, stroke: INK, strokeWidth: 14 },
+        { id: 'sheet-back-near', tilt: -9.7, x: -1.8, y: 126.9, stroke: INK, strokeWidth: 14 },
+      ],
       wordmark: { draws: ['letters'], fills: 0.7 },
       arrows: { width: 29 },
     },
