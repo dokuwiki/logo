@@ -1,0 +1,55 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>DokuWiki logo up close</title>
+<style>
+  body { margin:0; padding:14px 16px 40px; background:#fff; font:13px system-ui; color:#222; }
+  h1 { font-size:15px; margin:0 0 8px; }
+  h2 { font-size:12px; font-weight:600; margin:26px 0 6px; color:#444; }
+  nav { margin:0 0 12px; font:12px system-ui; }
+  nav a { color:#36c; margin-right:14px; }
+  nav b { margin-right:14px; color:#222; }
+  /* The canvas is outlined, so how much room a part has at its edge is visible. */
+  .level { display:inline-block; outline:1px solid #ddd; }
+  .level > svg { display:block; }
+</style>
+<body>
+<nav>
+  <a href="/">every size</a>
+  <a href="/src/serve/compare.html">beside the classic one</a>
+  <b>up close</b>
+</nav>
+<h1>dist/dokuwiki-logo.svg at 1024px, one level under another</h1>
+
+<h2>full</h2>
+<div class="level" data-level=""></div>
+
+<h2>md — 96px and below</h2>
+<div class="level" data-level="sz-md"></div>
+
+<h2>sm — 40px and below</h2>
+<div class="level" data-level="sz-sm"></div>
+
+<h2>xs — 20px and below</h2>
+<div class="level" data-level="sz-xs"></div>
+
+<script type="module">
+  /**
+   * Paste the drawing into each level's slot and tell it its level by a class.
+   * Only pasting needs a script: no element loads a file as markup rather than
+   * as its own document, and a class has to be on a copy in this page to reach
+   * it. The class is the mechanism that can hold a level at a size it does not
+   * answer to, which is the whole of what this page is for.
+   */
+  const FILE = '/dist/dokuwiki-logo.svg'
+  const SIZE = '1024px'
+  const source = await fetch(FILE).then((response) => response.text())
+  const parsed = new DOMParser().parseFromString(source, 'image/svg+xml')
+
+  for (const slot of document.querySelectorAll('[data-level]')) {
+    const svg = document.importNode(parsed.documentElement, true)
+    svg.style.width = svg.style.height = SIZE
+    if (slot.dataset.level) svg.classList.add(slot.dataset.level)
+    slot.append(svg)
+  }
+</script>
+</body>

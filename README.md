@@ -33,8 +33,8 @@ repository so the letters come out the same everywhere.
 npm run serve
 ```
 
-The server is for these two pages only: it binds to localhost and serves nothing
-outside the project directory. Rebuild and reload to see a change.
+The server is for these three pages only: it binds to localhost and serves
+nothing outside the project directory. Rebuild and reload to see a change.
 
 <http://localhost:8731/> draws the generated file at the sizes each level of
 detail serves. Every size appears three times, once for each way a level can be
@@ -43,3 +43,8 @@ on the root.
 
 <http://localhost:8731/src/serve/compare.html> puts the generated file beside
 the classic one at those same sizes, on white paper and on black.
+
+<http://localhost:8731/src/serve/closeup.html> draws the whole file at 1024
+pixels, once for each level of detail, one under another. A level is held at that
+size by its class, which is the only mechanism that can hold a level at a size it
+does not answer to.
