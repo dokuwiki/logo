@@ -17,6 +17,11 @@ level already drawn as it comes out, in attributes alone, with no stylesheet and
 nothing hidden. They carry every consumer that is not a browser, because
 librsvg, Inkscape and the tools built on them read no queries.
 
+A PNG goes with each size the compare page draws, `dist/dokuwiki-logo-256.png`
+down to `-16.png`, rasterised from the level that serves that size, on a clear
+background. `@resvg/resvg-js` draws them, which is the one thing the build needs
+that is not in this repository.
+
 `classic/dokuwiki-logo.svg` is the logo DokuWiki uses today. It is kept to
 compare the new drawing against.
 

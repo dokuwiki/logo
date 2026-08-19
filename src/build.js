@@ -5,12 +5,15 @@
  *
  * One file carries every level of detail and switches between them as it is
  * drawn smaller. Beside it goes a flat file per level, in attributes alone, for
- * the renderers that read no stylesheet.
+ * the renderers that read no stylesheet, and a PNG per size for the places that
+ * take no vectors at all.
  */
 
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+
+import { Resvg } from '@resvg/resvg-js'
 
 import { CANVAS, LEVELS, logo } from './logo.js'
 import { GREEN, INK, PAPER, PAPER_BACK, RED } from './palette.js'
@@ -19,6 +22,16 @@ import { round, serialiseDocument, shorten } from './emit.js'
 import { stylesheet } from './responsive.js'
 
 const DIST = join(dirname(fileURLToPath(import.meta.url)), '..', 'dist')
+
+/**
+ * The sizes a PNG is written at, largest first.
+ *
+ * These are the sizes the compare page draws, which are the sizes the levels
+ * were designed against.
+ *
+ * @type {number[]}
+ */
+const SIZES = [256, 128, 96, 64, 48, 40, 32, 24, 20, 16]
 
 /**
  * The header comment of one file: where it came from, what it holds, and how
@@ -41,13 +54,13 @@ function notes(about) {
  * Write one file into dist and say what went into it.
  *
  * @param {string} name File name
- * @param {string} svg The file
+ * @param {string|Buffer} body The file
  * @param {string} note What it holds, for the console
  * @returns {void}
  */
-function write(name, svg, note) {
-  writeFileSync(join(DIST, name), svg)
-  console.log(`wrote dist/${name}, ${svg.length} bytes, ${note}`)
+function write(name, body, note) {
+  writeFileSync(join(DIST, name), body)
+  console.log(`wrote dist/${name}, ${body.length} bytes, ${note}`)
 }
 
 /**
@@ -62,6 +75,37 @@ function write(name, svg, note) {
  */
 function fileOf(level) {
   return `dokuwiki-logo-${level.upTo === null ? 'lg' : level.name}.svg`
+}
+
+/**
+ * The level a size is drawn at: the smallest one that still answers at that
+ * size, which is the level the responsive file switches to there.
+ *
+ * @param {Array<{upTo: number|null}>} levels The levels, largest first
+ * @param {number} size Edge length in pixels
+ * @returns {object} The level to draw
+ */
+function levelAt(levels, size) {
+  return levels.filter((level) => level.upTo === null || size <= level.upTo).at(-1)
+}
+
+/**
+ * Draw one level at one size.
+ *
+ * The word mark is outlines rather than text, so no font has to be found, and
+ * the paper is the only thing that paints a background, so the canvas around
+ * the drawing stays clear.
+ *
+ * @param {string} svg A level's flat file
+ * @param {number} size Edge length in pixels
+ * @returns {Buffer} A PNG
+ */
+function raster(svg, size) {
+  const drawing = new Resvg(svg, {
+    fitTo: { mode: 'width', value: size },
+    font: { loadSystemFonts: false },
+  })
+  return drawing.render().asPng()
 }
 
 /**
@@ -91,6 +135,7 @@ write(
   `${whole.elements.length} elements, levels ${compositions.map((level) => level.name).join(', ')}`,
 )
 
+const flat = new Map()
 for (const level of compositions) {
   const svg = serialiseDocument({
     size: CANVAS,
@@ -101,5 +146,11 @@ for (const level of compositions) {
     ]),
     elements: level.elements,
   })
+  flat.set(level, svg)
   write(fileOf(level), svg, `level ${level.name}, ${level.elements.length} elements`)
+}
+
+for (const size of SIZES) {
+  const level = levelAt(compositions, size)
+  write(`dokuwiki-logo-${size}.png`, raster(flat.get(level), size), `level ${level.name} at ${size}px`)
 }
