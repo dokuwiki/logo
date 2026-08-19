@@ -1,36 +1,126 @@
 <!doctype html>
 <meta charset="utf-8">
+<title>DokuWiki logo beside the classic one</title>
 <style>
-  body { margin:0; background:#fff; font:13px system-ui; }
-  .row { display:flex; gap:2px; align-items:flex-start; }
-  .cell { position:relative; overflow:hidden; background:#fff; outline:1px solid #ccc; }
-  .cell img { position:absolute; image-rendering:auto; }
-  h2 { margin:6px 0 2px 4px; font-size:12px; font-weight:600; color:#444; }
+  body { margin:0; padding:14px 0 40px; background:#fff; font:13px system-ui; color:#222; }
+  h1 { font-size:15px; margin:0 0 8px; }
+  h2 { font-size:12px; font-weight:600; margin:0 0 10px; color:#444; }
+  nav { font:12px system-ui; margin:0 0 12px; }
+  nav a { color:#36c; margin-right:14px; }
+  nav b { margin-right:14px; color:#222; }
+  .page { padding:0 16px; }
+  /* A section is one colour of paper, edge to edge, so the drawings sit on it
+     the way they would sit on a page of that colour. */
+  .paper { padding:16px; margin:22px 0 0; overflow-x:auto; }
+  .paper.light { background:#fff; }
+  .paper.dark { background:#000; }
+  .paper.dark h2, .paper.dark th { color:#bbb; }
+  table { border-collapse:collapse; }
+  th { font:11px system-ui; font-weight:600; color:#666; text-align:left; padding:0 10px 6px 0; vertical-align:bottom; }
+  th .level { display:block; font-weight:400; opacity:0.7; }
+  td { padding:0 10px 10px 0; }
+  td img { display:block; }
+  /* The two rows face each other, so a size meets its counterpart across the
+     line between them. Without this the small sizes sit a row's height apart. */
+  tr.bottom td, tr.bottom th { vertical-align:bottom; }
+  tr.top td, tr.top th { vertical-align:top; }
 </style>
 <body>
-<h2>whole logo &mdash; old | new</h2>
-<div class="row">
-  <div class="cell" style="width:420px;height:420px"><img src="/dokuwiki-logo.svg" style="width:420px;height:420px;left:0;top:0"></div>
-  <div class="cell" style="width:420px;height:420px"><img src="/dokuwiki-logo-new.svg" style="width:420px;height:420px;left:0;top:0"></div>
+<div class="page">
+<nav>
+  <a href="/">every size</a>
+  <b>beside the classic one</b>
+</nav>
+<h1>dist/dokuwiki-logo.svg beside classic/dokuwiki-logo.svg</h1>
 </div>
-<h2>red pencil tip &mdash; old | new (3x)</h2>
-<div class="row">
-  <div class="cell" style="width:420px;height:330px"><img src="/dokuwiki-logo.svg" style="width:3072px;height:3072px;left:-1350px;top:-1080px"></div>
-  <div class="cell" style="width:420px;height:330px"><img src="/dokuwiki-logo-new.svg" style="width:3072px;height:3072px;left:-1350px;top:-1080px"></div>
-</div>
-<h2>red pencil end hexagon &mdash; old | new (3x)</h2>
-<div class="row">
-  <div class="cell" style="width:420px;height:330px"><img src="/dokuwiki-logo.svg" style="width:3072px;height:3072px;left:-2610px;top:0px"></div>
-  <div class="cell" style="width:420px;height:330px"><img src="/dokuwiki-logo-new.svg" style="width:3072px;height:3072px;left:-2610px;top:0px"></div>
-</div>
-<h2>green pencil tip &mdash; old | new (3x)</h2>
-<div class="row">
-  <div class="cell" style="width:420px;height:330px"><img src="/dokuwiki-logo.svg" style="width:3072px;height:3072px;left:-600px;top:-1890px"></div>
-  <div class="cell" style="width:420px;height:330px"><img src="/dokuwiki-logo-new.svg" style="width:3072px;height:3072px;left:-600px;top:-1890px"></div>
-</div>
-<h2>green pencil end hexagon &mdash; old | new (3x)</h2>
-<div class="row">
-  <div class="cell" style="width:420px;height:330px"><img src="/dokuwiki-logo.svg" style="width:3072px;height:3072px;left:-2190px;top:-2580px"></div>
-  <div class="cell" style="width:420px;height:330px"><img src="/dokuwiki-logo-new.svg" style="width:3072px;height:3072px;left:-2190px;top:-2580px"></div>
-</div>
+
+<section class="paper light">
+<h2>on white paper</h2>
+<table>
+  <tr>
+    <th></th>
+    <th>256px<span class="level">full</span></th>
+    <th>128px<span class="level">full</span></th>
+    <th>96px<span class="level">md</span></th>
+    <th>64px<span class="level">md</span></th>
+    <th>48px<span class="level">md</span></th>
+    <th>40px<span class="level">sm</span></th>
+    <th>32px<span class="level">sm</span></th>
+    <th>24px<span class="level">sm</span></th>
+    <th>20px<span class="level">xs</span></th>
+    <th>16px<span class="level">xs</span></th>
+  </tr>
+  <tr class="bottom">
+    <th>new</th>
+    <td><img src="/dist/dokuwiki-logo.svg" width="256" height="256" alt=""></td>
+    <td><img src="/dist/dokuwiki-logo.svg" width="128" height="128" alt=""></td>
+    <td><img src="/dist/dokuwiki-logo.svg" width="96" height="96" alt=""></td>
+    <td><img src="/dist/dokuwiki-logo.svg" width="64" height="64" alt=""></td>
+    <td><img src="/dist/dokuwiki-logo.svg" width="48" height="48" alt=""></td>
+    <td><img src="/dist/dokuwiki-logo.svg" width="40" height="40" alt=""></td>
+    <td><img src="/dist/dokuwiki-logo.svg" width="32" height="32" alt=""></td>
+    <td><img src="/dist/dokuwiki-logo.svg" width="24" height="24" alt=""></td>
+    <td><img src="/dist/dokuwiki-logo.svg" width="20" height="20" alt=""></td>
+    <td><img src="/dist/dokuwiki-logo.svg" width="16" height="16" alt=""></td>
+  </tr>
+  <tr class="top">
+    <th>classic</th>
+    <td><img src="/classic/dokuwiki-logo.svg" width="256" height="256" alt=""></td>
+    <td><img src="/classic/dokuwiki-logo.svg" width="128" height="128" alt=""></td>
+    <td><img src="/classic/dokuwiki-logo.svg" width="96" height="96" alt=""></td>
+    <td><img src="/classic/dokuwiki-logo.svg" width="64" height="64" alt=""></td>
+    <td><img src="/classic/dokuwiki-logo.svg" width="48" height="48" alt=""></td>
+    <td><img src="/classic/dokuwiki-logo.svg" width="40" height="40" alt=""></td>
+    <td><img src="/classic/dokuwiki-logo.svg" width="32" height="32" alt=""></td>
+    <td><img src="/classic/dokuwiki-logo.svg" width="24" height="24" alt=""></td>
+    <td><img src="/classic/dokuwiki-logo.svg" width="20" height="20" alt=""></td>
+    <td><img src="/classic/dokuwiki-logo.svg" width="16" height="16" alt=""></td>
+  </tr>
+</table>
+</section>
+
+<section class="paper dark">
+<h2>on black paper</h2>
+<table>
+  <tr>
+    <th></th>
+    <th>256px<span class="level">full</span></th>
+    <th>128px<span class="level">full</span></th>
+    <th>96px<span class="level">md</span></th>
+    <th>64px<span class="level">md</span></th>
+    <th>48px<span class="level">md</span></th>
+    <th>40px<span class="level">sm</span></th>
+    <th>32px<span class="level">sm</span></th>
+    <th>24px<span class="level">sm</span></th>
+    <th>20px<span class="level">xs</span></th>
+    <th>16px<span class="level">xs</span></th>
+  </tr>
+  <tr class="bottom">
+    <th>new</th>
+    <td><img src="/dist/dokuwiki-logo.svg" width="256" height="256" alt=""></td>
+    <td><img src="/dist/dokuwiki-logo.svg" width="128" height="128" alt=""></td>
+    <td><img src="/dist/dokuwiki-logo.svg" width="96" height="96" alt=""></td>
+    <td><img src="/dist/dokuwiki-logo.svg" width="64" height="64" alt=""></td>
+    <td><img src="/dist/dokuwiki-logo.svg" width="48" height="48" alt=""></td>
+    <td><img src="/dist/dokuwiki-logo.svg" width="40" height="40" alt=""></td>
+    <td><img src="/dist/dokuwiki-logo.svg" width="32" height="32" alt=""></td>
+    <td><img src="/dist/dokuwiki-logo.svg" width="24" height="24" alt=""></td>
+    <td><img src="/dist/dokuwiki-logo.svg" width="20" height="20" alt=""></td>
+    <td><img src="/dist/dokuwiki-logo.svg" width="16" height="16" alt=""></td>
+  </tr>
+  <tr class="top">
+    <th>classic</th>
+    <td><img src="/classic/dokuwiki-logo.svg" width="256" height="256" alt=""></td>
+    <td><img src="/classic/dokuwiki-logo.svg" width="128" height="128" alt=""></td>
+    <td><img src="/classic/dokuwiki-logo.svg" width="96" height="96" alt=""></td>
+    <td><img src="/classic/dokuwiki-logo.svg" width="64" height="64" alt=""></td>
+    <td><img src="/classic/dokuwiki-logo.svg" width="48" height="48" alt=""></td>
+    <td><img src="/classic/dokuwiki-logo.svg" width="40" height="40" alt=""></td>
+    <td><img src="/classic/dokuwiki-logo.svg" width="32" height="32" alt=""></td>
+    <td><img src="/classic/dokuwiki-logo.svg" width="24" height="24" alt=""></td>
+    <td><img src="/classic/dokuwiki-logo.svg" width="20" height="20" alt=""></td>
+    <td><img src="/classic/dokuwiki-logo.svg" width="16" height="16" alt=""></td>
+  </tr>
+</table>
+</section>
 </body>

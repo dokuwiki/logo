@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 /**
- * Write dokuwiki-logo-new.svg from the design in src/.
+ * Write dist/dokuwiki-logo.svg from the design in src/.
  */
 
-import { writeFileSync } from 'node:fs'
+import { mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -32,7 +32,8 @@ const svg = serialiseDocument({
   elements,
 })
 
-const target = join(ROOT, 'dokuwiki-logo-new.svg')
+const target = join(ROOT, 'dist', 'dokuwiki-logo.svg')
+mkdirSync(dirname(target), { recursive: true })
 writeFileSync(target, svg)
 const levels = compositions.map((level) => level.name).join(', ')
 console.log(`wrote ${target}, ${svg.length} bytes, ${elements.length} elements, levels ${levels}`)

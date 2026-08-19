@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 /**
- * Serve the project directory on localhost, so the comparison page can be
- * opened in a browser and driven by a headless one. Browsers block a page
- * loading its neighbours over file://, which is why this exists.
+ * Serve the project directory on localhost, so the review pages can be opened
+ * in a browser and driven by a headless one. Browsers block a page loading its
+ * neighbours over file://, which is why this exists.
  *
  * Development only. It binds to the loopback address and never leaves the
  * project directory.
@@ -11,7 +11,7 @@
 
 import { createReadStream, statSync } from 'node:fs'
 import { createServer } from 'node:http'
-import { dirname, extname, join, normalize, resolve, sep } from 'node:path'
+import { dirname, extname, normalize, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..')
@@ -41,7 +41,7 @@ const TYPES = {
  */
 function fileFor(url) {
   const wanted = decodeURIComponent(new URL(url, 'http://localhost').pathname)
-  const page = wanted === '/' ? '/src/serve/compare.html' : wanted
+  const page = wanted === '/' ? '/src/serve/sizes.html' : wanted
   const path = resolve(ROOT, `.${normalize(page)}`)
   if (path !== ROOT && !path.startsWith(ROOT + sep)) return null
   try {
