@@ -6,7 +6,7 @@
  * one cap for both of its ends.
  */
 
-import { outline, pen } from '../path.js'
+import { compact, outline, pen } from '../path.js'
 import { radians } from '../plane.js'
 
 /**
@@ -122,7 +122,7 @@ export class Arrow {
     const path = pen()
     path.moveTo(tail.x, tail.y)
     path.bezierCurveTo(swing.x, swing.y, approach.x, approach.y, tip.x, tip.y)
-    return this.painted('shaft', 'butt', 'none', this.stroke.width, path.toString())
+    return this.painted('shaft', 'butt', 'none', this.stroke.width, compact(path.toString()))
   }
 
   /**
@@ -149,7 +149,7 @@ export class Arrow {
     path.moveTo(start.x, start.y)
     path.lineTo(tip.x, tip.y)
     path.lineTo(end.x, end.y)
-    return this.painted('head', 'round', 'none', this.stroke.width, path.toString())
+    return this.painted('head', 'round', 'none', this.stroke.width, compact(path.toString()))
   }
 
   /**

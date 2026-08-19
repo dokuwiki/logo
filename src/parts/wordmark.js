@@ -7,7 +7,7 @@
  */
 
 import { checkCoverage, loadFont, VENDORED } from '../font.js'
-import { pen } from '../path.js'
+import { compact, pen } from '../path.js'
 import { extent } from '../plane.js'
 
 /**
@@ -173,6 +173,6 @@ export class Wordmark {
       else if (step.type === 'C') path.bezierCurveTo(step.x1, step.y1, step.x2, step.y2, step.x, step.y)
       else if (step.type === 'Z') path.closePath()
     }
-    return path.toString()
+    return compact(path.toString())
   }
 }
