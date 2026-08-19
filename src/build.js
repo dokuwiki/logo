@@ -28,6 +28,13 @@ import { stylesheet } from './responsive.js'
 const DIST = join(dirname(fileURLToPath(import.meta.url)), '..', 'dist')
 
 /**
+ * The accessible name every drawing carries.
+ *
+ * @type {string}
+ */
+const TITLE = 'DokuWiki Logo'
+
+/**
  * The sizes a PNG is written at, largest first.
  *
  * The levels were designed against these sizes, which the compare page draws.
@@ -111,7 +118,7 @@ write(
   'dokuwiki-logo.svg',
   serialiseDocument({
     size: CANVAS,
-    title: whole.title,
+    title: TITLE,
     style: stylesheet(compositions),
     elements: whole.elements,
   }),
@@ -122,7 +129,7 @@ const flat = new Map()
 for (const level of compositions) {
   const svg = serialiseDocument({
     size: CANVAS,
-    title: level.title,
+    title: TITLE,
     elements: level.elements,
   })
   flat.set(level, svg)

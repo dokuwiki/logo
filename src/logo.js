@@ -88,12 +88,11 @@ export const CANVAS = design.canvas
  * above it apply as well. A class says how small the drawing is, so each level
  * carries the classes it has to serve: its own and every smaller one.
  *
- * @type {Array<{name: string, upTo: number|null, title: string, classNames: string[]}>}
+ * @type {Array<{name: string, upTo: number|null, classNames: string[]}>}
  */
 export const LEVELS = design.levels.map((level, at) => ({
   name: level.name,
   upTo: level.upTo ?? null,
-  title: level.title,
   classNames: level.class
     ? design.levels
         .slice(at)

@@ -154,7 +154,6 @@ parts:
 # earlier value again says it.
 levels:
   - name: full
-    title: 'Red and green pencils and arrows over a stack of [[DW]] pages'
 
   # The ink already thinner than a pixel at 96px goes: the word mark loses its
   # brackets, its thinnest strokes, and its letters grow to fill most of the
@@ -164,7 +163,6 @@ levels:
   - name: md
     class: sz-md
     upTo: 96
-    title: Red and green pencils and arrows over a stack of DW pages
     overrides:
       sheet-back-far: {stroke: {width: 14}}
       sheet-back-near: {stroke: {width: 14}}
@@ -192,7 +190,6 @@ levels:
   - name: sm
     class: sz-sm
     upTo: 40
-    title: Red and green pencils over a stack of DW pages
     overrides:
       sheet-back-far: {show: false}
       sheet-back-near: {at: {x: 38.7, y: 58.1}, turn: 0, stroke: {width: 16}}
@@ -232,7 +229,6 @@ levels:
   - name: xs
     class: sz-xs
     upTo: 20
-    title: A red and a green pencil on a page
     overrides:
       sheet-back-near: {show: false}
       sheet-front: {at: {x: 68, y: 83}, size: {w: 664, h: 842}}
