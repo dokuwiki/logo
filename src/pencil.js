@@ -9,13 +9,13 @@
  * What makes the two look different is perspective. Each pencil lies with its
  * far end nearer the viewer than its point, so it widens along its length.
  * That is one number, the lean, and it is applied to every part at once, so
- * the barrel, the wood, the band and the core all agree about where the
- * pencil is in space.
+ * the barrel, its middle facet, the wood, the band and the core all agree
+ * about where the pencil is in space.
  */
 
 import { Frame } from './frame.js'
 import { ellipse, inset, outline } from './path.js'
-import { PAPER } from './palette.js'
+import { lit, PAPER } from './palette.js'
 import { Point } from './plane.js'
 
 /**
@@ -60,19 +60,21 @@ export class Pencil {
    * Lay a pencil down.
    *
    * @param {object} spec Where this pencil lies
-   * @param {string} spec.id Element id, used as a prefix for the two parts
-   * @param {string} spec.colour Barrel colour
+   * @param {string} spec.id Element id, used as a prefix for each of its parts
+   * @param {string} spec.colour Barrel colour, the paint out of the light
    * @param {{x: number, y: number}} spec.at The sharpened point
    * @param {number} spec.angle Which way it points, in degrees
    * @param {number} spec.lean How much nearer the viewer its far end is, as a
    *   fraction of the pencil's own width
    * @param {string} [spec.paper] Colour of the bare wood and the band's face
+   * @param {string} [spec.highlight] Colour of the light on the middle facet,
+   *   the barrel's own colour lit unless it is given one
    * @param {number} [spec.scale] How much larger than a standard pencil this
    *   one is drawn, which its frame carries rather than its proportions, so
    *   that a pencil of any size is the same shape drawn larger
    */
-  constructor({ id, colour, at, angle, lean = 0, paper = PAPER, scale = 1, ...proportions }) {
-    Object.assign(this, Pencil.proportions, proportions, { id, colour, lean, paper, scale })
+  constructor({ id, colour, at, angle, lean = 0, paper = PAPER, highlight = lit(colour), scale = 1, ...proportions }) {
+    Object.assign(this, Pencil.proportions, proportions, { id, colour, lean, paper, highlight, scale })
     /** @type {Frame} The pencil's own frame, running along it then across */
     this.frame = new Frame(at, angle)
   }
@@ -153,6 +155,30 @@ export class Pencil {
    */
   get facet() {
     return this.endNearFace / this.barrelWidth
+  }
+
+  /**
+   * The light on the facet down the middle of the barrel.
+   *
+   * The barrel is a hexagonal rod and the facet in the middle is the one the
+   * light falls on. This is that facet pulled in by the same rim the band's
+   * face is pulled in by, all the way round it, so the paint shows as one rim
+   * of one width wherever the light stops.
+   *
+   * Across the pencil the rim is measured from the facet's own edges, which are
+   * the end face's near corners. Along it, the sharpened end is measured from
+   * the wood's edge, which steps back across the middle facet. The far end runs
+   * to where the barrel's side ends and the end face begins, because the band's
+   * face is already a rim in from there and that rim is the one at that end.
+   *
+   * @returns {string} Path data
+   */
+  middle() {
+    const at = (along, across) => this.at(along, across)
+    const from = this.woodTo - this.woodChevron + this.bandRim
+    const to = this.length - 2 * this.endTaper
+    const edge = this.endNearFace / 2 - this.bandRim
+    return outline([at(from, -edge), at(to, -edge), at(to, edge), at(from, edge)], this.bevel)
   }
 
   /**
@@ -241,12 +267,14 @@ export class Pencil {
   /**
    * The pencil as drawable elements.
    *
-   * @returns {Array<{tag: string, attrs: Object}>} The barrel and the paper parts
+   * @returns {Array<{tag: string, attrs: Object}>} The barrel, its middle
+   *   facet and the paper parts
    */
   elements() {
     const place = this.frame.matrix(this.scale)
     return [
       { tag: 'path', attrs: { id: `${this.id}-body`, fill: this.colour, transform: place, d: this.barrel() } },
+      { tag: 'path', attrs: { id: `${this.id}-middle`, fill: this.highlight, transform: place, d: this.middle() } },
       {
         tag: 'path',
         attrs: {
