@@ -35,6 +35,40 @@ const WORDMARK = [
 ]
 
 /**
+ * A pencil pared down to a painted rod with a bare point on it.
+ *
+ * The band at the far end and the light along the middle facet are both finer
+ * than the barrel, so below a certain size neither is a pixel wide and both go.
+ * What is left is the paint and the wood, and it is the paint stopping short of
+ * the point that says pencil rather than dash: a bar of colour, and the point
+ * painted around an island of bare wood.
+ *
+ * So the barrel is stouter and the point longer than a whole pencil's, and the
+ * wood is set well in from the cone's edges. The wood is the paper's own colour,
+ * so the paint left around it is the only thing that draws the point's edge, and
+ * that rim is a pixel wide at 40, where these sizes begin, and half of one at
+ * 16, where they end. The wood stops short of the tip and reaches a little past
+ * the shoulder, so the paint runs the whole way round it.
+ *
+ * @type {object}
+ */
+const PLAIN_PENCIL = {
+  draws: ['body', 'wood'],
+  length: 600,
+  barrelWidth: 150,
+  coneLength: 150,
+  endTaper: 22,
+  endFace: 74,
+  bevel: 10,
+  woodFrom: 76,
+  woodTo: 156,
+  woodRim: 28,
+  woodChevron: 0,
+  woodNearChevron: 0,
+  woodBevel: 6,
+}
+
+/**
  * Every level of detail, largest first: the size it answers to, the class a
  * host can set for it, what it draws in words, and how it composes the
  * picture.
@@ -95,57 +129,72 @@ const LADDER = [
     },
   },
   {
-    // The first change of pose. The tilted fan and the tight arrow loops are
-    // what stop working here: a loop encloses a gap of a pixel or two, and the
-    // pale paper needs an outline to be seen at all. So the stack stands
-    // upright and compact, two sheets rather than three, and each arrow keeps
-    // its curve but opens it out: it comes out from behind the paper's edge,
-    // hooks clear of it and sweeps across the sheet, red pointing right above
-    // and green pointing left below. The word mark keeps the room at the top of
-    // the sheet, so the arrows sit under it. The pencils are past reading and
-    // go. The paper's corners are rounded more than twice as hard, or the
-    // round the whole drawing keeps is a pixel at 40 and the sheet reads as a
-    // plain rectangle.
+    // The first change of pose. Two things stop working here. An arrow's loop
+    // encloses a gap of a pixel or two, so the arrows go: of the two things
+    // lying on the paper, the pencils are the ones the mark is about. And the
+    // pale paper needs an outline to be seen at all, which a tilted fan of
+    // three sheets turns into a tangle of lines, so the stack stands upright
+    // and compact, two sheets rather than three.
+    // The pencils stay, pared down to paint and wood. Each keeps the slant the
+    // whole drawing gives it and its place beside the other, red steep and
+    // above, green shallow and below it and further left, because that
+    // arrangement is what the mark is known by. Red lies across the right end of
+    // the word mark, as it does in the whole drawing, and that is what leaves
+    // room for both of them to be drawn nearly as large as the canvas takes.
+    // Each runs off the paper at its blunt end, red past the top right corner
+    // and green past the bottom right corner of the sheet behind, as they both
+    // run off the paper in the whole drawing.
+    // Everything is drawn as large as the canvas will take. The stack sits in
+    // the top left corner with its outline on the canvas's own edge, and the
+    // sheets are cut larger than the paper's own measure, because the room the
+    // whole drawing keeps clear around the paper is empty at this size. Each
+    // pencil is grown from the blunt end that rests on the canvas edge, red on
+    // the right and green at the bottom, so a longer pencil is one whose point
+    // reaches further back across the paper, and both are stouter than the
+    // pared-down pencil. What stops the pair growing is the strip of paper
+    // between red's point and green's barrel, which is down to a pixel and a
+    // third at 24, the smallest size this level is drawn at. The two are drawn
+    // at one scale, as the pair in the whole drawing is. The word mark is
+    // written across the sheet, so it moves and grows with it, and the red
+    // pencil lies across the foot of its last two strokes.
+    // The paper's corners are rounded more than twice as hard, or the round the
+    // whole drawing keeps is a pixel at 40 and the sheet reads as a plain
+    // rectangle.
     name: 'sm',
     className: 'sz-sm',
     upTo: 40,
-    title: 'A red and a green arrow across a stack of DW pages',
+    title: 'Red and green pencils over a stack of DW pages',
     detail: {
-      front: { corner: { x: 180, y: 63 }, tilt: 0, radius: 64, stroke: INK, strokeWidth: 24 },
+      front: { corner: { x: 12, y: 12 }, tilt: 0, width: 720, height: 913, radius: 64, stroke: INK, strokeWidth: 24 },
       behind: [{ id: 'sheet-back-near', tilt: 0, x: 38.7, y: 58.1, stroke: INK, strokeWidth: 16 }],
       wordmark: { draws: ['letters'], fills: 0.76 },
-      arrows: { width: 64, headLength: 130, headSpread: 38 },
-      red: { from: 0.42, to: { u: 0.8, v: 0.58 }, swing: 300, approach: 320 },
-      green: { from: 0.68, to: { u: 0.2, v: 0.86 }, swing: 300, approach: 320 },
-      pencils: [],
+      arrows: { draws: [] },
+      pencils: [
+        { id: 'pencil-red', colour: RED, ...PLAIN_PENCIL, barrelWidth: 155, at: { x: 395.5, y: 568.1 }, angle: -40, scale: 1.28 },
+        { id: 'pencil-green', colour: GREEN, ...PLAIN_PENCIL, barrelWidth: 155, at: { x: 159.2, y: 625.7 }, angle: 24.9, scale: 1.28 },
+      ],
     },
   },
   {
-    // The pose sm takes, pared down. What sm still draws around the sheet stops
-    // working here: the sheet behind is a second outline a pixel from the
-    // first, and the word mark's letters are three pixels tall. Both go, and
-    // the one sheet that is left grows to the height of the canvas, keeping the
-    // paper's proportions, so what little the mark holds fills the frame. The
-    // arrows move up into the room the word mark leaves. A wider sheet leaves
-    // less canvas beside it, so each arrow's loop swings out less far, or it
-    // would run off the edge.
-    // What sm draws in half a pixel is thickened: the outline by two thirds and
-    // the arrows by half, which brings the outline to near a pixel at 20 and
-    // the shafts above one. A head grows with its shaft, or a thicker shaft
-    // swallows it and the arrow ends in a stub. The corners are rounded harder
-    // again, to two pixels and a half at 20, so the round is still seen at the
-    // sizes below that.
+    // This level takes sm's pose whole and drops the two pieces of it that stop
+    // reading at 20. The word mark goes: its letters stand four pixels tall
+    // there and the strokes that draw them are finer than one, so they close up
+    // into a smudge. The sheet behind goes with it: it peeks three quarters of a
+    // pixel out at the side and one below, under an outline a third of a pixel
+    // wide, which is an edge too close to the front sheet's to be read as
+    // another sheet.
+    // The paper is cut back to its own measure and set down and right by the
+    // whole of what it lost, so its right and bottom edges lie where sm's do and
+    // the room it gives up is all at the top left. Both pencils stay where sm
+    // puts them, and each hangs further off the paper for it.
     name: 'xs',
     className: 'sz-xs',
     upTo: 20,
-    title: 'A red and a green arrow across a page',
+    title: 'A red and a green pencil on a page',
     detail: {
-      front: { corner: { x: 124, y: 20 }, tilt: 0, width: 776, height: 984, radius: 130, stroke: INK, strokeWidth: 40 },
+      front: { corner: { x: 68, y: 83 }, tilt: 0, radius: 64, stroke: INK, strokeWidth: 24 },
       behind: [],
       wordmark: { draws: [] },
-      arrows: { width: 96, headLength: 165, headSpread: 38 },
-      red: { from: 0.29, to: { u: 0.8, v: 0.45 }, swing: 180, approach: 320 },
-      green: { from: 0.55, to: { u: 0.2, v: 0.73 }, swing: 180, approach: 320 },
     },
   },
 ]
