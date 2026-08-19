@@ -232,10 +232,10 @@ export class Pencil {
     const middle = corners
       .reduce((total, corner) => total.add(corner), corners[0].mult(0))
       .mult(1 / corners.length)
-    const along = (this.length - this.endTaper * 1.5) / this.length
+    const wider = this.nearness(this.length - this.endTaper * 1.5)
     const core = ellipse(
       middle,
-      { x: this.coreLength / 2, y: (this.coreWidth / 2) * (1 + this.lean * along) },
+      { x: this.coreLength / 2, y: (this.coreWidth / 2) * wider },
       ALONG,
     )
     return `${face} ${core}`

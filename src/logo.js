@@ -226,13 +226,5 @@ export function logo(level = 'full') {
     ...detail.pencils.map((pencil) => new Pencil(pencil)),
   ]
 
-  const elements = parts.flatMap((part) => part.elements())
-  if (!detail.crisp) return elements
-
-  // a shape this small covers so few pixels that smoothing greys out more of it
-  // than it draws, so the renderer is told to put each edge where it falls
-  return elements.map((element) => ({
-    ...element,
-    attrs: { ...element.attrs, 'shape-rendering': 'crispEdges' },
-  }))
+  return parts.flatMap((part) => part.elements())
 }

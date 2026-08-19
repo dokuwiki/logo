@@ -34,7 +34,6 @@ const PROPERTIES = {
   fill: written,
   height: (value) => `${written(value)}px`,
   rx: (value) => `${written(value)}px`,
-  'shape-rendering': written,
   stroke: written,
   'stroke-width': written,
   transform: written,
@@ -192,7 +191,7 @@ export function stylesheet(compositions) {
   const markup = byId(whole.elements)
 
   const lines = [
-    '/* so a container query can measure the drawing where a media query cannot */',
+    '/* so a container query can measure the drawing */',
     'svg { container-type: size }',
   ]
 

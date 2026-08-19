@@ -9,7 +9,7 @@
        palette: paper #faf4dc, paper back #ece5c8,
        red #a62d2a, green #326633, ink #4a6174 -->
   <style>
-    /* so a container query can measure the drawing where a media query cannot */
+    /* so a container query can measure the drawing */
     svg { container-type: size }
 
     /* md, 96px and below */
