@@ -38,6 +38,10 @@ const WORDMARK = [
  * Every level of detail, largest first: the size it answers to, the class a
  * host can set for it, and how it composes the picture.
  *
+ * The whole drawing is composed a shade inside the canvas, at the measure the
+ * paper is cut to, so that the outlines and the pencils' ends have somewhere to
+ * go. A sheet takes that measure from the paper; a pencil is told it.
+ *
  * A level with nothing of its own is not drawn yet. It still belongs here,
  * because its class stands for a size, and the levels above it have to serve
  * that class until it is drawn.
@@ -50,18 +54,18 @@ const LADDER = [
     className: null,
     upTo: null,
     detail: {
-      front: { corner: { x: 119.4, y: 64.2 }, tilt: -5.3, stroke: INK, strokeWidth: 12 },
+      front: { corner: { x: 132, y: 78.6 }, tilt: -5.3, stroke: INK, strokeWidth: 12 },
       behind: [
-        { id: 'sheet-back-far', tilt: -5.2, x: -130.5, y: 61.7, stroke: INK, strokeWidth: 8 },
-        { id: 'sheet-back-near', tilt: -9.7, x: -1.8, y: 126.9, stroke: INK, strokeWidth: 8 },
+        { id: 'sheet-back-far', tilt: -5.2, x: -126.3, y: 59.7, stroke: INK, strokeWidth: 8 },
+        { id: 'sheet-back-near', tilt: -9.7, x: -1.7, y: 122.8, stroke: INK, strokeWidth: 8 },
       ],
       wordmark: { draws: ['brackets', 'letters'] },
       arrows: { width: 24 },
       red: { from: 0.34, to: { u: 0.404, v: 0.531 }, swing: 260, approach: 430 },
       green: { from: 0.571, to: { u: 0.431, v: 0.691 }, swing: 190, approach: 480 },
       pencils: [
-        { id: 'pencil-red', colour: RED, at: { x: 463.2, y: 496.2 }, angle: -40, lean: 0.42 },
-        { id: 'pencil-green', colour: GREEN, at: { x: 211.2, y: 657.1 }, angle: 24.9, lean: 0.54 },
+        { id: 'pencil-red', colour: RED, at: { x: 464.8, y: 496.7 }, angle: -40, lean: 0.42, scale: 0.968 },
+        { id: 'pencil-green', colour: GREEN, at: { x: 220.9, y: 652.4 }, angle: 24.9, lean: 0.54, scale: 0.968 },
       ],
     },
   },
@@ -78,10 +82,10 @@ const LADDER = [
     className: 'sz-md',
     upTo: 96,
     detail: {
-      front: { corner: { x: 119.4, y: 64.2 }, tilt: -5.3, stroke: INK, strokeWidth: 20 },
+      front: { corner: { x: 132, y: 78.6 }, tilt: -5.3, stroke: INK, strokeWidth: 20 },
       behind: [
-        { id: 'sheet-back-far', tilt: -5.2, x: -130.5, y: 61.7, stroke: INK, strokeWidth: 14 },
-        { id: 'sheet-back-near', tilt: -9.7, x: -1.8, y: 126.9, stroke: INK, strokeWidth: 14 },
+        { id: 'sheet-back-far', tilt: -5.2, x: -126.3, y: 59.7, stroke: INK, strokeWidth: 14 },
+        { id: 'sheet-back-near', tilt: -9.7, x: -1.7, y: 122.8, stroke: INK, strokeWidth: 14 },
       ],
       wordmark: { draws: ['letters'], fills: 0.7 },
       arrows: { width: 29 },
@@ -101,8 +105,8 @@ const LADDER = [
     className: 'sz-sm',
     upTo: 40,
     detail: {
-      front: { corner: { x: 169, y: 49 }, tilt: 0, stroke: INK, strokeWidth: 24 },
-      behind: [{ id: 'sheet-back-near', tilt: 0, x: 40, y: 60, stroke: INK, strokeWidth: 16 }],
+      front: { corner: { x: 180, y: 63 }, tilt: 0, stroke: INK, strokeWidth: 24 },
+      behind: [{ id: 'sheet-back-near', tilt: 0, x: 38.7, y: 58.1, stroke: INK, strokeWidth: 16 }],
       wordmark: { draws: ['letters'], fills: 0.76 },
       arrows: { width: 64, headLength: 130, headSpread: 38 },
       red: { from: 0.42, to: { u: 0.8, v: 0.58 }, swing: 300, approach: 320 },
@@ -127,7 +131,7 @@ const LADDER = [
     className: 'sz-xs',
     upTo: 20,
     detail: {
-      front: { corner: { x: 124.1, y: 20 }, tilt: 0, width: 775.9, height: 984, stroke: INK, strokeWidth: 40 },
+      front: { corner: { x: 124, y: 20 }, tilt: 0, width: 776, height: 984, stroke: INK, strokeWidth: 40 },
       behind: [],
       wordmark: { draws: [] },
       arrows: { width: 96, headLength: 165, headSpread: 38 },

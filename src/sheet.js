@@ -18,9 +18,14 @@ export class Sheet {
   /**
    * Proportions of a sheet, used unless a sheet is given its own.
    *
+   * The paper is a shade smaller than the space it is drawn in. An outline sits
+   * half outside the edge it follows, so a sheet as large as the canvas would
+   * have that half cut off, and md draws the heaviest outline of the levels
+   * that show the whole fan.
+   *
    * @type {{width: number, height: number, radius: number}}
    */
-  static proportions = { width: 686, height: 870, radius: 30 }
+  static proportions = { width: 664, height: 842, radius: 29 }
 
   /**
    * Place a sheet.
