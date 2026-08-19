@@ -7,7 +7,8 @@
  * draws the real logo, and nothing has to be revealed.
  *
  * A level's rules are the step from the level above it rather than the whole
- * difference from the markup, so no declaration is written twice. That works
+ * difference from the markup, and elements a level says the same thing about
+ * share one rule, so no declaration is written twice. That works
  * because every mechanism that carries the rules reaches each level above the
  * one in force, and the steps pile up: a max-width that matches at one size
  * matches at every smaller size, and a level's class rules name the smaller
@@ -151,6 +152,16 @@ function changes(state, level, markup) {
 }
 
 /**
+ * What a rule sets, written out.
+ *
+ * @param {Map<string, string>} declarations What it sets
+ * @returns {string} The declarations
+ */
+function body(declarations) {
+  return [...declarations].map(([name, value]) => `${name}: ${value}`).join('; ')
+}
+
+/**
  * One rule, on one line.
  *
  * @param {string} selector What it applies to
@@ -158,8 +169,29 @@ function changes(state, level, markup) {
  * @returns {string} The rule
  */
 function rule(selector, declarations) {
-  const body = [...declarations].map(([name, value]) => `${name}: ${value}`).join('; ')
-  return `${selector} { ${body} }`
+  return `${selector} { ${body(declarations)} }`
+}
+
+/**
+ * Gather the elements a level says the same thing about.
+ *
+ * Naming them all in one rule saves writing the declarations out again for
+ * each, which is worth doing because the declarations are the longer half of a
+ * rule and every one of them is written three times over.
+ *
+ * @param {Map<string, Map<string, string>>} rules Declarations, by element id
+ * @returns {Array<{ids: string[], declarations: Map<string, string>}>} The
+ *   elements, gathered by what is said about them, in the order they first
+ *   appear
+ */
+function gather(rules) {
+  const groups = new Map()
+  for (const [id, declarations] of rules) {
+    const said = body(declarations)
+    if (groups.has(said)) groups.get(said).ids.push(id)
+    else groups.set(said, { ids: [id], declarations })
+  }
+  return [...groups.values()]
 }
 
 /**
@@ -186,16 +218,16 @@ export function stylesheet(compositions) {
       if (!markup.has(id)) throw new Error(`${id} is drawn only at a smaller level, so the markup cannot hold it`)
     }
 
-    const rules = changes(state, elements, markup)
+    const rules = gather(changes(state, elements, markup))
     const query = `(max-width: ${round(level.upTo)}px)`
-    const inside = [...rules].map(([id, declarations]) => `  ${rule(`#${id}`, declarations)}`)
+    const inside = rules.map(({ ids, declarations }) => `  ${rule(ids.map((id) => `#${id}`).join(', '), declarations)}`)
 
     lines.push('', `/* ${level.name}, ${round(level.upTo)}px and below */`)
     lines.push(`@media ${query} {`, ...inside, '}')
     lines.push(`@container ${query} {`, ...inside, '}')
     lines.push(
-      ...[...rules].map(([id, declarations]) => {
-        const selector = level.classNames.map((name) => `.${name} #${id}`).join(', ')
+      ...rules.map(({ ids, declarations }) => {
+        const selector = ids.flatMap((id) => level.classNames.map((name) => `.${name} #${id}`)).join(', ')
         return rule(selector, declarations)
       }),
     )
