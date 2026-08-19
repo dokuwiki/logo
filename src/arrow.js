@@ -1,10 +1,10 @@
 /**
  * An arrow looping around a sheet.
  *
- * It starts on an edge of the sheet, leaving at a right angle so the flat end
- * of the stroke lies along that edge and the arrow reads as coming out from
- * behind the paper. It swings outward, comes back across the sheet, and ends
- * in a head pointing along the sheet's own horizontal.
+ * It starts at an edge of the sheet, against the outside of the line that draws
+ * that edge, and leaves at a right angle so the flat end of the stroke lies
+ * along it. It swings outward, comes back across the sheet, and ends in a head
+ * pointing along the sheet's own horizontal.
  *
  * Shaft and head are two paths because they end differently: the tail is cut
  * flat against the sheet's edge, while the head's tips are round. A stroke
@@ -38,7 +38,9 @@ export class Arrow {
    * @param {'left'|'right'} spec.edge Edge the tail comes out of
    * @param {number} spec.from How far down that edge the tail sits, from 0 to 1
    * @param {{u: number, v: number}} spec.to Where the head lands on the sheet
-   * @param {number} spec.swing How far the loop reaches out past the edge
+   * @param {number} spec.swing How far the loop reaches out past the edge,
+   *   measured from the edge itself, so holding the tail clear of the outline
+   *   does not carry the loop out with it
    * @param {number} spec.approach How straight the run into the head is
    * @param {number} [spec.width] Stroke width
    * @param {number} [spec.headLength] Length of each head arm
@@ -60,10 +62,16 @@ export class Arrow {
   /**
    * Where the tail meets the sheet's edge.
    *
+   * It is held off the edge by half the sheet's outline, so the flat cut lands
+   * against the outside of that line rather than across it. The line stays
+   * whole, and the arrow reads as coming out from behind the paper.
+   *
    * @returns {import('./plane.js').Point} The point
    */
   get tail() {
-    return this.sheet.onEdge(this.edge, this.from)
+    const edge = this.sheet.edge(this.edge)
+    const clear = (this.sheet.strokeWidth ?? 0) / 2
+    return this.sheet.onEdge(this.edge, this.from).add(edge.outward.mult(clear))
   }
 
   /**
@@ -116,7 +124,8 @@ export class Arrow {
    */
   shaftElement() {
     const { tail, tip, backwards } = this
-    const swing = tail.add(this.sheet.edge(this.edge).outward.mult(this.swing))
+    const outward = this.sheet.edge(this.edge).outward
+    const swing = this.sheet.onEdge(this.edge, this.from).add(outward.mult(this.swing))
     const approach = tip.add(backwards.mult(this.approach))
 
     const path = pen()
