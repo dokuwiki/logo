@@ -60,6 +60,29 @@ function attributeValue(value) {
 }
 
 /**
+ * The ids the file carries: the initials of the names the design gives.
+ *
+ * An id is written into the markup once and into three rules for every level
+ * that touches the element, so a long one is paid for many times over. Initials
+ * keep the name traceable: arrow-red-shaft is written ars.
+ *
+ * @param {Array<{tag: string, attrs: Object}>} elements Elements of one level
+ * @returns {Array<{tag: string, attrs: Object}>} The same elements, named short
+ * @throws {Error} If two names come down to the same initials
+ */
+export function shorten(elements) {
+  const taken = new Map()
+  return elements.map((element) => {
+    const name = element.attrs.id
+    const id = name.split('-').map((word) => word[0]).join('')
+    const clash = taken.get(id)
+    if (clash && clash !== name) throw new Error(`${name} and ${clash} both come down to ${id}`)
+    taken.set(id, name)
+    return { ...element, attrs: { ...element.attrs, id } }
+  })
+}
+
+/**
  * Serialise one element description.
  *
  * @param {{tag: string, attrs: Object<string, string|number>}} element Element

@@ -11,11 +11,11 @@ import { fileURLToPath } from 'node:url'
 import { CANVAS, LEVELS, logo } from './logo.js'
 import { GREEN, INK, PAPER, PAPER_BACK, RED } from './palette.js'
 
-import { serialiseDocument } from './emit.js'
+import { serialiseDocument, shorten } from './emit.js'
 import { stylesheet } from './responsive.js'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
-const compositions = LEVELS.map((level) => ({ ...level, elements: logo(level.name) }))
+const compositions = LEVELS.map((level) => ({ ...level, elements: shorten(logo(level.name)) }))
 const elements = compositions[0].elements
 
 const svg = serialiseDocument({
@@ -24,6 +24,7 @@ const svg = serialiseDocument({
   notes: [
     'Built by build.js. Change the design in src/logo.js, not this file.',
     'The markup is the whole drawing. The stylesheet drops detail as it is drawn smaller.',
+    'An id is the initials of the name the design gives it: ars is arrow-red-shaft.',
     `palette: paper ${PAPER}, paper back ${PAPER_BACK},`,
     `red ${RED}, green ${GREEN}, ink ${INK}`,
   ],
