@@ -17,8 +17,7 @@
   .cell { display:inline-block; outline:1px solid #ddd; }
   .cell > * { display:block; }
   /* The class column has to answer for the class rules on its own, so the
-     container query is switched off inside it. Without this both mechanisms
-     would fire in the same cell and neither could be told apart. */
+     container query is switched off inside it. */
   .by-class svg { container-type: normal; }
 </style>
 <body>
@@ -157,9 +156,9 @@
   /**
    * Fill every cell that asks for the markup pasted into this page. A cell says
    * the size it wants in data-inline and the level class it carries, if any, in
-   * data-level. Only pasting needs a script: no element loads a file as markup
-   * rather than as its own document, and a copy has to be in this page for a
-   * container query or a class to reach it.
+   * data-level. Pasting needs a script because no element loads a file as
+   * markup, and a container query or a class reaches the drawing only on a copy
+   * in this page.
    */
   const FILE = '/dist/dokuwiki-logo.svg'
   const source = await fetch(FILE).then((response) => response.text())

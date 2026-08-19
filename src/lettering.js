@@ -1,14 +1,9 @@
 /**
  * A word mark written on a sheet.
  *
- * The word mark is text, so it is set from a font rather than kept as traced
- * outlines. opentype.js turns the string into path data; this component works
- * out where that path goes on its sheet.
- *
- * It is set in named parts, and a level of detail can leave parts out. The
- * parts that stay keep the outlines of the whole setting and are scaled into
- * the width the whole word mark filled, so what changes between levels is
- * where a part sits rather than what it is made of.
+ * opentype.js sets the text from a font and turns it into path data; this
+ * component works out where that path goes on its sheet. The text is set in
+ * named parts, and a level of detail can leave parts out.
  */
 
 import { existsSync, readFileSync } from 'node:fs'
@@ -62,9 +57,6 @@ function loadFont(path) {
 /**
  * Check that the font can draw every letter of the text.
  *
- * Without this a missing letter comes out as an empty box, or as nothing at
- * all, and the build says it succeeded.
- *
  * @param {object} font The parsed font
  * @param {string} text What is to be set
  * @param {string} path Where the font came from, for the message
@@ -99,10 +91,10 @@ export class Wordmark {
   /**
    * How the word mark is set, used unless it is given its own.
    *
-   * The lettering is Arial Bold, which the original was drawn from. Liberation
-   * Sans Bold carries the same metrics and is the one that ships on Linux.
+   * The original was drawn in Arial Bold. Liberation Sans Bold carries the same
+   * metrics.
    *
-   * @type {object}
+   * @type {{font: string, tracking: number, fill: string}}
    */
   static proportions = {
     font: VENDORED,
@@ -113,9 +105,8 @@ export class Wordmark {
   /**
    * Write on a sheet.
    *
-   * The text is centred across the sheet, hangs a fixed fraction of the
-   * sheet's height below its top edge, and is scaled to a fraction of the
-   * sheet's width. So it follows the sheet wherever the sheet goes.
+   * The text is placed and sized in fractions of the sheet, so it follows the
+   * sheet wherever the sheet goes.
    *
    * @param {import('./sheet.js').Sheet} sheet Sheet to write on
    * @param {object} spec What to write and where
@@ -138,8 +129,7 @@ export class Wordmark {
   }
 
   /**
-   * The word mark as drawable elements, one per part being drawn, and none at
-   * a level that draws no part of it.
+   * The word mark as drawable elements, one per part being drawn.
    *
    * @returns {Array<{tag: string, attrs: Object}>} One path per part
    * @throws {Error} If the font sets the text as some other number of glyphs,
@@ -151,8 +141,7 @@ export class Wordmark {
     checkCoverage(font, text, this.font)
     const options = { kerning: true, letterSpacing: this.tracking }
 
-    // set it once to find out how wide it comes out, then again at the size
-    // and place it actually wants, so nothing has to be scaled afterwards
+    // set once to measure, then again at the size and place it wants
     const box = font.getPath(text, 0, 0, MEASURE, options).getBoundingBox()
     const wanted = this.width * this.sheet.width
     const size = (MEASURE * wanted) / (box.x2 - box.x1)
@@ -188,7 +177,7 @@ export class Wordmark {
    * Share the glyphs out among the parts they belong to.
    *
    * The whole word mark is set in one run, so its letters are spaced as one
-   * piece of text however the parts are then divided up.
+   * piece of text however the parts are divided up.
    *
    * @param {Array<object>} glyphs One outline per letter, in reading order
    * @returns {Map<string, {commands: Array, boxes: Array}>} Each part, in the
@@ -215,10 +204,7 @@ export class Wordmark {
    * what is drawn fills the width it is meant to.
    *
    * The outlines stay in the sheet's own measure, so this one value carries
-   * everything about where the word mark sits: which way the sheet is turned,
-   * where it is, and how much the drawn parts had to grow to fill the width
-   * once a part was left out. A level can move, turn or grow the word mark by
-   * setting it, and needs no outlines of its own.
+   * where the word mark sits and how much the drawn parts had to grow.
    *
    * @param {{x1: number, y1: number, x2: number, y2: number}} box What is
    *   being drawn, measured across and down the sheet
@@ -228,8 +214,7 @@ export class Wordmark {
     const target = (this.fills ?? this.width) * this.sheet.width
     const factor = target / (box.x2 - box.x1)
 
-    // where it has to end up: centred across the sheet and hanging the same
-    // fraction of the sheet's height below its top edge as ever
+    // centred across the sheet, hanging the same fraction of its height down
     const across = (this.sheet.width - target) / 2 - box.x1 * factor
     const down = this.top * this.sheet.height - box.y1 * factor
 
@@ -240,8 +225,7 @@ export class Wordmark {
    * The glyph outlines as path data, in the sheet's own measure.
    *
    * The letters arrive lying flat, measured across and down the sheet, and stay
-   * that way. What puts them on the canvas is the transform, so the same
-   * outlines serve a sheet at any tilt, in any place, at any size.
+   * that way, so the same outlines serve a sheet at any tilt and any size.
    *
    * @param {Array<object>} commands The outlines as the font gives them
    * @returns {string} Path data

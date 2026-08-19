@@ -16,10 +16,9 @@ export function round(value) {
  * Format a transform matrix.
  *
  * The four numbers that turn and scale are kept to more decimals than a
- * coordinate is, because each of them multiplies a distance: three decimals of
- * a cosine would move the far corner of a sheet by a quarter of a unit. The
- * commas matter as well, because a matrix written this way is the one spelling
- * a transform attribute and a style declaration both read the same way.
+ * coordinate is, because each of them multiplies a distance. The commas suit
+ * both readers: a style declaration needs them, a transform attribute takes
+ * them.
  *
  * @param {number} a How much of x the new x takes
  * @param {number} b How much of x the new y takes
@@ -50,21 +49,21 @@ function escape(text) {
 }
 
 /**
- * Format one attribute value. Numbers are trimmed, everything else is escaped.
+ * Format one attribute value.
  *
  * @param {string|number} value Attribute value
- * @returns {string} Quoted-ready value
+ * @returns {string} The value to put between the quotes
  */
 function attributeValue(value) {
   return typeof value === 'number' ? round(value) : escape(value)
 }
 
 /**
- * The ids the file carries: the initials of the names the design gives.
+ * Replace each element's id with the initials of the name the design gives it.
  *
- * An id is written into the markup once and into three rules for every level
- * that touches the element, so a long one is paid for many times over. Initials
- * keep the name traceable: arrow-red-shaft is written ars.
+ * A level writes three rules for every element it touches, so a long id is paid
+ * for many times over. Initials keep the name traceable: arrow-red-shaft
+ * becomes ars.
  *
  * @param {Array<{tag: string, attrs: Object}>} elements Elements of one level
  * @returns {Array<{tag: string, attrs: Object}>} The same elements, named short

@@ -2,11 +2,10 @@
 
 /**
  * Serve the project directory on localhost, so the review pages can be opened
- * in a browser and driven by a headless one. Browsers block a page loading its
- * neighbours over file://, which is why this exists.
+ * in a browser and driven by a headless one. Browsers block a page from loading
+ * its neighbours over file://.
  *
- * Development only. It binds to the loopback address and never leaves the
- * project directory.
+ * Development only, bound to the loopback address.
  */
 
 import { createReadStream, statSync } from 'node:fs'
@@ -14,7 +13,18 @@ import { createServer } from 'node:http'
 import { dirname, extname, normalize, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+/**
+ * The project directory, which is as far as a request can reach.
+ *
+ * @type {string}
+ */
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..')
+
+/**
+ * The port to listen on, from the first argument, then the environment.
+ *
+ * @type {number}
+ */
 const PORT = Number(process.argv[2] ?? process.env.PORT ?? 8731)
 
 /**
@@ -38,7 +48,7 @@ const TYPES = {
  * Turn a request path into a file inside the project directory.
  *
  * @param {string} url Path from the request
- * @returns {string|null} The file to send, or null if it is not one we serve
+ * @returns {string|null} The file to send, or null if there is none to send
  */
 function fileFor(url) {
   const wanted = decodeURIComponent(new URL(url, 'http://localhost').pathname)

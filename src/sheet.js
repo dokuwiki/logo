@@ -1,9 +1,8 @@
 /**
  * A sheet of paper.
  *
- * A sheet knows where its own edges and corners are, and the things that live
- * on it are made from it: another sheet tucked behind, an arrow coming out
- * from behind an edge, a word mark written across it.
+ * A sheet knows where its own edges and corners are, and the things that lie on
+ * it are made from it, so they follow wherever the sheet goes.
  */
 
 import { Frame } from './frame.js'
@@ -18,10 +17,8 @@ export class Sheet {
   /**
    * Proportions of a sheet, used unless a sheet is given its own.
    *
-   * The paper is a shade smaller than the space it is drawn in. An outline sits
-   * half outside the edge it follows, so a sheet as large as the canvas would
-   * have that half cut off, and md draws the heaviest outline of the levels
-   * that show the whole fan.
+   * The paper is a shade smaller than the space it is drawn in, because an
+   * outline sits half outside the edge it follows and needs the room.
    *
    * @type {{width: number, height: number, radius: number}}
    */
@@ -97,7 +94,11 @@ export class Sheet {
    * One of the sheet's four edges.
    *
    * @param {'left'|'right'|'top'|'bottom'} name Which edge
-   * @returns {{from: object, along: object, outward: object, length: number}} The edge
+   * @returns {{from: import('./plane.js').Point,
+   *   along: import('./plane.js').Point,
+   *   outward: import('./plane.js').Point, length: number}} Where the edge
+   *   starts, the direction along it, the direction out of the sheet, and how
+   *   long it is
    */
   edge(name) {
     const sides = {
@@ -175,8 +176,7 @@ export class Sheet {
    * The sheet as drawable elements.
    *
    * The rect is drawn at the frame's origin and placed by the frame itself, so
-   * where the sheet is and how far it is turned are one attribute rather than
-   * three.
+   * one attribute carries where the sheet is and how far it is turned.
    *
    * @returns {Array<{tag: string, attrs: Object}>} One rect
    */

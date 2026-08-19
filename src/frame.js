@@ -1,9 +1,8 @@
 /**
  * A local coordinate frame.
  *
- * Anything drawn along its own axis works in one of these: a sheet lying at a
- * tilt, a pencil lying at an angle. Parts of a component are placed in its
- * frame, so the component can be moved or turned as a whole.
+ * Anything drawn along its own axis works in one of these. Parts of a component
+ * are placed in its frame, so the component moves and turns as a whole.
  */
 
 import { direction, point } from './plane.js'
@@ -45,10 +44,6 @@ export class Frame {
    * The frame written as a transform, so that whatever is drawn in the frame's
    * own measure lands in place.
    *
-   * The frame is its two directions and its origin, which is what a matrix
-   * holds, so the two are the same thing said twice. A level of detail can
-   * therefore move, turn and grow anything drawn this way by setting one
-   * property.
    *
    * @param {number} [scale] How much larger than its own measure to draw it
    * @param {number} [along] How far along the axis to start instead

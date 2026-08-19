@@ -1,42 +1,30 @@
 /**
  * Turning the levels of detail into a stylesheet.
  *
- * The markup is the full drawing, and the stylesheet only takes away from it:
- * an element a smaller level does not draw is hidden, an attribute it draws
- * differently is overridden. So a renderer that ignores the stylesheet still
- * draws the real logo, and nothing has to be revealed.
+ * The markup is the full drawing and the stylesheet takes away from it, so a
+ * renderer that ignores the stylesheet still draws the real logo.
  *
- * A level's rules are the step from the level above it rather than the whole
- * difference from the markup, and elements a level says the same thing about
- * share one rule, so no declaration is written twice. That works
- * because every mechanism that carries the rules reaches each level above the
- * one in force, and the steps pile up: a max-width that matches at one size
- * matches at every smaller size, and a level's class rules name the smaller
- * levels' classes as well.
+ * A level's rules are the step from the level above it, which holds because
+ * every mechanism that carries them reaches each level above the one in force:
+ * a max-width that matches at one size matches at every smaller size, and a
+ * level's class rules name the smaller levels' classes as well.
  *
- * Every level's rules are written three times, because three unrelated
- * mechanisms have to arrive at the same picture. A media query measures the
- * drawing when the file is its own document, which covers an img, a background
- * image and opening the file. A container query measures it when the file is
- * pasted into a page, where a media query would measure the window instead. A
- * class on the root serves a host that has to say the size itself. A class
- * carries more weight than a query, so a host that says the size outright
- * wins over the measured one.
+ * Three mechanisms carry the rules, so each level's rules are written three
+ * times. A media query measures the drawing where the file is its own document,
+ * a container query measures it where the file is pasted into a page, and a
+ * class on the root serves a host that says the size itself. The class carries
+ * the most weight, so a host that says the size outright wins.
  */
 
 import { round } from './emit.js'
 
 /**
- * Attributes a rule can override, and how each one is written as a
- * declaration value.
+ * Attributes a rule can override, and how each one is written as a declaration
+ * value.
  *
- * An attribute that is not here is not a CSS property, so no rule could carry
- * it. A level that changes one stops the build rather than losing the change
- * without saying so. Width, height and rx are on the list because a shape's
- * size and the round of its corners are properties in SVG 2, which is how a
- * level can draw a sheet larger or rounder. They are written with a unit,
- * because a length in a declaration needs one where the attribute of the same
- * name does without.
+ * Width, height and rx are here because SVG 2 makes a shape's size and the
+ * round of its corners properties. Each takes a unit, which the attribute of
+ * the same name does without.
  *
  * @type {Object<string, function(string|number): string>}
  */
@@ -66,7 +54,7 @@ const UNSET = {
 
 /**
  * Write a value the way the markup writes it, so a level is compared against
- * what would actually be drawn rather than against how it was worked out.
+ * what the file draws.
  *
  * @param {string|number} value Attribute value
  * @returns {string} The value as it appears in the file
@@ -112,10 +100,8 @@ function putBack(attrs, id, name) {
 /**
  * The step from one level to the next.
  *
- * The state is how each element stands after the levels above: the attributes
- * it was last drawn with, and whether it is being drawn at all. An element a
- * larger level dropped can come back, because the markup holds it either way
- * and showing it again is one declaration.
+ * An element a larger level dropped can come back, because the markup holds it
+ * either way and showing it again is one declaration.
  *
  * @param {Map<string, {attrs: Object, shown: boolean}>} state How each element
  *   stands, which this updates
@@ -175,11 +161,8 @@ function rule(selector, declarations) {
 }
 
 /**
- * Gather the elements a level says the same thing about.
- *
- * Naming them all in one rule saves writing the declarations out again for
- * each, which is worth doing because the declarations are the longer half of a
- * rule and every one of them is written three times over.
+ * Gather the elements a level says the same thing about, so one rule can name
+ * them all.
  *
  * @param {Map<string, Map<string, string>>} rules Declarations, by element id
  * @returns {Array<{ids: string[], declarations: Map<string, string>}>} The

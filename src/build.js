@@ -4,10 +4,8 @@
  * Write the logo files in dist/ from the design in src/.
  *
  * One file carries every level of detail and switches between them as it is
- * drawn smaller. Beside it goes a flat file per level, in attributes alone, for
- * the renderers that read no stylesheet, a PNG per size for the places that take
- * no vectors at all, and an icon holding the sizes a browser asks a favicon
- * for.
+ * drawn smaller. Beside it go a flat file per level, a PNG per size, and an
+ * icon.
  */
 
 import { mkdirSync, writeFileSync } from 'node:fs'
@@ -23,21 +21,25 @@ import { GREEN, INK, PAPER, PAPER_BACK, RED } from './palette.js'
 import { round, serialiseDocument, shorten } from './emit.js'
 import { stylesheet } from './responsive.js'
 
+/**
+ * Where the built files go.
+ *
+ * @type {string}
+ */
 const DIST = join(dirname(fileURLToPath(import.meta.url)), '..', 'dist')
 
 /**
  * The sizes a PNG is written at, largest first.
  *
- * These are the sizes the compare page draws, which are the sizes the levels
- * were designed against.
+ * The levels were designed against these sizes, which the compare page draws.
  *
  * @type {number[]}
  */
 const SIZES = [256, 128, 96, 64, 48, 40, 32, 24, 20, 16]
 
 /**
- * The sizes favicon.ico carries, smallest first, which are the ones a browser
- * picks between for a tab, a bookmark and a shortcut.
+ * The sizes favicon.ico carries, smallest first: what a browser picks between
+ * for a tab, a bookmark and a shortcut.
  *
  * Each has to be a size a PNG is drawn at, because the icon is packed from
  * those.
@@ -47,8 +49,7 @@ const SIZES = [256, 128, 96, 64, 48, 40, 32, 24, 20, 16]
 const ICON = [16, 32, 48]
 
 /**
- * The header comment of one file: where it came from, what it holds, and how
- * to read what is in it.
+ * The header comment of one file.
  *
  * @param {string[]} about Lines saying what this file holds
  * @returns {string[]} Lines for the comment
@@ -79,9 +80,8 @@ function write(name, body, note) {
 /**
  * What a level's own file is called.
  *
- * The files stand as a ladder to pick from by the size a drawing is wanted at,
- * so the level that holds the whole drawing is named for the largest sizes
- * rather than for its detail.
+ * The files are picked from by the size a drawing is wanted at, so the level
+ * that holds the whole drawing is named lg.
  *
  * @param {{name: string, upTo: number|null}} level A level of detail
  * @returns {string} File name
@@ -105,9 +105,7 @@ function levelAt(levels, size) {
 /**
  * Draw one level at one size.
  *
- * The word mark is outlines rather than text, so no font has to be found, and
- * the paper is the only thing that paints a background, so the canvas around
- * the drawing stays clear.
+ * The word mark is outlines rather than text, so no font has to be found.
  *
  * @param {string} svg A level's flat file
  * @param {number} size Edge length in pixels

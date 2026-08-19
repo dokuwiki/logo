@@ -2,9 +2,8 @@
  * The drawing plane.
  *
  * Points and directions are the same object, a Point from
- * @mapbox/point-geometry, which carries add, sub, mult, unit, perp, rotate and
- * the rest. This module only adapts it to two conventions of our own: angles
- * are written in degrees, and the design is written as plain data.
+ * @mapbox/point-geometry. This module adapts it to angles written in degrees
+ * and to a design written as plain data.
  */
 
 import Point from '@mapbox/point-geometry'
@@ -12,7 +11,7 @@ import Point from '@mapbox/point-geometry'
 export { Point }
 
 /**
- * Turn degrees into the radians the vector maths works in.
+ * Turn degrees into radians.
  *
  * @param {number} degrees Angle
  * @returns {number} The same angle in radians

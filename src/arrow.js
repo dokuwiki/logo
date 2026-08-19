@@ -1,14 +1,9 @@
 /**
  * An arrow looping around a sheet.
  *
- * It starts at an edge of the sheet, against the outside of the line that draws
- * that edge, and leaves at a right angle so the flat end of the stroke lies
- * along it. It swings outward, comes back across the sheet, and ends in a head
- * pointing along the sheet's own horizontal.
- *
  * Shaft and head are two paths because they end differently: the tail is cut
- * flat against the sheet's edge, while the head's tips are round. A stroke
- * takes one cap for both of its ends, so one path cannot do both.
+ * flat against the sheet's edge, the head's tips are round, and a stroke takes
+ * one cap for both of its ends.
  */
 
 import { outline, pen } from './path.js'
@@ -20,9 +15,6 @@ import { radians } from './plane.js'
 export class Arrow {
   /**
    * The look every arrow shares, used unless an arrow is given its own.
-   *
-   * The bevel softens the corners of a solid head, and does nothing to a head
-   * drawn as two strokes, whose corners are round already.
    *
    * @type {{width: number, headLength: number, headSpread: number, headBevel: number}}
    */
@@ -39,8 +31,7 @@ export class Arrow {
    * @param {number} spec.from How far down that edge the tail sits, from 0 to 1
    * @param {{u: number, v: number}} spec.to Where the head lands on the sheet
    * @param {number} spec.swing How far the loop reaches out past the edge,
-   *   measured from the edge itself, so holding the tail clear of the outline
-   *   does not carry the loop out with it
+   *   measured from the edge itself
    * @param {number} spec.approach How straight the run into the head is
    * @param {number} [spec.width] Stroke width
    * @param {number} [spec.headLength] Length of each head arm
@@ -50,8 +41,7 @@ export class Arrow {
    * @param {string[]} [spec.draws] Which parts to draw, the shaft and the head
    *   by default
    * @param {boolean} [spec.solid] Whether the head is a filled triangle rather
-    *   than two strokes, which is what it has to be where the head is all that
-   *   is left of the arrow
+   *   than two strokes
    */
   constructor(sheet, spec) {
     /** @type {import('./sheet.js').Sheet} Sheet the arrow comes out from */
@@ -63,8 +53,8 @@ export class Arrow {
    * Where the tail meets the sheet's edge.
    *
    * It is held off the edge by half the sheet's outline, so the flat cut lands
-   * against the outside of that line rather than across it. The line stays
-   * whole, and the arrow reads as coming out from behind the paper.
+   * against the outside of that line and the arrow reads as coming out from
+   * behind the paper.
    *
    * @returns {import('./plane.js').Point} The point
    */
@@ -84,7 +74,7 @@ export class Arrow {
   }
 
   /**
-   * How the arrow is painted, whichever part is being drawn.
+   * One part of the arrow as a path, painted the way every part is.
    *
    * @param {string} part What to call this part
    * @param {string} cap How its stroke ends
@@ -138,9 +128,9 @@ export class Arrow {
    * The head: two arms meeting at the tip, or the triangle between them where
    * the head has to stand for the whole arrow.
    *
-   * A solid head carries no stroke. Its corners are cut back and bridged in the
-   * path itself, the way a pencil's are, because the stroke that would round
-   * them also caps the arms and leaves a nub on each of the head's own corners.
+   * A solid head carries no stroke, so its corners are cut back and bridged in
+   * the path itself: a stroke that rounded them would cap the arms as well and
+   * leave a nub on each corner.
    *
    * @returns {{tag: string, attrs: Object}} Element
    */

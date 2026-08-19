@@ -2,8 +2,7 @@
  * Building path data.
  *
  * The commands come from d3-path, which rounds its coordinates as it writes
- * them. Only the rotated ellipse is written by hand, because d3-path draws
- * circles rather than ellipses.
+ * them.
  */
 
 import { pathRound } from 'd3-path'
@@ -29,10 +28,9 @@ export function pen() {
  * Draw a closed outline through the given corners, softening each one.
  *
  * A corner is cut off the same distance along both its sides and bridged with
- * a quadratic curve through the corner itself. Keeping that distance fixed,
- * rather than the radius, is what keeps a sharp corner sharp: a fixed radius
- * would eat further and further along the sides as the corner gets tighter.
- * A corner whose sides are too short is cut by as much as they allow.
+ * a quadratic curve through the corner itself. Fixing that distance keeps a
+ * sharp corner sharp. A corner whose sides are too short is cut by as much as
+ * they allow.
  *
  * @param {Array<{x: number, y: number}>} corners Corners in drawing order
  * @param {number} bevel How far back from each corner the curve starts
@@ -62,6 +60,8 @@ export function outline(corners, bevel) {
 /**
  * Draw a closed ellipse turned to face a given direction.
  *
+ * Written out by hand, because d3-path draws circles alone.
+ *
  * @param {{x: number, y: number}} centre Middle of the ellipse
  * @param {{x: number, y: number}} radii Half length along the axis and across it
  * @param {{x: number, y: number}} axis Direction the first radius points in
@@ -82,8 +82,7 @@ export function ellipse(centre, radii, axis) {
 /**
  * Pull a convex outline inward by an even distance.
  *
- * Every edge moves in by the same amount and the corners follow, so each new
- * edge stays parallel to the one it came from.
+ * Each new edge stays parallel to the one it came from.
  *
  * @param {Array<import('./plane.js').Point>} corners Corners in drawing order
  * @param {number} distance How far in to move

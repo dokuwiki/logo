@@ -2,15 +2,12 @@
  * A pencil.
  *
  * Both pencils in the logo are this one component, drawn at different angles
- * and seen from different distances. The pencil itself is straight and even:
- * a cone at the sharpened end, a barrel of one width, and a metal band whose
- * face is turned toward the viewer.
+ * and seen from different distances. The pencil itself is straight and even;
+ * perspective sets the two apart. Each lies with its far end nearer the viewer
+ * than its point, so it widens along its length.
  *
- * What makes the two look different is perspective. Each pencil lies with its
- * far end nearer the viewer than its point, so it widens along its length.
- * That is one number, the lean, and it is applied to every part at once, so
- * the barrel, its middle facet, the wood, the band and the core all agree
- * about where the pencil is in space.
+ * That widening is one number, the lean, and every part is drawn through it, so
+ * the whole pencil agrees about where it is in space.
  */
 
 import { Frame } from './frame.js'
@@ -19,8 +16,7 @@ import { lit, PAPER } from './palette.js'
 import { Point } from './plane.js'
 
 /**
- * The pencil's own axis, which is where its parts are drawn: along it and
- * across it, with the frame putting them on the canvas afterwards.
+ * The pencil's own axis, which its parts are drawn along and across.
  *
  * @type {Point}
  */
@@ -61,21 +57,18 @@ export class Pencil {
    *
    * @param {object} spec Where this pencil lies
    * @param {string} spec.id Element id, used as a prefix for each of its parts
-   * @param {string} spec.colour Barrel colour, the paint out of the light
+   * @param {string} spec.colour Barrel colour, unlit
    * @param {{x: number, y: number}} spec.at The sharpened point
    * @param {number} spec.angle Which way it points, in degrees
    * @param {number} spec.lean How much nearer the viewer its far end is, as a
    *   fraction of the pencil's own width
    * @param {string} [spec.paper] Colour of the bare wood and the band's face
    * @param {string} [spec.highlight] Colour of the light on the middle facet,
-   *   the barrel's own colour lit unless it is given one
+   *   the barrel's colour lit by default
    * @param {number} [spec.scale] How much larger than a standard pencil this
-   *   one is drawn, which its frame carries rather than its proportions, so
-   *   that a pencil of any size is the same shape drawn larger
-   * @param {string[]} [spec.draws] Which parts to draw, all of them by default.
-   *   A pencil drawn as its body and its wood alone is a painted rod with a
-   *   bare point, which is what is left of a pencil once the band and the light
-   *   along the middle facet are each thinner than a pixel
+   *   one is drawn, which its frame carries, so a pencil of any size is the
+   *   same shape
+   * @param {string[]} [spec.draws] Which parts to draw, all of them by default
    */
   constructor({ id, colour, at, angle, lean = 0, paper = PAPER, highlight = lit(colour), scale = 1, ...proportions }) {
     Object.assign(this, Pencil.proportions, proportions, { id, colour, lean, paper, highlight, scale })
@@ -98,10 +91,6 @@ export class Pencil {
    * A point on the pencil, seen from where the viewer stands, in the pencil's
    * own measure.
    *
-   * Every part of the pencil is drawn this way and the frame puts the whole of
-   * it on the canvas, so where the pencil lies and how large it is drawn are
-   * one attribute rather than a set of outlines of their own.
-   *
    * @param {number} along Distance from the sharpened point
    * @param {number} across Distance from the axis on the pencil itself
    * @returns {import('./plane.js').Point} The point, along the pencil and
@@ -116,7 +105,7 @@ export class Pencil {
    *
    * It opens evenly from the point to where it meets the barrel.
    *
-   * @param {number} along Distance from the frame's origin
+   * @param {number} along Distance from the sharpened point
    * @returns {number} Half the width there
    */
   coneHalfWidth(along) {
@@ -150,10 +139,9 @@ export class Pencil {
   /**
    * Where the pencil's middle facet ends, as a fraction of its half width.
    *
-   * The barrel is a hexagonal rod. The facet facing the viewer is bounded by
-   * two edges running the length of the pencil, and this is where they sit.
-   * The end face's own near edge is the same two edges seen head on, so the
-   * two agree by construction.
+   * The barrel is a hexagonal rod, and the facet facing the viewer is bounded
+   * by two edges running its length. Those edges are the end face's near
+   * corners seen down the pencil, so this comes from the end face's own width.
    *
    * @returns {number} Fraction of the half width, from 0 to 1
    */
@@ -164,16 +152,11 @@ export class Pencil {
   /**
    * The light on the facet down the middle of the barrel.
    *
-   * The barrel is a hexagonal rod and the facet in the middle is the one the
-   * light falls on. This is that facet pulled in by the same rim the band's
-   * face is pulled in by, all the way round it, so the paint shows as one rim
-   * of one width wherever the light stops.
-   *
-   * Across the pencil the rim is measured from the facet's own edges, which are
-   * the end face's near corners. Along it, the sharpened end is measured from
-   * the wood's edge, which steps back across the middle facet. The far end runs
-   * to where the barrel's side ends and the end face begins, because the band's
-   * face is already a rim in from there and that rim is the one at that end.
+   * The facet is pulled in by the same rim the band's face is, so the paint
+   * shows as one rim of one width wherever the light stops: in from the facet's
+   * own edges across the pencil, and in from the wood's edge at the sharpened
+   * end. The far end stops where the end face begins, because the band's face
+   * is already a rim in from there.
    *
    * @returns {string} Path data
    */
@@ -190,9 +173,8 @@ export class Pencil {
    * rim so it follows whatever shape the cone is given, and stopping short of
    * both the point and the shoulder.
    *
-   * Where the wood meets the paint the edge steps across the middle facet
-   * rather than coming to a point, which is the rod's hexagonal section
-   * showing.
+   * Where the wood meets the paint the edge steps back across the middle facet,
+   * which is the rod's hexagonal section showing.
    *
    * @returns {string} Path data
    */
@@ -218,8 +200,8 @@ export class Pencil {
    * The six corners of the pencil's end face, where the viewer sees it.
    *
    * Four of them are on the barrel's own outline; the two nearest the point
-   * are hidden under the barrel. The band's face is this same hexagon, so the
-   * two always agree.
+   * are hidden under it. The band's face is pulled in from this same hexagon,
+   * so the two agree.
    *
    * @returns {Array<import('./plane.js').Point>} The corners
    */
@@ -239,8 +221,8 @@ export class Pencil {
   /**
    * The metal band's face, with the graphite core cut out of it.
    *
-   * The face is the end face pulled in by an even rim of barrel colour, so
-   * each of its edges runs parallel to the barrel edge outside it.
+   * The face is the end face pulled in by an even rim, so the barrel's colour
+   * shows all round it.
    *
    * @returns {string} Path data for the face and the core
    */
@@ -260,11 +242,8 @@ export class Pencil {
   }
 
   /**
-   * How one part of the pencil is painted.
-   *
-   * Every part is drawn in the pencil's own measure and put on the canvas by
-   * its frame, so they all agree about where the pencil lies and how large it
-   * is drawn.
+   * One part of the pencil as a path, drawn in the pencil's own measure and put
+   * on the canvas by its frame.
    *
    * @param {string} part What to call this part
    * @param {string} fill What colour it is
