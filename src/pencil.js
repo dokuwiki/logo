@@ -72,6 +72,10 @@ export class Pencil {
    * @param {number} [spec.scale] How much larger than a standard pencil this
    *   one is drawn, which its frame carries rather than its proportions, so
    *   that a pencil of any size is the same shape drawn larger
+   * @param {string[]} [spec.draws] Which parts to draw, all of them by default.
+   *   A pencil drawn as its body and its wood alone is a painted rod with a
+   *   bare point, which is what is left of a pencil once the band and the light
+   *   along the middle facet are each thinner than a pixel
    */
   constructor({ id, colour, at, angle, lean = 0, paper = PAPER, highlight = lit(colour), scale = 1, ...proportions }) {
     Object.assign(this, Pencil.proportions, proportions, { id, colour, lean, paper, highlight, scale })
@@ -211,15 +215,6 @@ export class Pencil {
   }
 
   /**
-   * The metal band's face, with the graphite core cut out of it.
-   *
-   * It is a hexagon lying across the pencil, and a slightly skewed one: it is
-   * the pencil's hexagonal section seen at an angle, so its two ends are not
-   * the same width and its widest corners do not sit opposite each other.
-   *
-   * @returns {string} Path data for the face and the core
-   */
-  /**
    * The six corners of the pencil's end face, where the viewer sees it.
    *
    * Four of them are on the barrel's own outline; the two nearest the point
@@ -249,7 +244,7 @@ export class Pencil {
    *
    * @returns {string} Path data for the face and the core
    */
-  band() {
+  bandFace() {
     const corners = inset(this.endFaceCorners(), this.bandRim)
     const face = outline(corners, this.bevel)
     const middle = corners
@@ -265,26 +260,43 @@ export class Pencil {
   }
 
   /**
+   * How one part of the pencil is painted.
+   *
+   * Every part is drawn in the pencil's own measure and put on the canvas by
+   * its frame, so they all agree about where the pencil lies and how large it
+   * is drawn.
+   *
+   * @param {string} part What to call this part
+   * @param {string} fill What colour it is
+   * @param {string} data Path data
+   * @param {Object} [rest] Anything else to say about it
+   * @returns {{tag: string, attrs: Object}} Element
+   */
+  part(part, fill, data, rest = {}) {
+    return {
+      tag: 'path',
+      attrs: { id: `${this.id}-${part}`, fill, ...rest, transform: this.frame.matrix(this.scale), d: data },
+    }
+  }
+
+  /**
    * The pencil as drawable elements.
    *
-   * @returns {Array<{tag: string, attrs: Object}>} The barrel, its middle
-   *   facet and the paper parts
+   * @returns {Array<{tag: string, attrs: Object}>} The parts this pencil draws
+   * @throws {Error} If a part being drawn is not one of a pencil's own
    */
   elements() {
-    const place = this.frame.matrix(this.scale)
-    return [
-      { tag: 'path', attrs: { id: `${this.id}-body`, fill: this.colour, transform: place, d: this.barrel() } },
-      { tag: 'path', attrs: { id: `${this.id}-middle`, fill: this.highlight, transform: place, d: this.middle() } },
-      {
-        tag: 'path',
-        attrs: {
-          id: `${this.id}-paper`,
-          fill: this.paper,
-          'fill-rule': 'evenodd',
-          transform: place,
-          d: `${this.wood()} ${this.band()}`,
-        },
-      },
-    ]
+    const parts = {
+      body: () => this.part('body', this.colour, this.barrel()),
+      middle: () => this.part('middle', this.highlight, this.middle()),
+      wood: () => this.part('wood', this.paper, this.wood()),
+      'band-face': () => this.part('band-face', this.paper, this.bandFace(), { 'fill-rule': 'evenodd' }),
+    }
+
+    const drawn = this.draws ?? Object.keys(parts)
+    for (const name of drawn) {
+      if (!parts[name]) throw new Error(`a pencil has no part called ${name}`)
+    }
+    return drawn.map((name) => parts[name]())
   }
 }
