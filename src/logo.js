@@ -103,29 +103,28 @@ const LADDER = [
     },
   },
   {
-    // A mark that stands for the logo rather than the logo made small. One
-    // sheet, nearly the whole canvas, outlined 64 units wide, which is a pixel
-    // at 16 and the thinnest line worth drawing. Each arrow is down to its head,
-    // grown large and filled so it reads as a triangle rather than as two
-    // strokes. Each stands one outline's width in from the canvas edge its arrow
-    // comes from and points into the paper: red on the left pointing right
-    // above, green on the right pointing left below, their tips passing each
-    // other across the middle as the arrows do in the whole drawing. The
-    // pencils are past reading and go.
-    // Every shape is drawn with its edges where they fall rather than smoothed,
-    // there being too few pixels for smoothing to help.
+    // The pose sm takes, pared down. What sm still draws around the sheet stops
+    // working here: the sheet behind is a second outline a pixel from the
+    // first, and the word mark's letters are three pixels tall. Both go, and
+    // the one sheet that is left grows to the height of the canvas, keeping the
+    // paper's proportions, so what little the mark holds fills the frame. The
+    // arrows move up into the room the word mark leaves. A wider sheet leaves
+    // less canvas beside it, so each arrow's loop swings out less far, or it
+    // would run off the edge.
+    // What sm draws in half a pixel is thickened: the outline by two thirds and
+    // the arrows by half, which brings the outline to near a pixel at 20 and
+    // the shafts above one. A head grows with its shaft, or a thicker shaft
+    // swallows it and the arrow ends in a stub.
     name: 'xs',
     className: 'sz-xs',
     upTo: 20,
     detail: {
-      front: { corner: { x: 157, y: 62 }, tilt: 0, width: 710, height: 900, stroke: INK, strokeWidth: 64 },
+      front: { corner: { x: 124.1, y: 20 }, tilt: 0, width: 775.9, height: 984, stroke: INK, strokeWidth: 40 },
       behind: [],
       wordmark: { draws: [] },
-      crisp: true,
-      arrows: { headLength: 600, headSpread: 30, draws: ['head'], solid: true },
-      red: { to: { u: 0.601, v: 0.36 } },
-      green: { to: { u: 0.399, v: 0.64 } },
-      pencils: [],
+      arrows: { width: 96, headLength: 165, headSpread: 38 },
+      red: { from: 0.29, to: { u: 0.8, v: 0.45 }, swing: 180, approach: 320 },
+      green: { from: 0.55, to: { u: 0.2, v: 0.73 }, swing: 180, approach: 320 },
     },
   },
 ]
@@ -152,18 +151,20 @@ export const LEVELS = LADDER.filter((level) => level.detail).map((level) => ({
 /**
  * How one level composes the picture.
  *
- * A level says only what it composes differently, so the pieces it leaves
- * alone come from the whole drawing.
+ * A level says only what it composes differently from the level above it, so
+ * the pieces it leaves alone come from there. The levels pile up, which is how
+ * a small level can take the pose of the level above and change one piece of
+ * it.
  *
  * @param {string} level Which level of detail
  * @returns {object} What each piece is given
  * @throws {Error} If there is no such level, or it is not drawn yet
  */
 function detailOf(level) {
-  const found = LADDER.find((candidate) => candidate.name === level)
-  if (!found) throw new Error(`no such level: ${level}`)
-  if (!found.detail) throw new Error(`level ${level} is not drawn yet`)
-  return { ...LADDER[0].detail, ...found.detail }
+  const found = LADDER.findIndex((candidate) => candidate.name === level)
+  if (found < 0) throw new Error(`no such level: ${level}`)
+  if (!LADDER[found].detail) throw new Error(`level ${level} is not drawn yet`)
+  return LADDER.slice(0, found + 1).reduce((detail, above) => ({ ...detail, ...above.detail }), {})
 }
 
 /**
