@@ -15,9 +15,9 @@ import { fileURLToPath } from 'node:url'
 import pngToIco from 'png-to-ico'
 import { Resvg } from '@resvg/resvg-js'
 
-import { CANVAS, LEVELS, logo, PALETTE } from './logo.js'
+import { CANVAS, LEVELS, logo } from './logo.js'
 
-import { round, serialiseDocument, shorten } from './emit.js'
+import { serialiseDocument, shorten } from './emit.js'
 import { stylesheet } from './responsive.js'
 
 /**
@@ -46,22 +46,6 @@ const SIZES = [256, 128, 96, 64, 48, 40, 32, 24, 20, 16]
  * @type {number[]}
  */
 const ICON = [16, 32, 48]
-
-/**
- * The header comment of one file.
- *
- * @param {string[]} about Lines saying what this file holds
- * @returns {string[]} Lines for the comment
- */
-function notes(about) {
-  return [
-    'Built by build.js. Change the design in src/logo.yaml, not this file.',
-    ...about,
-    'An id is the initials of the name the design gives it: ars is arrow-red-shaft.',
-    `palette: paper ${PALETTE.paper}, paper back ${PALETTE['paper-back']},`,
-    `red ${PALETTE.red}, green ${PALETTE.green}, ink ${PALETTE.ink}`,
-  ]
-}
 
 /**
  * Write one file into dist and say what went into it.
@@ -118,16 +102,6 @@ function raster(svg, size) {
   return drawing.render().asPng()
 }
 
-/**
- * The sizes a level is drawn for, as its header comment says it.
- *
- * @param {{name: string, upTo: number|null}} level A level of detail
- * @returns {string} What it serves
- */
-function serves(level) {
-  return level.upTo === null ? 'the whole drawing' : `for ${round(level.upTo)}px and below`
-}
-
 const compositions = LEVELS.map((level) => ({ ...level, elements: shorten(logo(level.name)) }))
 const whole = compositions[0]
 
@@ -138,7 +112,6 @@ write(
   serialiseDocument({
     size: CANVAS,
     title: whole.title,
-    notes: notes(['The markup is the whole drawing. The stylesheet drops detail as it is drawn smaller.']),
     style: stylesheet(compositions),
     elements: whole.elements,
   }),
@@ -150,10 +123,6 @@ for (const level of compositions) {
   const svg = serialiseDocument({
     size: CANVAS,
     title: level.title,
-    notes: notes([
-      `Level ${level.name} of the logo, ${serves(level)}, in attributes alone.`,
-      'For a renderer that reads no stylesheet. dokuwiki-logo.svg carries every level.',
-    ]),
     elements: level.elements,
   })
   flat.set(level, svg)

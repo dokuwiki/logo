@@ -3,16 +3,9 @@
      width="1024" height="1024"
      role="img">
   <title>Red and green pencils and arrows over a stack of [[DW]] pages</title>
-  <!-- Built by build.js. Change the design in src/logo.yaml, not this file.
-       The markup is the whole drawing. The stylesheet drops detail as it is drawn smaller.
-       An id is the initials of the name the design gives it: ars is arrow-red-shaft.
-       palette: paper #faf4dc, paper back #ece5c8,
-       red #a62d2a, green #326633, ink #4a6174 -->
   <style>
-    /* so a container query can measure the drawing */
     svg { container-type: size }
 
-    /* md, 96px and below */
     @media (max-width: 96px) {
       #sbf, #sbn { stroke-width: 14 }
       #sf { stroke-width: 20 }
@@ -39,7 +32,6 @@
     .sz-md #arh, .sz-sm #arh, .sz-xs #arh, .sz-md #agh, .sz-sm #agh, .sz-xs #agh { stroke-width: 29 }
     .sz-md #ags, .sz-sm #ags, .sz-xs #ags { stroke-width: 29; d: path("M847.53,495.07C1026.76,478.44,948.65,587.16,470.7,631.5") }
 
-    /* sm, 40px and below */
     @media (max-width: 40px) {
       #sbf, #ars, #arh, #ags, #agh, #pre, #pge { display: none }
       #sbn { width: 720px; height: 913px; rx: 64px; transform: matrix(1, 0, 0, 1, 50.7, 70.1); stroke-width: 16 }
@@ -75,7 +67,6 @@
     .sz-sm #pgf, .sz-xs #pgf { transform: matrix(1.16102, 0.53893, -0.53893, 1.16102, 159.2, 625.7); d: path("M167,-19Q167,-29,177,-29L546,-29Q556,-29,556,-19L556,19Q556,29,546,29L177,29Q167,29,167,19Z") }
     .sz-sm #pgp, .sz-xs #pgp { transform: matrix(1.16102, 0.53893, -0.53893, 1.16102, 159.2, 625.7); d: path("M76,-5.63Q76,-11.27,81.41,-13.85L150.59,-46.91Q156,-49.5,156,-43.5L156,-31.55Q156,-25.55,156,-19.55L156,19.55Q156,25.55,156,31.55L156,43.5Q156,49.5,150.59,46.91L81.41,13.85Q76,11.27,76,5.63L76,5.63Q76,0,76,-5.63Z") }
 
-    /* xs, 20px and below */
     @media (max-width: 20px) {
       #sbn, #wl, #prf, #pgf { display: none }
       #sf { width: 664px; height: 842px; transform: matrix(1, 0, 0, 1, 68, 83) }

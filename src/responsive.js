@@ -190,10 +190,7 @@ export function stylesheet(compositions) {
   const [whole, ...smaller] = compositions
   const markup = byId(whole.elements)
 
-  const lines = [
-    '/* so a container query can measure the drawing */',
-    'svg { container-type: size }',
-  ]
+  const lines = ['svg { container-type: size }']
 
   const state = new Map([...markup].map(([id, attrs]) => [id, { attrs, shown: true }]))
   for (const level of smaller) {
@@ -206,8 +203,7 @@ export function stylesheet(compositions) {
     const query = `(max-width: ${round(level.upTo)}px)`
     const inside = rules.map(({ ids, declarations }) => `  ${rule(ids.map((id) => `#${id}`).join(', '), declarations)}`)
 
-    lines.push('', `/* ${level.name}, ${round(level.upTo)}px and below */`)
-    lines.push(`@media ${query} {`, ...inside, '}')
+    lines.push('', `@media ${query} {`, ...inside, '}')
     lines.push(`@container ${query} {`, ...inside, '}')
     lines.push(
       ...rules.map(({ ids, declarations }) => {

@@ -3,12 +3,6 @@
      width="1024" height="1024"
      role="img">
   <title>Red and green pencils and arrows over a stack of DW pages</title>
-  <!-- Built by build.js. Change the design in src/logo.yaml, not this file.
-       Level md of the logo, for 96px and below, in attributes alone.
-       For a renderer that reads no stylesheet. dokuwiki-logo.svg carries every level.
-       An id is the initials of the name the design gives it: ars is arrow-red-shaft.
-       palette: paper #faf4dc, paper back #ece5c8,
-       red #a62d2a, green #326633, ink #4a6174 -->
   <rect id="sbf" width="664" height="842" rx="29" transform="matrix(0.98325, -0.18224, 0.18224, 0.98325, 11.75, 149.71)" fill="#ece5c8" stroke="#4a6174" stroke-width="14"/>
   <rect id="sbn" width="664" height="842" rx="29" transform="matrix(0.96593, -0.25882, 0.25882, 0.96593, 141.65, 201.03)" fill="#ece5c8" stroke="#4a6174" stroke-width="14"/>
   <rect id="sf" width="664" height="842" rx="29" transform="matrix(0.99572, -0.09237, 0.09237, 0.99572, 132, 78.6)" fill="#faf4dc" stroke="#4a6174" stroke-width="20"/>

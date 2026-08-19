@@ -3,12 +3,6 @@
      width="1024" height="1024"
      role="img">
   <title>Red and green pencils over a stack of DW pages</title>
-  <!-- Built by build.js. Change the design in src/logo.yaml, not this file.
-       Level sm of the logo, for 40px and below, in attributes alone.
-       For a renderer that reads no stylesheet. dokuwiki-logo.svg carries every level.
-       An id is the initials of the name the design gives it: ars is arrow-red-shaft.
-       palette: paper #faf4dc, paper back #ece5c8,
-       red #a62d2a, green #326633, ink #4a6174 -->
   <rect id="sbn" width="720" height="913" rx="64" transform="matrix(1, 0, 0, 1, 50.7, 70.1)" fill="#ece5c8" stroke="#4a6174" stroke-width="16"/>
   <rect id="sf" width="720" height="913" rx="64" transform="matrix(1, 0, 0, 1, 12, 12)" fill="#faf4dc" stroke="#4a6174" stroke-width="24"/>
   <path id="wl" fill="#4a6174" transform="matrix(1.88773, 0, 0, 1.88773, -318.5, -91.72)" d="M328.45,169.05L328.45,169.05Q328.45,187.73,321.12,201.65Q313.8,215.57,300.39,222.94Q286.98,230.3,269.68,230.3L269.68,230.3L220.85,230.3L220.85,109.59L264.54,109.59Q295.04,109.59,311.74,124.97Q328.45,140.35,328.45,169.05M303,169.05L303,169.05Q303,149.6,292.9,139.36Q282.79,129.13,264.02,129.13L264.02,129.13L246.12,129.13L246.12,210.77L267.54,210.77Q283.81,210.77,293.41,199.55Q303,188.32,303,169.05M510.72,109.59L479.53,230.3L449.55,230.3L433.19,160.48Q430.19,148.15,428.13,134.7L428.13,134.7Q426.08,145.92,424.79,151.79Q423.51,157.65,406.54,230.3L406.54,230.3L376.56,230.3L345.46,109.59L371.08,109.59L388.55,187.55L392.49,206.4Q394.89,194.49,397.16,183.66Q399.43,172.82,414.25,109.59L414.25,109.59L442.53,109.59L457.77,173.85Q459.57,181.04,463.86,206.4L463.86,206.4L466,196.46L470.54,176.76L485.1,109.59L510.72,109.59"/>

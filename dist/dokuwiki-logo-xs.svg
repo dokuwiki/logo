@@ -3,12 +3,6 @@
      width="1024" height="1024"
      role="img">
   <title>A red and a green pencil on a page</title>
-  <!-- Built by build.js. Change the design in src/logo.yaml, not this file.
-       Level xs of the logo, for 20px and below, in attributes alone.
-       For a renderer that reads no stylesheet. dokuwiki-logo.svg carries every level.
-       An id is the initials of the name the design gives it: ars is arrow-red-shaft.
-       palette: paper #faf4dc, paper back #ece5c8,
-       red #a62d2a, green #326633, ink #4a6174 -->
   <rect id="sf" width="664" height="842" rx="64" transform="matrix(1, 0, 0, 1, 68, 83)" fill="#faf4dc" stroke="#4a6174" stroke-width="24"/>
   <path id="prb" fill="#a62d2a" transform="matrix(0.98054, -0.82277, 0.82277, 0.98054, 395.5, 568.1)" d="M8.88,4.59Q0,0,8.88,-4.59L141.12,-72.91Q150,-77.5,160,-77.5L568,-77.5Q578,-77.5,582.77,-68.71L595.23,-45.79Q600,-37,600,-27L600,27Q600,37,595.23,45.79L582.77,68.71Q578,77.5,568,77.5L160,77.5Q150,77.5,141.12,72.91Z"/>
   <path id="prp" fill="#faf4dc" transform="matrix(0.98054, -0.82277, 0.82277, 0.98054, 395.5, 568.1)" d="M76,-5.63Q76,-11.27,81.41,-13.85L150.59,-46.91Q156,-49.5,156,-43.5L156,-31.55Q156,-25.55,156,-19.55L156,19.55Q156,25.55,156,31.55L156,43.5Q156,49.5,150.59,46.91L81.41,13.85Q76,11.27,76,5.63L76,5.63Q76,0,76,-5.63Z"/>
