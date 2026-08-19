@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 1024 1024"
+     width="1024" height="1024"
+     role="img">
+  <title>A red and a green arrow across a page</title>
+  <!-- Built by build.js. Change the design in src/logo.js, not this file.
+       Level xs of the logo, for 20px and below, in attributes alone.
+       For a renderer that reads no stylesheet. dokuwiki-logo.svg carries every level.
+       An id is the initials of the name the design gives it: ars is arrow-red-shaft.
+       palette: paper #faf4dc, paper back #ece5c8,
+       red #a62d2a, green #326633, ink #4a6174 -->
+  <rect id="sf" width="776" height="984" rx="130" transform="matrix(1, 0, 0, 1, 124, 20)" fill="#faf4dc" stroke="#4a6174" stroke-width="40"/>
+  <path id="ars" fill="none" stroke="#a62d2a" stroke-width="96" stroke-linecap="butt" stroke-linejoin="round" d="M104,305.36C-56,305.36,424.8,462.8,744.8,462.8"/>
+  <path id="arh" fill="none" stroke="#a62d2a" stroke-width="96" stroke-linecap="round" stroke-linejoin="round" d="M614.778,564.384L744.8,462.8L614.778,361.216"/>
+  <path id="ags" fill="none" stroke="#326633" stroke-width="96" stroke-linecap="butt" stroke-linejoin="round" d="M920,561.2C1080,561.2,599.2,738.32,279.2,738.32"/>
+  <path id="agh" fill="none" stroke="#326633" stroke-width="96" stroke-linecap="round" stroke-linejoin="round" d="M409.222,636.736L279.2,738.32L409.222,839.904"/>
+</svg>

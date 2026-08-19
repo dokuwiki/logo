@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 1024 1024"
+     width="1024" height="1024"
+     role="img">
+  <title>A red and a green arrow across a stack of DW pages</title>
+  <!-- Built by build.js. Change the design in src/logo.js, not this file.
+       Level sm of the logo, for 40px and below, in attributes alone.
+       For a renderer that reads no stylesheet. dokuwiki-logo.svg carries every level.
+       An id is the initials of the name the design gives it: ars is arrow-red-shaft.
+       palette: paper #faf4dc, paper back #ece5c8,
+       red #a62d2a, green #326633, ink #4a6174 -->
+  <rect id="sbn" width="664" height="842" rx="64" transform="matrix(1, 0, 0, 1, 218.7, 121.1)" fill="#ece5c8" stroke="#4a6174" stroke-width="16"/>
+  <rect id="sf" width="664" height="842" rx="64" transform="matrix(1, 0, 0, 1, 180, 63)" fill="#faf4dc" stroke="#4a6174" stroke-width="24"/>
+  <path id="wl" fill="#4a6174" transform="matrix(1.887734, 0, 0, 1.887734, -124.795, -32.65)" d="M302.902,155.902L302.902,155.902Q302.902,173.125,296.147,185.964Q289.392,198.803,277.028,205.597Q264.663,212.392,248.704,212.392L248.704,212.392L203.67,212.392L203.67,101.071L243.963,101.071Q272.09,101.071,287.496,115.253Q302.902,129.435,302.902,155.902M279.437,155.902L279.437,155.902Q279.437,137.968,270.115,128.526Q260.792,119.085,243.489,119.085L243.489,119.085L226.977,119.085L226.977,194.378L246.729,194.378Q261.74,194.378,270.589,184.028Q279.437,173.678,279.437,155.902M470.996,101.071L442.237,212.392L414.585,212.392L399.495,148.001Q396.73,136.624,394.834,124.22L394.834,124.22Q392.937,134.57,391.752,139.982Q390.567,145.394,374.924,212.392L374.924,212.392L347.272,212.392L318.592,101.071L342.215,101.071L358.333,172.967L361.967,190.349Q364.179,179.367,366.273,169.373Q368.366,159.378,382.035,101.071L382.035,101.071L408.107,101.071L422.17,160.326Q423.829,166.963,427.779,190.349L427.779,190.349L429.754,181.184L433.942,163.013L447.373,101.071L470.996,101.071"/>
+  <path id="ars" fill="none" stroke="#a62d2a" stroke-width="64" stroke-linecap="butt" stroke-linejoin="round" d="M168,416.64C-120,416.64,391.2,551.36,711.2,551.36"/>
+  <path id="arh" fill="none" stroke="#a62d2a" stroke-width="64" stroke-linecap="round" stroke-linejoin="round" d="M608.759,631.396L711.2,551.36L608.759,471.324"/>
+  <path id="ags" fill="none" stroke="#326633" stroke-width="64" stroke-linecap="butt" stroke-linejoin="round" d="M856,635.56C1144,635.56,632.8,787.12,312.8,787.12"/>
+  <path id="agh" fill="none" stroke="#326633" stroke-width="64" stroke-linecap="round" stroke-linejoin="round" d="M415.241,707.084L312.8,787.12L415.241,867.156"/>
+</svg>

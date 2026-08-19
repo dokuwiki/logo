@@ -11,6 +11,12 @@ detail away as the drawing gets smaller. `src/responsive.js` writes that
 stylesheet by comparing each level with the one a size above it, so no rule is
 written by hand. A renderer that ignores the stylesheet draws the whole logo.
 
+Beside it goes a flat file per level, `dist/dokuwiki-logo-lg.svg`, `-md.svg`,
+`-sm.svg` and `-xs.svg`, each named for the size it is wanted at. Each one is a
+level already drawn as it comes out, in attributes alone, with no stylesheet and
+nothing hidden. They carry every consumer that is not a browser, because
+librsvg, Inkscape and the tools built on them read no queries.
+
 `classic/dokuwiki-logo.svg` is the logo DokuWiki uses today. It is kept to
 compare the new drawing against.
 
@@ -21,8 +27,8 @@ npm install
 npm run build
 ```
 
-That writes `dist/dokuwiki-logo.svg`, which is checked in, so a change to the
-design shows up as a change to that file.
+That writes every file in `dist/`, all of which are checked in, so a change to
+the design shows up as a change to them.
 
 The word mark is set from `fonts/LiberationSans-Bold.ttf`, which ships with the
 repository so the letters come out the same everywhere.

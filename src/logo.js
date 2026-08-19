@@ -36,7 +36,8 @@ const WORDMARK = [
 
 /**
  * Every level of detail, largest first: the size it answers to, the class a
- * host can set for it, and how it composes the picture.
+ * host can set for it, what it draws in words, and how it composes the
+ * picture.
  *
  * The whole drawing is composed a shade inside the canvas, at the measure the
  * paper is cut to, so that the outlines and the pencils' ends have somewhere to
@@ -46,13 +47,14 @@ const WORDMARK = [
  * because its class stands for a size, and the levels above it have to serve
  * that class until it is drawn.
  *
- * @type {Array<{name: string, className: string|null, upTo: number|null, detail: object|undefined}>}
+ * @type {Array<{name: string, className: string|null, upTo: number|null, title: string, detail: object|undefined}>}
  */
 const LADDER = [
   {
     name: 'full',
     className: null,
     upTo: null,
+    title: 'Red and green pencils and arrows over a stack of [[DW]] pages',
     detail: {
       front: { corner: { x: 132, y: 78.6 }, tilt: -5.3, stroke: INK, strokeWidth: 12 },
       behind: [
@@ -81,6 +83,7 @@ const LADDER = [
     name: 'md',
     className: 'sz-md',
     upTo: 96,
+    title: 'Red and green pencils and arrows over a stack of DW pages',
     detail: {
       front: { corner: { x: 132, y: 78.6 }, tilt: -5.3, stroke: INK, strokeWidth: 20 },
       behind: [
@@ -106,6 +109,7 @@ const LADDER = [
     name: 'sm',
     className: 'sz-sm',
     upTo: 40,
+    title: 'A red and a green arrow across a stack of DW pages',
     detail: {
       front: { corner: { x: 180, y: 63 }, tilt: 0, radius: 64, stroke: INK, strokeWidth: 24 },
       behind: [{ id: 'sheet-back-near', tilt: 0, x: 38.7, y: 58.1, stroke: INK, strokeWidth: 16 }],
@@ -134,6 +138,7 @@ const LADDER = [
     name: 'xs',
     className: 'sz-xs',
     upTo: 20,
+    title: 'A red and a green arrow across a page',
     detail: {
       front: { corner: { x: 124, y: 20 }, tilt: 0, width: 776, height: 984, radius: 130, stroke: INK, strokeWidth: 40 },
       behind: [],
@@ -152,11 +157,12 @@ const LADDER = [
  * above it apply as well. A class says how small the drawing is, so each level
  * carries the classes it has to serve: its own and every smaller one.
  *
- * @type {Array<{name: string, upTo: number|null, classNames: string[]}>}
+ * @type {Array<{name: string, upTo: number|null, title: string, classNames: string[]}>}
  */
 export const LEVELS = LADDER.filter((level) => level.detail).map((level) => ({
   name: level.name,
   upTo: level.upTo,
+  title: level.title,
   classNames: level.className
     ? LADDER.slice(LADDER.indexOf(level))
         .map((smaller) => smaller.className)
