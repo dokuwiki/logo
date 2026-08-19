@@ -13,7 +13,7 @@ import { round } from './emit.js'
  *
  * @type {number}
  */
-const DIGITS = 3
+const DIGITS = 2
 
 /**
  * Start collecting path commands.

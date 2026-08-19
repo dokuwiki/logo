@@ -3,13 +3,13 @@
  */
 
 /**
- * Trim a number to three decimals and drop any trailing zeros.
+ * Trim a number to two decimals and drop any trailing zeros.
  *
  * @param {number} value Number to format
  * @returns {string} Shortest form that still reads the same
  */
 export function round(value) {
-  return String(Number(value.toFixed(3)))
+  return String(Number(value.toFixed(2)))
 }
 
 /**
@@ -29,7 +29,7 @@ export function round(value) {
  * @returns {string} Value for a transform attribute
  */
 export function matrix(a, b, c, d, e, f) {
-  const turn = (value) => String(Number(value.toFixed(6)))
+  const turn = (value) => String(Number(value.toFixed(5)))
   return `matrix(${turn(a)}, ${turn(b)}, ${turn(c)}, ${turn(d)}, ${round(e)}, ${round(f)})`
 }
 
