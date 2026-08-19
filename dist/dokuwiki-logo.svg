@@ -42,8 +42,8 @@
     /* sm, 40px and below */
     @media (max-width: 40px) {
       #sbf, #prb, #prm, #prp, #pgb, #pgm, #pgp { display: none }
-      #sbn { transform: matrix(1, 0, 0, 1, 218.7, 121.1); stroke-width: 16 }
-      #sf { transform: matrix(1, 0, 0, 1, 180, 63); stroke-width: 24 }
+      #sbn { rx: 64px; transform: matrix(1, 0, 0, 1, 218.7, 121.1); stroke-width: 16 }
+      #sf { rx: 64px; transform: matrix(1, 0, 0, 1, 180, 63); stroke-width: 24 }
       #wl { transform: matrix(1.887734, 0, 0, 1.887734, -124.795, -32.65) }
       #ars { stroke-width: 64; d: path("M168,416.64C-120,416.64,391.2,551.36,711.2,551.36") }
       #arh { stroke-width: 64; d: path("M608.759,631.396L711.2,551.36L608.759,471.324") }
@@ -52,8 +52,8 @@
     }
     @container (max-width: 40px) {
       #sbf, #prb, #prm, #prp, #pgb, #pgm, #pgp { display: none }
-      #sbn { transform: matrix(1, 0, 0, 1, 218.7, 121.1); stroke-width: 16 }
-      #sf { transform: matrix(1, 0, 0, 1, 180, 63); stroke-width: 24 }
+      #sbn { rx: 64px; transform: matrix(1, 0, 0, 1, 218.7, 121.1); stroke-width: 16 }
+      #sf { rx: 64px; transform: matrix(1, 0, 0, 1, 180, 63); stroke-width: 24 }
       #wl { transform: matrix(1.887734, 0, 0, 1.887734, -124.795, -32.65) }
       #ars { stroke-width: 64; d: path("M168,416.64C-120,416.64,391.2,551.36,711.2,551.36") }
       #arh { stroke-width: 64; d: path("M608.759,631.396L711.2,551.36L608.759,471.324") }
@@ -61,8 +61,8 @@
       #agh { stroke-width: 64; d: path("M415.241,707.084L312.8,787.12L415.241,867.156") }
     }
     .sz-sm #sbf, .sz-xs #sbf, .sz-sm #prb, .sz-xs #prb, .sz-sm #prm, .sz-xs #prm, .sz-sm #prp, .sz-xs #prp, .sz-sm #pgb, .sz-xs #pgb, .sz-sm #pgm, .sz-xs #pgm, .sz-sm #pgp, .sz-xs #pgp { display: none }
-    .sz-sm #sbn, .sz-xs #sbn { transform: matrix(1, 0, 0, 1, 218.7, 121.1); stroke-width: 16 }
-    .sz-sm #sf, .sz-xs #sf { transform: matrix(1, 0, 0, 1, 180, 63); stroke-width: 24 }
+    .sz-sm #sbn, .sz-xs #sbn { rx: 64px; transform: matrix(1, 0, 0, 1, 218.7, 121.1); stroke-width: 16 }
+    .sz-sm #sf, .sz-xs #sf { rx: 64px; transform: matrix(1, 0, 0, 1, 180, 63); stroke-width: 24 }
     .sz-sm #wl, .sz-xs #wl { transform: matrix(1.887734, 0, 0, 1.887734, -124.795, -32.65) }
     .sz-sm #ars, .sz-xs #ars { stroke-width: 64; d: path("M168,416.64C-120,416.64,391.2,551.36,711.2,551.36") }
     .sz-sm #arh, .sz-xs #arh { stroke-width: 64; d: path("M608.759,631.396L711.2,551.36L608.759,471.324") }
@@ -72,7 +72,7 @@
     /* xs, 20px and below */
     @media (max-width: 20px) {
       #sbn, #wl { display: none }
-      #sf { width: 776px; height: 984px; transform: matrix(1, 0, 0, 1, 124, 20); stroke-width: 40 }
+      #sf { width: 776px; height: 984px; rx: 130px; transform: matrix(1, 0, 0, 1, 124, 20); stroke-width: 40 }
       #ars { stroke-width: 96; d: path("M104,305.36C-56,305.36,424.8,462.8,744.8,462.8") }
       #arh { stroke-width: 96; d: path("M614.778,564.384L744.8,462.8L614.778,361.216") }
       #ags { stroke-width: 96; d: path("M920,561.2C1080,561.2,599.2,738.32,279.2,738.32") }
@@ -80,14 +80,14 @@
     }
     @container (max-width: 20px) {
       #sbn, #wl { display: none }
-      #sf { width: 776px; height: 984px; transform: matrix(1, 0, 0, 1, 124, 20); stroke-width: 40 }
+      #sf { width: 776px; height: 984px; rx: 130px; transform: matrix(1, 0, 0, 1, 124, 20); stroke-width: 40 }
       #ars { stroke-width: 96; d: path("M104,305.36C-56,305.36,424.8,462.8,744.8,462.8") }
       #arh { stroke-width: 96; d: path("M614.778,564.384L744.8,462.8L614.778,361.216") }
       #ags { stroke-width: 96; d: path("M920,561.2C1080,561.2,599.2,738.32,279.2,738.32") }
       #agh { stroke-width: 96; d: path("M409.222,636.736L279.2,738.32L409.222,839.904") }
     }
     .sz-xs #sbn, .sz-xs #wl { display: none }
-    .sz-xs #sf { width: 776px; height: 984px; transform: matrix(1, 0, 0, 1, 124, 20); stroke-width: 40 }
+    .sz-xs #sf { width: 776px; height: 984px; rx: 130px; transform: matrix(1, 0, 0, 1, 124, 20); stroke-width: 40 }
     .sz-xs #ars { stroke-width: 96; d: path("M104,305.36C-56,305.36,424.8,462.8,744.8,462.8") }
     .sz-xs #arh { stroke-width: 96; d: path("M614.778,564.384L744.8,462.8L614.778,361.216") }
     .sz-xs #ags { stroke-width: 96; d: path("M920,561.2C1080,561.2,599.2,738.32,279.2,738.32") }

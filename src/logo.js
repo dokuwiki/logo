@@ -100,12 +100,14 @@ const LADDER = [
     // hooks clear of it and sweeps across the sheet, red pointing right above
     // and green pointing left below. The word mark keeps the room at the top of
     // the sheet, so the arrows sit under it. The pencils are past reading and
-    // go.
+    // go. The paper's corners are rounded more than twice as hard, or the
+    // round the whole drawing keeps is a pixel at 40 and the sheet reads as a
+    // plain rectangle.
     name: 'sm',
     className: 'sz-sm',
     upTo: 40,
     detail: {
-      front: { corner: { x: 180, y: 63 }, tilt: 0, stroke: INK, strokeWidth: 24 },
+      front: { corner: { x: 180, y: 63 }, tilt: 0, radius: 64, stroke: INK, strokeWidth: 24 },
       behind: [{ id: 'sheet-back-near', tilt: 0, x: 38.7, y: 58.1, stroke: INK, strokeWidth: 16 }],
       wordmark: { draws: ['letters'], fills: 0.76 },
       arrows: { width: 64, headLength: 130, headSpread: 38 },
@@ -126,12 +128,14 @@ const LADDER = [
     // What sm draws in half a pixel is thickened: the outline by two thirds and
     // the arrows by half, which brings the outline to near a pixel at 20 and
     // the shafts above one. A head grows with its shaft, or a thicker shaft
-    // swallows it and the arrow ends in a stub.
+    // swallows it and the arrow ends in a stub. The corners are rounded harder
+    // again, to two pixels and a half at 20, so the round is still seen at the
+    // sizes below that.
     name: 'xs',
     className: 'sz-xs',
     upTo: 20,
     detail: {
-      front: { corner: { x: 124, y: 20 }, tilt: 0, width: 776, height: 984, stroke: INK, strokeWidth: 40 },
+      front: { corner: { x: 124, y: 20 }, tilt: 0, width: 776, height: 984, radius: 130, stroke: INK, strokeWidth: 40 },
       behind: [],
       wordmark: { draws: [] },
       arrows: { width: 96, headLength: 165, headSpread: 38 },
