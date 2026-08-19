@@ -56,10 +56,11 @@ export class Pencil {
    * Pencils of another shape, each pared down for a size the standard one
    * cannot hold, by the name the design asks for it by.
    *
-   * A plain pencil is a painted rod with a bare point on it. The end and the
-   * light along the facet are finer than the barrel, so below a pixel wide they
-   * go. The paint stopping short of the point is then all that says pencil: a
-   * bar of colour, and the point painted around an island of bare wood.
+   * A plain pencil is a painted rod with a bare point on it. Its blunt end puts
+   * paint, then wood, then lead inside a couple of pixels, so no level that
+   * asks for this shape draws it. The paint stopping short of the point is then
+   * what says pencil: a bar of colour, and the point painted around an island
+   * of bare wood.
    *
    * So the barrel is stouter and the point longer, and the wood is set well in
    * from the cone's edges. The wood is the paper's colour, so the paint around

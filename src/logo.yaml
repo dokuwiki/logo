@@ -182,12 +182,13 @@ levels:
   # pencils keep the slant and the arrangement the whole drawing gives them, red
   # steep and above, green shallow and below it and further left, because the
   # mark is known by that. Each is grown from the blunt end that rests on the
-  # canvas edge, both at one size, and both lie flat, because a pared down
-  # pencil has no facets left to place in space. The pair can grow no further
-  # than the strip of paper between red's point and green's barrel allows, which
-  # is down to a pixel and a third at 24px. The paper's corners are rounded more
-  # than twice as hard, or the round the whole drawing keeps is a pixel at 40px
-  # and reads as a plain rectangle.
+  # canvas edge, both at one size, and both lie flat, because a lean shows most
+  # in the blunt end face, and a pared down pencil does not draw one: its end
+  # puts paint, then wood, then lead inside two pixels at 40px. The pair can
+  # grow no further than the strip of paper between red's point and green's
+  # barrel allows, which is down to a pixel and a third at 24px. The paper's
+  # corners are rounded more than twice as hard, or the round the whole drawing
+  # keeps is a pixel at 40px and reads as a plain rectangle.
   - name: sm
     class: sz-sm
     upTo: 40
@@ -205,27 +206,29 @@ levels:
       arrow-red: {show: false}
       arrow-green: {show: false}
       pencil-red:
-        shape: plain               # a pared down pencil, from the shapes a pencil holds
+        shape: plain                   # a pared down pencil, from the shapes a pencil holds
         at: {x: 395.5, y: 568.1}
         size: 1.28
-        lean: 0                    # flat: a pared down pencil has no facet to place
-        draws: [barrel, point]     # a pencil draws barrel, facet, point and end
+        lean: 0                        # flat: a pared down pencil has no end face to place
+        draws: [barrel, point, facet]  # a pencil draws barrel, facet, point and end
       pencil-green:
         shape: plain
         at: {x: 159.2, y: 625.7}
         size: 1.28
         lean: 0
-        draws: [barrel, point]
+        draws: [barrel, point, facet]
 
-  # This level takes sm's pose and drops the two pieces of it that stop reading
-  # at 20px. The word mark goes: its letters stand four pixels tall and their
-  # strokes are finer than one, so they close up into a smudge. The sheet behind
-  # goes too: it peeks three quarters of a pixel out at the side under an
+  # This level takes sm's pose and drops the three pieces of it that stop
+  # reading at 20px. The word mark goes: its letters stand four pixels tall and
+  # their strokes are finer than one, so they close up into a smudge. The sheet
+  # behind goes too: it peeks three quarters of a pixel out at the side under an
   # outline a third of a pixel wide, too close to the front sheet's edge to read
   # as another sheet. The paper is cut back to its own measure and set down and
   # right by what it lost, so its right and bottom edges lie where sm's do. Both
   # pencils stay where sm puts them, and each hangs further off the paper for
-  # it.
+  # it. The light along their facets is the third piece to go: a barrel not four
+  # pixels across holds a pixel and a half of it between a pixel of paint either
+  # side, which muddies the bar's colour rather than lighting it.
   - name: xs
     class: sz-xs
     upTo: 20
@@ -234,3 +237,7 @@ levels:
       sheet-back-near: {show: false}
       sheet-front: {at: {x: 68, y: 83}, size: {w: 664, h: 842}}
       wordmark: {show: false}
+      pencil-red:
+        draws: [barrel, point]
+      pencil-green:
+        draws: [barrel, point]
