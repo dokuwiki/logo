@@ -18,6 +18,10 @@ the design shows up as a change to them.
 
 ## Look at it
 
+See https://dokuwiki.github.io/logo/
+
+On a local checkout, use:
+
 ```
 npm run serve
 ```
