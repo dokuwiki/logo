@@ -1,174 +1,173 @@
 <!doctype html>
 <meta charset="utf-8">
 <title>DokuWiki logo at every size</title>
-<link rel="icon" href="/dist/favicon.ico">
-<style>
-  body { margin:0; padding:14px 16px 40px; background:#fff; font:13px system-ui; color:#222; }
-  h1 { font-size:15px; margin:0 0 8px; }
-  h2 { font-size:12px; font-weight:600; margin:22px 0 6px; color:#444; }
-  nav { margin:0 0 12px; font:12px system-ui; }
-  nav a { color:#36c; margin-right:14px; }
-  nav b { margin-right:14px; color:#222; }
-  table { border-collapse:collapse; }
-  .band { display:flex; gap:18px; align-items:flex-start; }
-  th, .label { font:11px system-ui; font-weight:600; color:#666; text-align:left; padding:0 14px 5px 0; }
-  td { padding:5px 14px 5px 0; vertical-align:bottom; }
-  .size { font:11px ui-monospace, monospace; color:#666; }
-  .cell { display:inline-block; outline:1px solid #ddd; }
-  .cell > * { display:block; }
-  /* The class column has to answer for the class rules on its own, so the
-     container query is switched off inside it. */
-  .by-class svg { container-type: normal; }
-</style>
+<link rel="icon" href="../../dist/favicon.ico">
+<link rel="stylesheet" href="style.css">
 <body>
-<nav>
-  <b>every size</b>
-  <a href="/src/serve/compare.html">beside the classic one</a>
-  <a href="/src/serve/closeup.html">up close</a>
-</nav>
-<h1>dist/dokuwiki-logo.svg at every size</h1>
+<header>
+    <nav></nav>
+</header>
 
-<h2>full — no rules, the drawing as the markup holds it</h2>
-<div class="band">
-  <table>
-    <tr>
-      <th>size</th>
-      <th>img, media query</th>
-      <th>inline, container query</th>
-      <th>inline, no class</th>
-    </tr>
-    <tr>
-      <td class="size">256px</td>
-      <td><span class="cell"><img src="/dist/dokuwiki-logo.svg" width="256" height="256" alt=""></span></td>
-      <td><span class="cell" data-inline="256"></span></td>
-      <td><span class="cell by-class" data-inline="256"></span></td>
-    </tr>
-    <tr>
-      <td class="size">128px</td>
-      <td><span class="cell"><img src="/dist/dokuwiki-logo.svg" width="128" height="128" alt=""></span></td>
-      <td><span class="cell" data-inline="128"></span></td>
-      <td><span class="cell by-class" data-inline="128"></span></td>
-    </tr>
-  </table>
-  <div>
-    <div class="label">no class at 256px</div>
-    <span class="cell by-class" data-inline="256"></span>
-  </div>
-</div>
+<main>
+    <section>
+        <h1>Every size</h1>
 
-<h2>md — 96px and below — class .sz-md</h2>
-<div class="band">
-  <table>
-    <tr>
-      <th>size</th>
-      <th>img, media query</th>
-      <th>inline, container query</th>
-      <th>inline, .sz-md</th>
-    </tr>
-    <tr>
-      <td class="size">96px</td>
-      <td><span class="cell"><img src="/dist/dokuwiki-logo.svg" width="96" height="96" alt=""></span></td>
-      <td><span class="cell" data-inline="96"></span></td>
-      <td><span class="cell by-class" data-inline="96" data-level="sz-md"></span></td>
-    </tr>
-    <tr>
-      <td class="size">64px</td>
-      <td><span class="cell"><img src="/dist/dokuwiki-logo.svg" width="64" height="64" alt=""></span></td>
-      <td><span class="cell" data-inline="64"></span></td>
-      <td><span class="cell by-class" data-inline="64" data-level="sz-md"></span></td>
-    </tr>
-    <tr>
-      <td class="size">48px</td>
-      <td><span class="cell"><img src="/dist/dokuwiki-logo.svg" width="48" height="48" alt=""></span></td>
-      <td><span class="cell" data-inline="48"></span></td>
-      <td><span class="cell by-class" data-inline="48" data-level="sz-md"></span></td>
-    </tr>
-  </table>
-  <div>
-    <div class="label">.sz-md at 256px</div>
-    <span class="cell by-class" data-inline="256" data-level="sz-md"></span>
-  </div>
-</div>
+        <p>
+            The universal SVG displayed at every size using different usage methods:
+        </p>
 
-<h2>sm — 40px and below — class .sz-sm</h2>
-<div class="band">
-  <table>
-    <tr>
-      <th>size</th>
-      <th>img, media query</th>
-      <th>inline, container query</th>
-      <th>inline, .sz-sm</th>
-    </tr>
-    <tr>
-      <td class="size">40px</td>
-      <td><span class="cell"><img src="/dist/dokuwiki-logo.svg" width="40" height="40" alt=""></span></td>
-      <td><span class="cell" data-inline="40"></span></td>
-      <td><span class="cell by-class" data-inline="40" data-level="sz-sm"></span></td>
-    </tr>
-    <tr>
-      <td class="size">32px</td>
-      <td><span class="cell"><img src="/dist/dokuwiki-logo.svg" width="32" height="32" alt=""></span></td>
-      <td><span class="cell" data-inline="32"></span></td>
-      <td><span class="cell by-class" data-inline="32" data-level="sz-sm"></span></td>
-    </tr>
-    <tr>
-      <td class="size">24px</td>
-      <td><span class="cell"><img src="/dist/dokuwiki-logo.svg" width="24" height="24" alt=""></span></td>
-      <td><span class="cell" data-inline="24"></span></td>
-      <td><span class="cell by-class" data-inline="24" data-level="sz-sm"></span></td>
-    </tr>
-  </table>
-  <div>
-    <div class="label">.sz-sm at 256px</div>
-    <span class="cell by-class" data-inline="256" data-level="sz-sm"></span>
-  </div>
-</div>
+        <ul>
+            <li>When used with an <code>&lt;img&gt;</code> tag, the file's media query does the adjustments</li>
+            <li>When used inline, the container query does the adjustments</li>
+            <li>When used inline with a class, the class enforces the adjustments</li>
+        </ul>
+    </section>
 
-<h2>xs — 20px and below — class .sz-xs</h2>
-<div class="band">
-  <table>
-    <tr>
-      <th>size</th>
-      <th>img, media query</th>
-      <th>inline, container query</th>
-      <th>inline, .sz-xs</th>
-    </tr>
-    <tr>
-      <td class="size">20px</td>
-      <td><span class="cell"><img src="/dist/dokuwiki-logo.svg" width="20" height="20" alt=""></span></td>
-      <td><span class="cell" data-inline="20"></span></td>
-      <td><span class="cell by-class" data-inline="20" data-level="sz-xs"></span></td>
-    </tr>
-    <tr>
-      <td class="size">16px</td>
-      <td><span class="cell"><img src="/dist/dokuwiki-logo.svg" width="16" height="16" alt=""></span></td>
-      <td><span class="cell" data-inline="16"></span></td>
-      <td><span class="cell by-class" data-inline="16" data-level="sz-xs"></span></td>
-    </tr>
-  </table>
-  <div>
-    <div class="label">.sz-xs at 256px</div>
-    <span class="cell by-class" data-inline="256" data-level="sz-xs"></span>
-  </div>
-</div>
+    <section>
+        <h2>large</h2>
+        <table>
+            <thead>
+            <tr>
+                <th scope="col">size</th>
+                <th scope="col">img, media query</th>
+                <th scope="col">inline, container query</th>
+                <th scope="col">inline, no class</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <th scope="row">256px</th>
+                <td><img src="../../dist/dokuwiki-logo.svg" width="256" height="256" alt=""></td>
+                <td data-inline="256"></td>
+                <td data-inline="256" data-level=""></td>
+            </tr>
+            <tr>
+                <th scope="row">128px</th>
+                <td><img src="../../dist/dokuwiki-logo.svg" width="128" height="128" alt=""></td>
+                <td data-inline="128"></td>
+                <td data-inline="128" data-level=""></td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section>
+        <h2>medium</h2>
+        <table>
+            <thead>
+            <tr>
+                <th scope="col">size</th>
+                <th scope="col">img, media query</th>
+                <th scope="col">inline, container query</th>
+                <th scope="col">inline, .sz-md</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <th scope="row">96px</th>
+                <td><img src="../../dist/dokuwiki-logo.svg" width="96" height="96" alt=""></td>
+                <td data-inline="96"></td>
+                <td data-inline="96" data-level="sz-md"></td>
+            </tr>
+            <tr>
+                <th scope="row">64px</th>
+                <td><img src="../../dist/dokuwiki-logo.svg" width="64" height="64" alt=""></td>
+                <td data-inline="64"></td>
+                <td data-inline="64" data-level="sz-md"></td>
+            </tr>
+            <tr>
+                <th scope="row">48px</th>
+                <td><img src="../../dist/dokuwiki-logo.svg" width="48" height="48" alt=""></td>
+                <td data-inline="48"></td>
+                <td data-inline="48" data-level="sz-md"></td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section>
+        <h2>small</h2>
+        <table>
+            <thead>
+            <tr>
+                <th scope="col">size</th>
+                <th scope="col">img, media query</th>
+                <th scope="col">inline, container query</th>
+                <th scope="col">inline, .sz-sm</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <th scope="row">40px</th>
+                <td><img src="../../dist/dokuwiki-logo.svg" width="40" height="40" alt=""></td>
+                <td data-inline="40"></td>
+                <td data-inline="40" data-level="sz-sm"></td>
+            </tr>
+            <tr>
+                <th scope="row">32px</th>
+                <td><img src="../../dist/dokuwiki-logo.svg" width="32" height="32" alt=""></td>
+                <td data-inline="32"></td>
+                <td data-inline="32" data-level="sz-sm"></td>
+            </tr>
+            <tr>
+                <th scope="row">24px</th>
+                <td><img src="../../dist/dokuwiki-logo.svg" width="24" height="24" alt=""></td>
+                <td data-inline="24"></td>
+                <td data-inline="24" data-level="sz-sm"></td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section>
+        <h2>extra small</h2>
+        <table>
+            <thead>
+            <tr>
+                <th scope="col">size</th>
+                <th scope="col">img, media query</th>
+                <th scope="col">inline, container query</th>
+                <th scope="col">inline, .sz-xs</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <th scope="row">20px</th>
+                <td><img src="../../dist/dokuwiki-logo.svg" width="20" height="20" alt=""></td>
+                <td data-inline="20"></td>
+                <td data-inline="20" data-level="sz-xs"></td>
+            </tr>
+            <tr>
+                <th scope="row">16px</th>
+                <td><img src="../../dist/dokuwiki-logo.svg" width="16" height="16" alt=""></td>
+                <td data-inline="16"></td>
+                <td data-inline="16" data-level="sz-xs"></td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
 
 <script type="module">
-  /**
-   * Fill every cell that asks for the markup pasted into this page. A cell says
-   * the size it wants in data-inline and the level class it carries, if any, in
-   * data-level. Pasting needs a script because no element loads a file as
-   * markup, and a container query or a class reaches the drawing only on a copy
-   * in this page.
-   */
-  const FILE = '/dist/dokuwiki-logo.svg'
-  const source = await fetch(FILE).then((response) => response.text())
-  const parsed = new DOMParser().parseFromString(source, 'image/svg+xml')
+    /**
+     * Fill every slot that asks for the markup pasted into this page. A slot says
+     * the size it wants in data-inline and, where its level is to come from a
+     * class rather than from its size, that class in data-level. The drawing goes
+     * in front of what the slot already holds, so a caption stays under it.
+     *
+     * Pasting needs a script because no element loads a file as markup, and a
+     * container query or a class reaches the drawing only on a copy in this page.
+     */
+    const FILE = '../../dist/dokuwiki-logo.svg'
+    const source = await fetch(FILE).then((response) => response.text())
+    const parsed = new DOMParser().parseFromString(source, 'image/svg+xml')
 
-  for (const slot of document.querySelectorAll('[data-inline]')) {
-    const svg = document.importNode(parsed.documentElement, true)
-    svg.style.width = svg.style.height = `${slot.dataset.inline}px`
-    if (slot.dataset.level) svg.classList.add(slot.dataset.level)
-    slot.append(svg)
-  }
+    for (const slot of document.querySelectorAll('[data-inline]')) {
+        const svg = document.importNode(parsed.documentElement, true)
+        svg.style.width = svg.style.height = `${slot.dataset.inline}px`
+        if (slot.dataset.level) svg.classList.add(slot.dataset.level)
+        slot.prepend(svg)
+    }
 </script>
+<script type="module" src="nav.js"></script>
 </body>

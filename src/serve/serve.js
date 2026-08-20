@@ -45,14 +45,15 @@ const TYPES = {
 }
 
 /**
- * Turn a request path into a file inside the project directory.
+ * Turn a request path into a file inside the project directory. A directory is
+ * read as the index.html it holds, the way a static host serves one.
  *
  * @param {string} url Path from the request
  * @returns {string|null} The file to send, or null if there is none to send
  */
 function fileFor(url) {
   const wanted = decodeURIComponent(new URL(url, 'http://localhost').pathname)
-  const page = wanted === '/' ? '/src/serve/sizes.html' : wanted
+  const page = wanted.endsWith('/') ? `${wanted}index.html` : wanted
   const path = resolve(ROOT, `.${normalize(page)}`)
   if (path !== ROOT && !path.startsWith(ROOT + sep)) return null
   try {

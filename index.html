@@ -1,0 +1,179 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>The DokuWiki Logo Files</title>
+<link rel="icon" href="dist/favicon.ico">
+<link rel="stylesheet" href="src/serve/style.css">
+<body>
+<header>
+    <nav></nav>
+</header>
+
+<main>
+    <section>
+        <h1>The DokuWiki Logo Files</h1>
+        <p>
+            This is a modern redesign of the classic DokuWiki logo originally created by Esther Brunner.
+        </p>
+
+        <p>
+            The goal was to modernize the logo while keeping the original spirit and recognizability.
+            The new design features a cleaner, more contemporary look with simplified shapes and a more vibrant color
+            palette.
+        </p>
+
+        <p>
+            Making it work well at small sizes was a key consideration, ensuring that the logo remains clear and legible
+            across various applications. The repository contains a build script that generates the logo in multiple
+            formats and sizes based on a configuration file that governs the level of detail for each size.
+            The resulting files are checked into the repository, and are shown and linked below.
+        </p>
+    </section>
+
+    <section>
+        <h2>Universal SVG</h2>
+        <p>
+            This is the file you most likely want to use. It is a single SVG file that contains the entire drawing along
+            with a stylesheet that adjusts the level of detail based on the size of the rendering. This means that the
+            same file can be used for different sizes, making it versatile and efficient for web use.
+        </p>
+        <figure>
+            <img src="dist/dokuwiki-logo.svg" width="256" height="256" alt="">
+            <figcaption>
+                <code><a href="dist/dokuwiki-logo.svg">dokuwiki-logo.svg</a></code>
+                <small>contains every size level, drawn here at 256px</small>
+            </figcaption>
+        </figure>
+    </section>
+
+    <section>
+        <h2>Size-specific SVGs</h2>
+        <p>
+            These files are generated for each level of detail, and they contain only the necessary elements for that
+            specific size.
+            These are useful for contexts outside a browser, where styles may not be applied.
+        </p>
+        <p>
+            Each of the files is drawn here at 128px, but they are intended to be used at their respective sizes.
+        </p>
+        <figure>
+            <img src="dist/dokuwiki-logo-lg.svg" width="128" height="128" alt="">
+            <figcaption>
+                <code><a href="dist/dokuwiki-logo-lg.svg">dokuwiki-logo-lg.svg</a></code>
+                <small>for 96px and above</small>
+            </figcaption>
+        </figure>
+        <figure>
+            <img src="dist/dokuwiki-logo-md.svg" width="128" height="128" alt="">
+            <figcaption>
+                <code><a href="dist/dokuwiki-logo-md.svg">dokuwiki-logo-md.svg</a></code>
+                <small>for 96px and below</small>
+            </figcaption>
+        </figure>
+        <figure>
+            <img src="dist/dokuwiki-logo-sm.svg" width="128" height="128" alt="">
+            <figcaption>
+                <code><a href="dist/dokuwiki-logo-sm.svg">dokuwiki-logo-sm.svg</a></code>
+                <small>for 40px and below</small>
+            </figcaption>
+        </figure>
+        <figure>
+            <img src="dist/dokuwiki-logo-xs.svg" width="128" height="128" alt="">
+            <figcaption>
+                <code><a href="dist/dokuwiki-logo-xs.svg">dokuwiki-logo-xs.svg</a></code>
+                <small>for 20px and below</small>
+            </figcaption>
+        </figure>
+    </section>
+
+    <section>
+        <h2>Size-specific PNGs</h2>
+        <p>
+            PNG versions of the logo at different sizes, using the appropriate level of detail for each size.
+            Use them where SVG is not supported or where a raster image is preferred.
+        </p>
+        <figure>
+            <img src="dist/dokuwiki-logo-256.png" width="256" height="256" alt="">
+            <figcaption>
+                <code><a href="dist/dokuwiki-logo-256.png">dokuwiki-logo-256.png</a></code>
+                <small>full at 256px</small>
+            </figcaption>
+        </figure>
+        <figure>
+            <img src="dist/dokuwiki-logo-128.png" width="128" height="128" alt="">
+            <figcaption>
+                <code><a href="dist/dokuwiki-logo-128.png">dokuwiki-logo-128.png</a></code>
+                <small>full at 128px</small>
+            </figcaption>
+        </figure>
+        <figure>
+            <img src="dist/dokuwiki-logo-96.png" width="96" height="96" alt="">
+            <figcaption>
+                <code><a href="dist/dokuwiki-logo-96.png">dokuwiki-logo-96.png</a></code>
+                <small>md at 96px</small>
+            </figcaption>
+        </figure>
+        <figure>
+            <img src="dist/dokuwiki-logo-64.png" width="64" height="64" alt="">
+            <figcaption>
+                <code><a href="dist/dokuwiki-logo-64.png">dokuwiki-logo-64.png</a></code>
+                <small>md at 64px</small>
+            </figcaption>
+        </figure>
+        <figure>
+            <img src="dist/dokuwiki-logo-48.png" width="48" height="48" alt="">
+            <figcaption>
+                <code><a href="dist/dokuwiki-logo-48.png">dokuwiki-logo-48.png</a></code>
+                <small>md at 48px</small>
+            </figcaption>
+        </figure>
+        <figure>
+            <img src="dist/dokuwiki-logo-40.png" width="40" height="40" alt="">
+            <figcaption>
+                <code><a href="dist/dokuwiki-logo-40.png">dokuwiki-logo-40.png</a></code>
+                <small>sm at 40px</small>
+            </figcaption>
+        </figure>
+        <figure>
+            <img src="dist/dokuwiki-logo-32.png" width="32" height="32" alt="">
+            <figcaption>
+                <code><a href="dist/dokuwiki-logo-32.png">dokuwiki-logo-32.png</a></code>
+                <small>sm at 32px</small>
+            </figcaption>
+        </figure>
+        <figure>
+            <img src="dist/dokuwiki-logo-24.png" width="24" height="24" alt="">
+            <figcaption>
+                <code><a href="dist/dokuwiki-logo-24.png">dokuwiki-logo-24.png</a></code>
+                <small>sm at 24px</small>
+            </figcaption>
+        </figure>
+        <figure>
+            <img src="dist/dokuwiki-logo-20.png" width="20" height="20" alt="">
+            <figcaption>
+                <code><a href="dist/dokuwiki-logo-20.png">dokuwiki-logo-20.png</a></code>
+                <small>xs at 20px</small>
+            </figcaption>
+        </figure>
+        <figure>
+            <img src="dist/dokuwiki-logo-16.png" width="16" height="16" alt="">
+            <figcaption>
+                <code><a href="dist/dokuwiki-logo-16.png">dokuwiki-logo-16.png</a></code>
+                <small>xs at 16px</small>
+            </figcaption>
+        </figure>
+    </section>
+
+    <section>
+        <h2>FavIcon</h2>
+        <p>
+            The classic icon format. It holds the 16, 32 and 48 pixel drawings together.
+        </p>
+        <figure>
+            <img src="dist/favicon.ico" width="48" height="48" alt="">
+            <figcaption><code><a href="dist/favicon.ico">favicon.ico</a></code><small>16, 32 and 48px, drawn here at
+                48px</small></figcaption>
+        </figure>
+    </section>
+</main>
+<script type="module" src="src/serve/nav.js"></script>
+</body>
