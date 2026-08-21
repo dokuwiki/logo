@@ -119,7 +119,8 @@ td {
 }
 
 /* The paper is what is looked at here, so nothing is outlined on it. */
-.paper img {
+.paper img,
+.paper svg {
   outline: none;
 }
 
@@ -131,9 +132,39 @@ td {
 
 .paper.dark {
   background: #000;
+  color: #ddd;
 }
 
 .paper.dark h2,
 .paper.dark th {
   color: #bbb;
+}
+
+/* The icon */
+
+/* The Material grid, laid over a drawing. Every measure is a fraction of the 24
+   canvas, so the grid holds at any size. The box has to hold the drawing and
+   nothing else for those fractions to land. */
+.grid {
+  position: relative;
+  display: inline-block;
+}
+
+.grid::before,
+.grid::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+}
+
+/* The live area, 2 in from every side: nothing but a pencil may leave it. */
+.grid::before {
+  inset: 8.3333%;
+  outline: 1px solid #e0208a;
+}
+
+/* Where Material's two keylines cross, 4 in from every side. */
+.grid::after {
+  inset: 16.6667%;
+  outline: 1px solid #00a0e0;
 }

@@ -11,10 +11,12 @@ import { fileURLToPath } from 'node:url'
 import pngToIco from 'png-to-ico'
 import { Resvg } from '@resvg/resvg-js'
 
+import { icon } from './icon/icon.js'
 import { logo } from './logo/logo.js'
 
 import { serialiseDocument, shorten } from './emit.js'
 import { stylesheet } from './responsive.js'
+import { unify } from './unify.js'
 
 /**
  * Where the built files go.
@@ -47,12 +49,18 @@ const FAVICON = [16, 32, 48]
 /**
  * The designs the build writes, and what each one is written as.
  *
- * A drawing says what it is; this says what comes of it.
+ * A drawing says what it is; this says what comes of it. Whether a variant is
+ * merged into one path is a fact about the files and not about the drawing, so
+ * it is said here: the same parts can be written out one stroked element each,
+ * and taking the flag off is how the merge is checked.
  *
  * @type {Array<{drawing: import('./drawing.js').Drawing, stem: string,
- *   sizes?: number[], favicon?: number[]}>}
+ *   sizes?: number[], favicon?: number[], unify?: boolean}>}
  */
-const DRAWINGS = [{ drawing: logo, stem: 'dokuwiki-logo', sizes: SIZES, favicon: FAVICON }]
+const DRAWINGS = [
+  { drawing: logo, stem: 'dokuwiki-logo', sizes: SIZES, favicon: FAVICON },
+  { drawing: icon, stem: 'dokuwiki-icon', unify: true },
+]
 
 /**
  * Write one file into dist and say what went into it.
@@ -99,17 +107,19 @@ function raster(svg, size) {
 /**
  * The elements one variant is written with.
  *
- * Ids are cut down to initials where a stylesheet is written, because that is
- * what writes an id many times over, and a drawing that carries no stylesheet
- * needs no ids at all but is no worse for keeping the names its parts give their
- * pieces.
+ * A drawing whose files are one path is merged into one. Otherwise ids are cut
+ * down to initials where a stylesheet is written, because that is what writes an
+ * id many times over, and a drawing that carries no stylesheet needs no ids at
+ * all but is no worse for keeping the names its parts give their pieces.
  *
  * @param {import('./drawing.js').Drawing} drawing The drawing
  * @param {string} variant Which variant
+ * @param {boolean} [merge] Whether its elements become one path
  * @returns {Array<{tag: string, attrs: Object}>} The elements
  */
-function written(drawing, variant) {
+function written(drawing, variant, merge) {
   const elements = drawing.elements(variant)
+  if (merge) return unify(elements)
   return drawing.bySize ? shorten(elements) : elements
 }
 
@@ -126,13 +136,14 @@ function written(drawing, variant) {
  * @param {string} entry.stem What its files are called
  * @param {number[]} [entry.sizes] The sizes to write a PNG at, largest first
  * @param {number[]} [entry.favicon] The sizes favicon.ico carries
+ * @param {boolean} [entry.unify] Whether each variant becomes one path
  * @returns {Promise<void>}
  */
-async function writeDrawing({ drawing, stem, sizes, favicon }) {
+async function writeDrawing({ drawing, stem, sizes, favicon, unify: merge }) {
   const document = { size: drawing.canvas, title: drawing.title }
   const compositions = []
   for (const variant of drawing.variants) {
-    compositions.push({ ...variant, elements: written(drawing, variant.name) })
+    compositions.push({ ...variant, elements: written(drawing, variant.name, merge) })
   }
 
   if (drawing.bySize) {

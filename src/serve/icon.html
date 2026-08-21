@@ -1,0 +1,119 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>The DokuWiki icon</title>
+<link rel="icon" href="../../dist/favicon.ico">
+<link rel="stylesheet" href="style.css">
+<body>
+<header>
+    <site-nav></site-nav>
+</header>
+
+<main>
+    <section>
+        <h1>The icon</h1>
+
+        <p>
+            The DokuWiki icon tries to follow the
+            <a href="https://material.io/design/iconography/system-icons.html">Material Design system icon guidelines</a>,
+            but takes some liberties: the pencils reach a little past the 20 live area, into the margin around it.
+        </p>
+
+        <p>
+            The icon uses a single fillable path element and can easily be coloured by CSS when used inline.
+            An outlined and a filled version are provided.
+        </p>
+    </section>
+
+    <section>
+        <h2>On the grid</h2>
+
+        <figure>
+            <inline-svg class="grid" src="dist/dokuwiki-icon-outlined.svg" size="300"></inline-svg>
+            <figcaption>outlined<small>page and pencils are lines</small></figcaption>
+        </figure>
+        <figure>
+            <inline-svg class="grid" src="dist/dokuwiki-icon-filled.svg" size="300"></inline-svg>
+            <figcaption>filled<small>page and pencils are solid, each pencil in a slot</small></figcaption>
+        </figure>
+    </section>
+
+    <section class="paper">
+        <h2>On white background</h2>
+
+        <table>
+            <thead>
+            <tr>
+                <td></td>
+                <th scope="col">96px</th>
+                <th scope="col">48px</th>
+                <th scope="col">32px</th>
+                <th scope="col">24px</th>
+                <th scope="col">20px</th>
+                <th scope="col">16px</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <th scope="row">outlined</th>
+                <td><inline-svg src="dist/dokuwiki-icon-outlined.svg" size="96"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-icon-outlined.svg" size="48"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-icon-outlined.svg" size="32"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-icon-outlined.svg" size="24"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-icon-outlined.svg" size="20"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-icon-outlined.svg" size="16"></inline-svg></td>
+            </tr>
+            <tr>
+                <th scope="row">filled</th>
+                <td><inline-svg src="dist/dokuwiki-icon-filled.svg" size="96"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-icon-filled.svg" size="48"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-icon-filled.svg" size="32"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-icon-filled.svg" size="24"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-icon-filled.svg" size="20"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-icon-filled.svg" size="16"></inline-svg></td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="paper dark">
+        <h2>On black background</h2>
+
+        <table>
+            <thead>
+            <tr>
+                <td></td>
+                <th scope="col">96px</th>
+                <th scope="col">48px</th>
+                <th scope="col">32px</th>
+                <th scope="col">24px</th>
+                <th scope="col">20px</th>
+                <th scope="col">16px</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <th scope="row">outlined</th>
+                <td><inline-svg src="dist/dokuwiki-icon-outlined.svg" size="96"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-icon-outlined.svg" size="48"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-icon-outlined.svg" size="32"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-icon-outlined.svg" size="24"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-icon-outlined.svg" size="20"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-icon-outlined.svg" size="16"></inline-svg></td>
+            </tr>
+            <tr>
+                <th scope="row">filled</th>
+                <td><inline-svg src="dist/dokuwiki-icon-filled.svg" size="96"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-icon-filled.svg" size="48"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-icon-filled.svg" size="32"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-icon-filled.svg" size="24"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-icon-filled.svg" size="20"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-icon-filled.svg" size="16"></inline-svg></td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+
+<script type="module" src="inline.js"></script>
+<script type="module" src="nav.js"></script>
+</body>

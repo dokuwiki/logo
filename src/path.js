@@ -130,6 +130,30 @@ export function compact(data) {
 }
 
 /**
+ * A number in path data, however it is written.
+ *
+ * @type {RegExp}
+ */
+const NUMBER = /-?\d*\.?\d+(?:e[-+]?\d+)?/gi
+
+/**
+ * The same path with every coordinate trimmed to the decimals this build keeps.
+ *
+ * This is for path data that came from somewhere else; what pen writes is trimmed
+ * already. It has to happen before compacting, because a relative step is exact
+ * only where the two coordinates behind it are already rounded.
+ *
+ * Every number in what it is given has to be a coordinate, so an elliptical arc,
+ * whose radii and flags are not, has to be gone by the time it arrives.
+ *
+ * @param {string} data Path data holding nothing but coordinates
+ * @returns {string} The same path, rounded
+ */
+export function trimmed(data) {
+  return data.replace(NUMBER, (value) => round(Number(value)))
+}
+
+/**
  * Draw a closed outline through the given corners, softening each one.
  *
  * A corner is cut off the same distance along both its sides and bridged with

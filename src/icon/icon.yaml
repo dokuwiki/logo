@@ -1,0 +1,93 @@
+# The icon, composed from its parts.
+#
+# This is a Material Design system icon: one colour, flat, and set on the 24
+# square grid that guideline is written in. It does not adapt to size, so its
+# two variants are styles rather than levels of detail.
+#
+# Every part is said the same way the logo's parts are, so four questions have
+# one answer each: "at" moves it, "size" makes it larger or smaller,
+# "stroke.width" sets how heavy its outline is, and "show" hides or shows it.
+# How each kind looks belongs to the kind, in page.js and pencil.js beside this
+# file.
+
+# The accessible name every drawing of it carries.
+title: DokuWiki Icon
+
+# The colour the icon is drawn in.
+#
+# currentColor is not a colour but a promise to take one: the icon is painted in
+# the text colour of whatever it is placed in, which is how a Material icon
+# works and what lets one file serve a light surface and a dark one. The review
+# page sets that colour to the logo's own ink.
+palette:
+  ink: currentColor
+
+# Edge length of the square canvas, which is the Material grid.
+canvas: 24
+
+# The parts, back to front.
+#
+# The sheet fills the 20 live area: its outline lands on Material's own keyline,
+# the 16 by 20 vertical rectangle. The pencils are what leaves the live area, and
+# both run into the margin at the blunt end. Holding them inside it as well costs
+# the sheet its shape, and a pencil overrunning the margin reads better.
+parts:
+  # The sheet, its outline broken where a pencil crosses it. "crossedBy" names
+  # the parts it breaks for and "clear" says how much space to leave around each
+  # of them; where the breaks fall follows from where those pencils are, so
+  # moving a pencil moves its break with it.
+  #
+  # Both pencils leave on the right, so both ends of the right edge are broken and
+  # what is left of it stands clear of the corners rather than meeting either.
+  # Drawn, it reads as the sheet's own edge; left out, the sheet reads as a
+  # bracket.
+  - id: sheet
+    is: page
+    in: canvas
+    at: {x: 3, y: 3}                   # top left corner of the stroke's centre line
+    size: {w: 14, h: 18}
+    radius: 2
+    fill: ink                          # what it is filled with where it is solid
+    stroke: {colour: ink, width: 2}    # and drawn in where it is an outline
+    clear: 0.75
+    crossedBy: [pencil-upper, pencil-lower]
+
+  # The pencil across the sheet's top right corner, pointing down and left. It
+  # lies at the angle the logo gives its red pencil, and its blunt end runs to
+  # within a unit of the canvas edge.
+  - id: pencil-upper
+    is: pencil
+    in: canvas
+    at: {x: 11, y: 11}          # where its point sits on the canvas
+    turn: -40                   # which way it lies, in degrees
+    size: 1                     # how much larger than a standard icon pencil
+    fill: ink
+
+  # The pencil out through the sheet's bottom right corner, pointing up and left,
+  # at the angle the logo gives its green pencil. Lying this shallow it cannot
+  # cross the bottom edge instead: it would meet that edge over eighteen of the
+  # fourteen units the edge is long.
+  - id: pencil-lower
+    is: pencil
+    in: canvas
+    at: {x: 7, y: 15}
+    turn: 30
+    size: 1
+    fill: ink
+
+# The two styles. Outlined, the sheet is a line and each pencil shows its wall as
+# a slot. Solid, the sheet is filled and each pencil with it, and each pencil is
+# taken back out of the sheet with its clear space around it, so the cut follows
+# the pencil's own shape and leaves it an even margin to lie in.
+#
+# A variant says only what it changes, and each builds on the one above it, the
+# same as the logo's levels of detail. Neither says upTo, because neither is
+# picked by size, so no stylesheet is written and each gets a file of its own.
+variants:
+  - name: outlined
+
+  - name: filled
+    overrides:
+      sheet: {paint: solid}
+      pencil-upper: {paint: solid}
+      pencil-lower: {paint: solid}
