@@ -2,11 +2,14 @@
 #
 # This is the whole design: what the picture is made of, where each piece goes,
 # and what each level of detail changes. Everything else about how a piece looks
-# belongs to the piece, one class per kind in the parts directory.
+# belongs to the piece, one class per kind beside this file.
 #
 # Every part is said the same way, so four questions have one answer each:
 # "at" moves it, "size" makes it larger or smaller, "stroke.width" sets how
 # heavy its outline is, and "show" hides or shows it.
+
+# The accessible name every drawing of it carries.
+title: DokuWiki Logo
 
 # The colours the drawing is painted in.
 #
@@ -32,8 +35,8 @@ canvas: 1024
 #
 # "is" says what kind of part it is, and so what draws it and what else it can
 # be told: a sheet of paper, a pencil, an arrow, or a word mark. How each kind
-# looks belongs to the kind, in parts/sheet.js, parts/pencil.js, parts/arrow.js
-# and parts/wordmark.js.
+# looks belongs to the kind, in sheet.js, pencil.js, arrow.js and wordmark.js
+# beside this file.
 #
 # "in" says which frame the part hangs in. "in: sheet-front" means it is placed
 # in the front sheet's own frame and follows it wherever it goes, so only the
@@ -49,7 +52,7 @@ canvas: 1024
 # their place on the paper where sm cuts it larger. An arrow's tail is one
 # number, not a point, and is always a fraction down the edge it leaves.
 #
-# "id" names the part, both in the file that is drawn and to the levels below,
+# "id" names the part, both in the file that is drawn and to the variants below,
 # which say what they change by naming it.
 #
 # The whole drawing is composed a shade inside the canvas, so the outlines and
@@ -145,15 +148,16 @@ parts:
     fill: green
     bare: paper
 
-# Every level of detail, largest first.
+# Every variant of the drawing, largest first.
 #
-# The picture is drawn at several levels so that it still reads when it is
-# small. A level says only what it changes, part by part under the name each one
-# is given above, and each level builds on the level above it. Saying a value
-# always wins; leaving one out never puts it back, so a level that wants an
-# earlier value again says it.
-levels:
-  - name: full
+# The logo's variants are levels of detail: the picture is drawn at several so
+# that it still reads when it is small, and "upTo" says the size each one is
+# picked at. A variant says only what it changes, part by part under the name
+# each one is given above, and each builds on the variant above it. Saying a
+# value always wins; leaving one out never puts it back, so a variant that wants
+# an earlier value again says it.
+variants:
+  - name: lg
 
   # The ink already thinner than a pixel at 96px goes: the word mark loses its
   # brackets, its thinnest strokes, and its letters grow to fill most of the

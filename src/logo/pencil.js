@@ -12,7 +12,7 @@
 
 import { Frame } from '../frame.js'
 import { ellipse, inset, outline } from '../path.js'
-import { lit } from '../palette.js'
+import { lit } from './palette.js'
 import { Point } from '../plane.js'
 
 /**

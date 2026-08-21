@@ -1,11 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Write the logo files in dist/ from the design in src/.
- *
- * One file carries every level of detail and switches between them as it is
- * drawn smaller. Beside it go a flat file per level, a PNG per size, and an
- * icon.
+ * Write the files of every design in dist/.
  */
 
 import { mkdirSync, writeFileSync } from 'node:fs'
@@ -15,7 +11,7 @@ import { fileURLToPath } from 'node:url'
 import pngToIco from 'png-to-ico'
 import { Resvg } from '@resvg/resvg-js'
 
-import { CANVAS, LEVELS, logo } from './logo.js'
+import { logo } from './logo/logo.js'
 
 import { serialiseDocument, shorten } from './emit.js'
 import { stylesheet } from './responsive.js'
@@ -28,16 +24,10 @@ import { stylesheet } from './responsive.js'
 const DIST = join(dirname(fileURLToPath(import.meta.url)), '..', 'dist')
 
 /**
- * The accessible name every drawing carries.
- *
- * @type {string}
- */
-const TITLE = 'DokuWiki Logo'
-
-/**
  * The sizes a PNG is written at, largest first.
  *
- * The levels were designed against these sizes, which the compare page draws.
+ * The logo's levels were designed against these sizes, which the compare page
+ * draws.
  *
  * @type {number[]}
  */
@@ -52,7 +42,17 @@ const SIZES = [256, 128, 96, 64, 48, 40, 32, 24, 20, 16]
  *
  * @type {number[]}
  */
-const ICON = [16, 32, 48]
+const FAVICON = [16, 32, 48]
+
+/**
+ * The designs the build writes, and what each one is written as.
+ *
+ * A drawing says what it is; this says what comes of it.
+ *
+ * @type {Array<{drawing: import('./drawing.js').Drawing, stem: string,
+ *   sizes?: number[], favicon?: number[]}>}
+ */
+const DRAWINGS = [{ drawing: logo, stem: 'dokuwiki-logo', sizes: SIZES, favicon: FAVICON }]
 
 /**
  * Write one file into dist and say what went into it.
@@ -68,36 +68,23 @@ function write(name, body, note) {
 }
 
 /**
- * What a level's own file is called.
+ * The variant a size is drawn at: the smallest one that still answers at that
+ * size, which is the variant the responsive file switches to there.
  *
- * The files are picked from by the size a drawing is wanted at, so the level
- * that holds the whole drawing is named lg.
- *
- * @param {{name: string, upTo: number|null}} level A level of detail
- * @returns {string} File name
- */
-function fileOf(level) {
-  return `dokuwiki-logo-${level.upTo === null ? 'lg' : level.name}.svg`
-}
-
-/**
- * The level a size is drawn at: the smallest one that still answers at that
- * size, which is the level the responsive file switches to there.
- *
- * @param {Array<{upTo: number|null}>} levels The levels, largest first
+ * @param {Array<{upTo: number|null}>} variants The variants, largest first
  * @param {number} size Edge length in pixels
- * @returns {object} The level to draw
+ * @returns {object} The variant to draw
  */
-function levelAt(levels, size) {
-  return levels.filter((level) => level.upTo === null || size <= level.upTo).at(-1)
+function variantAt(variants, size) {
+  return variants.filter((variant) => variant.upTo === null || size <= variant.upTo).at(-1)
 }
 
 /**
- * Draw one level at one size.
+ * Draw one variant at one size.
  *
  * The word mark is outlines rather than text, so no font has to be found.
  *
- * @param {string} svg A level's flat file
+ * @param {string} svg A variant's flat file
  * @param {number} size Edge length in pixels
  * @returns {Buffer} A PNG
  */
@@ -109,38 +96,74 @@ function raster(svg, size) {
   return drawing.render().asPng()
 }
 
-const compositions = LEVELS.map((level) => ({ ...level, elements: shorten(logo(level.name)) }))
-const whole = compositions[0]
+/**
+ * The elements one variant is written with.
+ *
+ * Ids are cut down to initials where a stylesheet is written, because that is
+ * what writes an id many times over, and a drawing that carries no stylesheet
+ * needs no ids at all but is no worse for keeping the names its parts give their
+ * pieces.
+ *
+ * @param {import('./drawing.js').Drawing} drawing The drawing
+ * @param {string} variant Which variant
+ * @returns {Array<{tag: string, attrs: Object}>} The elements
+ */
+function written(drawing, variant) {
+  const elements = drawing.elements(variant)
+  return drawing.bySize ? shorten(elements) : elements
+}
+
+/**
+ * Write every file one design comes to.
+ *
+ * Every drawing gets a flat file per variant. A drawing whose variants are
+ * levels of detail also gets the one file that carries them all and switches
+ * between them as it is drawn smaller, a PNG at each size it is given, and an
+ * icon.
+ *
+ * @param {object} entry One design, as DRAWINGS says it
+ * @param {import('./drawing.js').Drawing} entry.drawing The drawing
+ * @param {string} entry.stem What its files are called
+ * @param {number[]} [entry.sizes] The sizes to write a PNG at, largest first
+ * @param {number[]} [entry.favicon] The sizes favicon.ico carries
+ * @returns {Promise<void>}
+ */
+async function writeDrawing({ drawing, stem, sizes, favicon }) {
+  const document = { size: drawing.canvas, title: drawing.title }
+  const compositions = []
+  for (const variant of drawing.variants) {
+    compositions.push({ ...variant, elements: written(drawing, variant.name) })
+  }
+
+  if (drawing.bySize) {
+    const whole = compositions[0]
+    write(
+      `${stem}.svg`,
+      serialiseDocument({ ...document, style: stylesheet(compositions), elements: whole.elements }),
+      `${whole.elements.length} elements, variants ${compositions.map((variant) => variant.name).join(', ')}`,
+    )
+  }
+
+  const flat = new Map()
+  for (const variant of compositions) {
+    const svg = serialiseDocument({ ...document, elements: variant.elements })
+    flat.set(variant, svg)
+    write(`${stem}-${variant.name}.svg`, svg, `variant ${variant.name}, ${variant.elements.length} elements`)
+  }
+
+  if (!sizes) return
+
+  const pngs = new Map()
+  for (const size of sizes) {
+    const variant = variantAt(compositions, size)
+    pngs.set(size, raster(flat.get(variant), size))
+    write(`${stem}-${size}.png`, pngs.get(size), `variant ${variant.name} at ${size}px`)
+  }
+
+  if (favicon) {
+    write('favicon.ico', await pngToIco(favicon.map((size) => pngs.get(size))), `${favicon.join(', ')}px`)
+  }
+}
 
 mkdirSync(DIST, { recursive: true })
-
-write(
-  'dokuwiki-logo.svg',
-  serialiseDocument({
-    size: CANVAS,
-    title: TITLE,
-    style: stylesheet(compositions),
-    elements: whole.elements,
-  }),
-  `${whole.elements.length} elements, levels ${compositions.map((level) => level.name).join(', ')}`,
-)
-
-const flat = new Map()
-for (const level of compositions) {
-  const svg = serialiseDocument({
-    size: CANVAS,
-    title: TITLE,
-    elements: level.elements,
-  })
-  flat.set(level, svg)
-  write(fileOf(level), svg, `level ${level.name}, ${level.elements.length} elements`)
-}
-
-const pngs = new Map()
-for (const size of SIZES) {
-  const level = levelAt(compositions, size)
-  pngs.set(size, raster(flat.get(level), size))
-  write(`dokuwiki-logo-${size}.png`, pngs.get(size), `level ${level.name} at ${size}px`)
-}
-
-write('favicon.ico', await pngToIco(ICON.map((size) => pngs.get(size))), `${ICON.join(', ')}px`)
+for (const entry of DRAWINGS) await writeDrawing(entry)
