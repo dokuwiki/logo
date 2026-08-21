@@ -50,6 +50,8 @@ export class Wordmark {
    *   far down it the text starts
    * @param {number} spec.size How much of the sheet's width to fill, from 0 to 1
    * @param {string} spec.fill Ink colour
+   * @param {{colour: string, width: number}} [spec.stroke] An outline on the
+   *   letters, for a mark that has to carry more weight than the font gives it
    * @param {string[]} [spec.draws] Which parts to draw, all of them by default
    * @param {number} [spec.fills] How much of the sheet's width the parts being
    *   drawn fill, as much as the whole word mark by default
@@ -96,11 +98,15 @@ export class Wordmark {
     if (!drawn.length) return []
 
     const place = this.placed(extent(drawn.flatMap((name) => parts.get(name).boxes)))
+    const outline = this.stroke
+      ? { stroke: this.stroke.colour, 'stroke-width': this.stroke.width, 'stroke-linejoin': 'round' }
+      : {}
     return drawn.map((name) => ({
       tag: 'path',
       attrs: {
         id: `${this.id}-${name}`,
         fill: this.fill,
+        ...outline,
         transform: place,
         d: this.trace(parts.get(name).commands),
       },

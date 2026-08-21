@@ -35,6 +35,9 @@ export class Arrow {
    * @param {number} spec.approach How straight the run into the head is
    * @param {{colour: string, width: number}} spec.stroke What the arrow is drawn
    *   in and how heavy it is
+   * @param {{colour: string, room: number}} [spec.keyline] What the arrow is
+   *   drawn in where it keeps room from whatever lies behind it, and how much
+   *   room that is
    * @param {number} [spec.headLength] Length of each head arm
    * @param {number} [spec.headSpread] Angle between an arm and the shaft, in degrees
    * @param {number} [spec.headBevel] How far back from a solid head's corners
@@ -153,17 +156,48 @@ export class Arrow {
   }
 
   /**
+   * The room the arrow keeps from whatever lies behind it: the arrow drawn
+   * again, wider by that room on either side, in the keyline's own colour.
+   *
+   * It is the shaft and the head together rather than a keyline apiece, because
+   * the shaft runs to the tip and the head's arms meet there. Drawn between the
+   * two, the head's room would cut a notch out of the shaft.
+   *
+   * @returns {Array<{tag: string, attrs: Object}>} The two pieces
+   */
+  room() {
+    const wider = (part, element) => ({
+      ...element,
+      attrs: {
+        ...element.attrs,
+        id: `${this.id}-keyline-${part}`,
+        ...(element.attrs.fill === 'none' ? {} : { fill: this.keyline.colour }),
+        stroke: this.keyline.colour,
+        'stroke-width': element.attrs['stroke-width'] + 2 * this.keyline.room,
+      },
+    })
+    return [wider('shaft', this.shaftElement()), wider('head', this.headElement())]
+  }
+
+  /**
    * The arrow as drawable elements.
+   *
+   * The keyline comes first, under both of the arrow's own pieces. An arrow
+   * given none draws no piece of that name.
    *
    * @returns {Array<{tag: string, attrs: Object}>} The parts this arrow draws
    * @throws {Error} If a part being drawn is not one of an arrow's own
    */
   elements() {
-    const parts = { shaft: () => this.shaftElement(), head: () => this.headElement() }
+    const parts = {
+      ...(this.keyline ? { keyline: () => this.room() } : {}),
+      shaft: () => this.shaftElement(),
+      head: () => this.headElement(),
+    }
     const drawn = this.draws ?? Object.keys(parts)
     for (const name of drawn) {
       if (!parts[name]) throw new Error(`an arrow has no part called ${name}`)
     }
-    return drawn.map((name) => parts[name]())
+    return drawn.flatMap((name) => parts[name]())
   }
 }

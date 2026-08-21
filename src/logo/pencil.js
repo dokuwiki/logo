@@ -11,9 +11,10 @@
  */
 
 import { Frame } from '../frame.js'
-import { ellipse, inset, outline } from '../path.js'
+import { ellipse, inset, outline, shaped } from '../path.js'
 import { lit } from './palette.js'
 import { Point } from '../plane.js'
+import { skia } from '../skia.js'
 
 /**
  * The pencil's own axis, which its parts are drawn along and across.
@@ -113,6 +114,9 @@ export class Pencil {
    *   fraction of the pencil's own width
    * @param {string} [spec.highlight] Colour of the light on the facet, the
    *   barrel's colour lit by default
+   * @param {{colour: string, room: number}} [spec.keyline] What the pencil is
+   *   drawn in where it keeps room from whatever lies behind it, and how much
+   *   room that is
    * @param {number} [spec.size] How much larger than a standard pencil this one
    *   is drawn, which its frame carries, so a pencil of any size is the same
    *   shape
@@ -121,7 +125,20 @@ export class Pencil {
    * @param {string[]} [spec.draws] Which parts to draw, all of them by default
    * @throws {Error} If there is no shape of that name
    */
-  constructor({ id, fill, bare, at, turn, lean = 0, highlight = lit(fill), size = 1, shape, draws, ...proportions }) {
+  constructor({
+    id,
+    fill,
+    bare,
+    at,
+    turn,
+    lean = 0,
+    highlight = lit(fill),
+    size = 1,
+    shape,
+    draws,
+    keyline,
+    ...proportions
+  }) {
     Object.assign(this, Pencil.proportions, Pencil.shape(shape), proportions, {
       id,
       fill,
@@ -130,6 +147,7 @@ export class Pencil {
       highlight,
       size,
       draws,
+      keyline,
     })
     /** @type {Frame} The pencil's own frame, running along it then across */
     this.frame = new Frame(at, turn)
@@ -321,13 +339,39 @@ export class Pencil {
   }
 
   /**
+   * The barrel given room to spare: the same shape offset outward by that much,
+   * which turns every corner of it into an arc of that radius.
+   *
+   * This is what anything keeping clear of the pencil follows, so what it leaves
+   * around the pencil is an even margin rather than a wedge cut past it.
+   *
+   * @param {number} room How much space to leave, in the pencil's own measure
+   * @returns {string} Path data for one closed subpath
+   * @throws {Error} If Skia cannot work the shape out
+   */
+  grown(room) {
+    const barrel = skia.Path.MakeFromSVGString(this.barrel())
+    const band = barrel.makeStroked({ width: 2 * room, join: skia.StrokeJoin.Round })
+    const shape = band && skia.Path.MakeFromOp(barrel, band, skia.PathOp.Union)
+    if (!shape) throw new Error(`the room round ${this.id} is a shape Skia cannot work out`)
+    return shaped(shape)
+  }
+
+  /**
    * The pencil as drawable elements.
+   *
+   * The keyline is the room the pencil keeps from whatever lies behind it. Where
+   * the pencil lies on paper it is invisible; where it lies over ink it opens an
+   * even gap. A pencil given no keyline has no piece of that name to draw.
    *
    * @returns {Array<{tag: string, attrs: Object}>} The parts this pencil draws
    * @throws {Error} If a part being drawn is not one of a pencil's own
    */
   elements() {
     const parts = {
+      ...(this.keyline
+        ? { keyline: () => this.part('keyline', this.keyline.colour, this.grown(this.keyline.room)) }
+        : {}),
       barrel: () => this.part('barrel', this.fill, this.barrel()),
       facet: () => this.part('facet', this.highlight, this.facet()),
       point: () => this.part('point', this.bare, this.point()),

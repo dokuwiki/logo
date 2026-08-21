@@ -20,8 +20,12 @@ const LIGHT = 1.28
  *
  * @param {string} colour Colour the surface is painted, as #rrggbb
  * @returns {string} The colour to draw that surface in, as #rrggbb
+ * @throws {Error} If it is not written as #rrggbb
  */
 export function lit(colour) {
+  if (!/^#[0-9a-f]{6}$/i.test(colour)) {
+    throw new Error(`the light on ${colour} cannot be worked out: a colour it falls on is written #rrggbb`)
+  }
   const channels = [1, 3, 5].map((at) => parseInt(colour.slice(at, at + 2), 16))
   const lift = (value) => Math.min(255, Math.round(value * LIGHT))
   return `#${channels.map((value) => lift(value).toString(16).padStart(2, '0')).join('')}`

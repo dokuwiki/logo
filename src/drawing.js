@@ -7,9 +7,13 @@
  * A variant says only what it changes from the variant above it. Those changes
  * are merged over the parts one variant at a time, so saying a value always
  * wins and leaving one out never puts it back.
+ *
+ * A design laid over another says only what it changes about it, the same way.
+ * One picture is then drawn from another's parts, in the places that other
+ * design puts them.
  */
 
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 
 import { parse } from 'yaml'
 
@@ -62,6 +66,49 @@ function merged(base, over) {
     result[key] = plain(value) && plain(base[key]) ? merged(base[key], value) : value
   }
   return result
+}
+
+/**
+ * A design file by the name it is called.
+ *
+ * @param {URL} file The file
+ * @returns {string} Its name
+ */
+function named(file) {
+  return decodeURIComponent(file.pathname).split('/').at(-1)
+}
+
+/**
+ * One design, and the design it is laid over where it names one.
+ *
+ * The two merge the way a variant's changes merge over a part. A palette said
+ * here is the one exception: it replaces the inherited palette rather than
+ * adding to it, so a part painted a colour only the design below holds is an
+ * error rather than quietly the colour it was.
+ *
+ * @param {URL} file The design file
+ * @param {string[]} [laid] The designs already being read, outermost first
+ * @returns {Object} The design, with whatever it is laid over merged under it
+ * @throws {Error} If it is laid over a file that is not there, or over one
+ *   already being read
+ */
+function design(file, laid = []) {
+  const spec = parse(readFileSync(file, 'utf8'))
+  if (!spec.from) return spec
+
+  const under = new URL(spec.from, file)
+  const chain = [...laid, file.href]
+  if (chain.includes(under.href)) {
+    throw new Error(
+      `these designs are laid over each other: ${[...chain, under.href].map((one) => named(new URL(one))).join(', ')}`,
+    )
+  }
+  if (!existsSync(under)) {
+    throw new Error(`${named(file)} is laid over ${spec.from}, which is not there beside it`)
+  }
+
+  const base = design(under, chain)
+  return { ...merged(base, spec), ...(spec.palette ? { palette: spec.palette } : {}) }
 }
 
 /**
@@ -123,9 +170,10 @@ export class Drawing {
   constructor({ file, kinds }) {
     /**
      * @type {{title: string, palette: Object<string, string>, canvas: number,
-     *   parts: Array<object>, variants: Array<object>}} The design, as written
+     *   parts: Array<object>, variants: Array<object>}} The design, with
+     *   whatever it is laid over merged under it
      */
-    this.design = parse(readFileSync(file, 'utf8'))
+    this.design = design(file)
     /** @type {Object<string, object>} How each kind of part is made */
     this.kinds = kinds
   }
@@ -146,6 +194,21 @@ export class Drawing {
    */
   get palette() {
     return this.design.palette
+  }
+
+  /**
+   * The colour a part painted in it takes away with rather than adds, where the
+   * drawing is cut into one shape.
+   *
+   * @returns {string|undefined} The colour, or nothing where the design names
+   *   none
+   * @throws {Error} If it names a colour the palette does not hold
+   */
+  get ground() {
+    const name = this.design.ground
+    if (name === undefined) return undefined
+    if (!(name in this.palette)) throw new Error(`the ground is ${name}, which the palette does not hold`)
+    return this.palette[name]
   }
 
   /**
@@ -208,7 +271,9 @@ export class Drawing {
       ...spec,
       ...(spec.fill ? { fill: colour(spec.fill) } : {}),
       ...(spec.bare ? { bare: colour(spec.bare) } : {}),
+      ...(spec.highlight ? { highlight: colour(spec.highlight) } : {}),
       ...(spec.stroke ? { stroke: { ...spec.stroke, colour: colour(spec.stroke.colour) } } : {}),
+      ...(spec.keyline ? { keyline: { ...spec.keyline, colour: colour(spec.keyline.colour) } } : {}),
     }
   }
 
@@ -252,20 +317,25 @@ export class Drawing {
    * The parts one variant composes the picture from, in the order they are
    * drawn.
    *
+   * The design's own changes come first, so a variant's changes win over them.
+   *
    * @param {string} variant Which variant
    * @returns {Array<Object>} What each part is given
-   * @throws {Error} If there is no such variant, if a variant changes a part the
+   * @throws {Error} If there is no such variant, if a change names a part the
    *   design does not hold, or if a part has nothing to be placed in
    */
   composed(variant) {
     const found = this.design.variants.findIndex((candidate) => candidate.name === variant)
     if (found < 0) throw new Error(`no such variant: ${variant}`)
 
-    const changes = this.design.variants.slice(0, found + 1).map((above) => above.overrides ?? {})
+    const changes = [
+      this.design.overrides ?? {},
+      ...this.design.variants.slice(0, found + 1).map((above) => above.overrides ?? {}),
+    ]
     for (const change of changes) {
       for (const id of Object.keys(change)) {
         if (!this.design.parts.some((part) => part.id === id)) {
-          throw new Error(`a variant changes ${id}, which is no part of the drawing`)
+          throw new Error(`${id} is changed, which is no part of the drawing`)
         }
       }
     }

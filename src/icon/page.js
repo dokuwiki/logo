@@ -24,7 +24,7 @@
  * points are already on it.
  */
 
-import { compact, pen, trimmed } from '../path.js'
+import { compact, pen, shaped } from '../path.js'
 import { Point, through } from '../plane.js'
 import { skia } from '../skia.js'
 
@@ -435,10 +435,7 @@ export class Page {
    *
    * What is taken out is the part's own shape offset outward, so the cut follows
    * the part round its curves and corners and leaves an even margin. Skia does
-   * the taking out. Its answer is one contour here, because every part crossing
-   * the boundary opens the cut to the outside rather than leaving a hole, and a
-   * hole it did leave would come back wound the other way, which is what nonzero
-   * winding wants either way.
+   * the taking out.
    *
    * @returns {string} Path data
    */
@@ -448,9 +445,8 @@ export class Page {
         skia.Path.MakeFromOp(shape, skia.Path.MakeFromSVGString(part.grown(this.room)), skia.PathOp.Difference),
       skia.Path.MakeFromSVGString(this.boundary()),
     )
-    const data = cut.toSVGString()
-    if (!data) throw new Error(`nothing is left of ${this.id}: what crosses it takes the whole of it out`)
-    return compact(trimmed(data))
+    if (cut.isEmpty()) throw new Error(`nothing is left of ${this.id}: what crosses it takes the whole of it out`)
+    return shaped(cut)
   }
 
   /**

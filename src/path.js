@@ -8,6 +8,7 @@
 
 import { pathRound } from 'd3-path'
 import { round } from './emit.js'
+import { skia } from './skia.js'
 
 /**
  * How many decimals to keep in path data.
@@ -151,6 +152,130 @@ const NUMBER = /-?\d*\.?\d+(?:e[-+]?\d+)?/gi
  */
 export function trimmed(data) {
   return data.replace(NUMBER, (value) => round(Number(value)))
+}
+
+/**
+ * How many numbers each of the commands a contour is drawn with carries.
+ *
+ * @type {Object<string, number>}
+ */
+const SEGMENTS = { L: 2, Q: 4, C: 6 }
+
+/**
+ * The numbers along each of a path's contours, in order.
+ *
+ * @param {string} data Path data in absolute commands
+ * @returns {number[][]} The numbers of each contour
+ */
+function contours(data) {
+  return data
+    .split('M')
+    .filter((contour) => contour.trim() !== '')
+    .map((contour) => (contour.match(NUMBER) ?? []).map(Number))
+}
+
+/**
+ * Which way round a path's outer contour goes: 1 where it is clockwise, -1 where
+ * it is anticlockwise, 0 where it covers nothing.
+ *
+ * The sum runs over the contour's own numbers as if straight lines joined them.
+ * A curve's control points move that sum a little and its sign not at all. The
+ * widest contour is the outer one.
+ *
+ * @param {string} data Path data in absolute commands
+ * @returns {number} Which way it goes
+ */
+function handedness(data) {
+  const area = (points) => {
+    const loop = [...points, points[0], points[1]]
+    let sum = 0
+    for (let at = 0; at + 3 < loop.length; at += 2) {
+      sum += loop[at] * loop[at + 3] - loop[at + 2] * loop[at + 1]
+    }
+    return sum
+  }
+
+  const areas = contours(data).map(area)
+  return Math.sign(areas.reduce((widest, one) => (Math.abs(one) > Math.abs(widest) ? one : widest), 0))
+}
+
+/**
+ * One closed contour drawn the other way round.
+ *
+ * It starts where it used to end and walks its segments backwards, each of them
+ * turned about: a line ends where it began, a quadratic keeps its one control
+ * point, and a cubic swaps its two.
+ *
+ * @param {string} piece One closed contour, in absolute commands
+ * @returns {string} The same contour, the other way round
+ * @throws {Error} If it is drawn with a command this cannot turn about
+ */
+function turned(piece) {
+  const steps = [...piece.matchAll(/([A-Z])([^A-Z]*)/g)].map(([, letter, rest]) => ({
+    letter,
+    values: (rest.match(NUMBER) ?? []).map(Number),
+  }))
+  const drawn = steps.slice(1).filter((step) => step.letter !== 'Z')
+  for (const step of drawn) {
+    if (SEGMENTS[step.letter] !== step.values.length) {
+      throw new Error(`a contour is drawn ${step.letter}, which cannot be turned about`)
+    }
+  }
+
+  const ends = [steps[0].values, ...drawn.map((step) => step.values.slice(-2))]
+  const out = [`M${ends.at(-1).join(' ')}`]
+  for (let at = drawn.length - 1; at >= 0; at--) {
+    const { letter, values } = drawn[at]
+    const control = letter === 'C' ? [...values.slice(2, 4), ...values.slice(0, 2)] : values.slice(0, -2)
+    out.push(`${letter}${[...control, ...ends[at]].join(' ')}`)
+  }
+  return `${out.join('')}Z`
+}
+
+/**
+ * The same shape written so that nonzero winding fills it.
+ *
+ * A boolean operation hands back contours only even odd reads correctly, and
+ * Skia offers no way to turn them into winding ones. Nonzero reads the same
+ * shape once every contour runs the opposite way round from the one holding it,
+ * so how many contours hold each one is counted and the ones going the wrong way
+ * for their depth are turned about.
+ *
+ * The contours a boolean operation leaves do not touch, so the point one starts
+ * at is inside or outside every other, never on it.
+ *
+ * @param {string} data Path data in absolute commands
+ * @returns {string} The same shape, wound so that nonzero fills it
+ * @throws {Error} If a contour is drawn with a command that cannot be turned
+ *   about
+ */
+function wound(data) {
+  const pieces = data.split(/(?=M)/).filter((piece) => piece.trim() !== '')
+  const paths = pieces.map((piece) => skia.Path.MakeFromSVGString(piece))
+
+  return pieces
+    .map((piece, at) => {
+      const [x, y] = (piece.match(NUMBER) ?? []).slice(0, 2).map(Number)
+      const held = paths.filter((other, which) => which !== at && other.contains(x, y)).length
+      return handedness(piece) === (held % 2 === 0 ? 1 : -1) ? piece : turned(piece)
+    })
+    .join('')
+}
+
+/**
+ * A shape Skia worked out, as path data ready to be written.
+ *
+ * Everything Skia hands back arrives the same way: at full precision, and wound
+ * for even odd where a boolean operation made it. This is the one way out, so no
+ * shape reaches a file needing a fill rule to read right.
+ *
+ * @param {object} path The shape, as Skia has it
+ * @returns {string} Path data, wound for nonzero, trimmed and shortened
+ * @throws {Error} If a contour is drawn with a command that cannot be turned
+ *   about
+ */
+export function shaped(path) {
+  return compact(trimmed(wound(path.toSVGString())))
 }
 
 /**

@@ -112,7 +112,7 @@ parts:
     is: arrow
     in: sheet-front
     from: {edge: left, along: 0.34}    # which edge the tail leaves, and how far down it
-    to: {u: 0.404, v: 0.531}           # where the head points, on the paper
+    to: {u: 0.38, v: 0.531}           # where the head points, on the paper
     swing: 260                         # how far the loop reaches out past that edge
     approach: 430                      # how long and straight the run into the head is
     stroke: {colour: red, width: 24}   # an arrow is all stroke, so this is its line weight

@@ -12,11 +12,12 @@ import pngToIco from 'png-to-ico'
 import { Resvg } from '@resvg/resvg-js'
 
 import { icon } from './icon/icon.js'
+import { line } from './logo/line.js'
 import { logo } from './logo/logo.js'
 
 import { serialiseDocument, shorten } from './emit.js'
 import { stylesheet } from './responsive.js'
-import { unify } from './unify.js'
+import { flatten } from './flatten.js'
 
 /**
  * Where the built files go.
@@ -50,16 +51,17 @@ const FAVICON = [16, 32, 48]
  * The designs the build writes, and what each one is written as.
  *
  * A drawing says what it is; this says what comes of it. Whether a variant is
- * merged into one path is a fact about the files and not about the drawing, so
- * it is said here: the same parts can be written out one stroked element each,
- * and taking the flag off is how the merge is checked.
+ * cut into one path is a fact about the files and not about the drawing, so it
+ * is said here: the same parts can be written out one stroked element each, and
+ * taking the flag off is how the cut is checked.
  *
  * @type {Array<{drawing: import('./drawing.js').Drawing, stem: string,
- *   sizes?: number[], favicon?: number[], unify?: boolean}>}
+ *   sizes?: number[], favicon?: number[], flatten?: boolean}>}
  */
 const DRAWINGS = [
   { drawing: logo, stem: 'dokuwiki-logo', sizes: SIZES, favicon: FAVICON },
-  { drawing: icon, stem: 'dokuwiki-icon', unify: true },
+  { drawing: icon, stem: 'dokuwiki-icon', flatten: true },
+  { drawing: line, stem: 'dokuwiki-logo-line', flatten: true },
 ]
 
 /**
@@ -107,20 +109,35 @@ function raster(svg, size) {
 /**
  * The elements one variant is written with.
  *
- * A drawing whose files are one path is merged into one. Otherwise ids are cut
- * down to initials where a stylesheet is written, because that is what writes an
- * id many times over, and a drawing that carries no stylesheet needs no ids at
- * all but is no worse for keeping the names its parts give their pieces.
+ * A drawing whose files are one path is cut into one. Otherwise ids are cut down
+ * to initials where a stylesheet is written, because that is what writes an id
+ * many times over, and a drawing that carries no stylesheet needs no ids at all
+ * but is no worse for keeping the names its parts give their pieces.
  *
  * @param {import('./drawing.js').Drawing} drawing The drawing
  * @param {string} variant Which variant
- * @param {boolean} [merge] Whether its elements become one path
+ * @param {boolean} [cut] Whether its elements become one path
  * @returns {Array<{tag: string, attrs: Object}>} The elements
  */
-function written(drawing, variant, merge) {
+function written(drawing, variant, cut) {
   const elements = drawing.elements(variant)
-  if (merge) return unify(elements)
+  if (cut) return flatten(elements, drawing.ground)
   return drawing.bySize ? shorten(elements) : elements
+}
+
+/**
+ * What one variant's flat file is called.
+ *
+ * A drawing of one variant has nothing to tell its files apart by, so it drops
+ * the name from them.
+ *
+ * @param {string} stem What the drawing's files are called
+ * @param {string} variant Which variant
+ * @param {number} of How many variants the drawing has
+ * @returns {string} The file name
+ */
+function flatName(stem, variant, of) {
+  return of === 1 ? `${stem}.svg` : `${stem}-${variant}.svg`
 }
 
 /**
@@ -136,14 +153,15 @@ function written(drawing, variant, merge) {
  * @param {string} entry.stem What its files are called
  * @param {number[]} [entry.sizes] The sizes to write a PNG at, largest first
  * @param {number[]} [entry.favicon] The sizes favicon.ico carries
- * @param {boolean} [entry.unify] Whether each variant becomes one path
+ * @param {boolean} [entry.flatten] Whether each variant becomes one path, its
+ *   ground cut out of its ink
  * @returns {Promise<void>}
  */
-async function writeDrawing({ drawing, stem, sizes, favicon, unify: merge }) {
+async function writeDrawing({ drawing, stem, sizes, favicon, flatten: cut }) {
   const document = { size: drawing.canvas, title: drawing.title }
   const compositions = []
   for (const variant of drawing.variants) {
-    compositions.push({ ...variant, elements: written(drawing, variant.name, merge) })
+    compositions.push({ ...variant, elements: written(drawing, variant.name, cut) })
   }
 
   if (drawing.bySize) {
@@ -159,7 +177,11 @@ async function writeDrawing({ drawing, stem, sizes, favicon, unify: merge }) {
   for (const variant of compositions) {
     const svg = serialiseDocument({ ...document, elements: variant.elements })
     flat.set(variant, svg)
-    write(`${stem}-${variant.name}.svg`, svg, `variant ${variant.name}, ${variant.elements.length} elements`)
+    write(
+      flatName(stem, variant.name, compositions.length),
+      svg,
+      `variant ${variant.name}, ${variant.elements.length} elements`,
+    )
   }
 
   if (!sizes) return

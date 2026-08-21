@@ -5,7 +5,7 @@
  * across the other end. What the design gives is the silhouette itself rather
  * than a centre line to be stroked, so the width it asks for is the width the
  * pencil is. The frame is worked into the path data rather than left as a
- * transform, so the merge at the end of the build has nothing to unpick.
+ * transform, so what it draws carries no attribute but its own shape.
  *
  * How thick the wall looks is the hole in that silhouette, and which hole it
  * carries is the whole of the difference between the two paintings.
