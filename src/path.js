@@ -7,15 +7,9 @@
  */
 
 import { pathRound } from 'd3-path'
-import { round } from './emit.js'
+import { DIGITS, round } from './emit.js'
+import { centre } from './plane.js'
 import { skia } from './skia.js'
-
-/**
- * How many decimals to keep in path data.
- *
- * @type {number}
- */
-const DIGITS = 2
 
 /**
  * Start collecting path commands.
@@ -27,6 +21,20 @@ export function pen() {
 }
 
 /**
+ * A number in path data, however it is written.
+ *
+ * @type {RegExp}
+ */
+const NUMBER = /-?\d*\.?\d+(?:e[-+]?\d+)?/gi
+
+/**
+ * One command of path data and everything that follows it up to the next one.
+ *
+ * @type {RegExp}
+ */
+const COMMAND = /([A-Z])([^A-Z]*)/g
+
+/**
  * Path data, split into the commands it is made of.
  *
  * @param {string} data Path data, in absolute commands
@@ -34,9 +42,9 @@ export function pen() {
  *   numbers that follow it, in order
  */
 function commands(data) {
-  return [...data.matchAll(/([A-Z])([^A-Z]*)/g)].map(([, letter, rest]) => ({
+  return [...data.matchAll(COMMAND)].map(([, letter, rest]) => ({
     letter,
-    values: (rest.match(/-?\d*\.?\d+/g) ?? []).map(Number),
+    values: (rest.match(NUMBER) ?? []).map(Number),
   }))
 }
 
@@ -50,7 +58,7 @@ function commands(data) {
  */
 function numbers(values) {
   return values.reduce((out, value) => {
-    const written = String(Number(value.toFixed(DIGITS)))
+    const written = round(value)
     return out === '' || written.startsWith('-') ? out + written : `${out},${written}`
   }, '')
 }
@@ -131,13 +139,6 @@ export function compact(data) {
 }
 
 /**
- * A number in path data, however it is written.
- *
- * @type {RegExp}
- */
-const NUMBER = /-?\d*\.?\d+(?:e[-+]?\d+)?/gi
-
-/**
  * The same path with every coordinate trimmed to the decimals this build keeps.
  *
  * This is for path data that came from somewhere else; what pen writes is trimmed
@@ -162,41 +163,22 @@ export function trimmed(data) {
 const SEGMENTS = { L: 2, Q: 4, C: 6 }
 
 /**
- * The numbers along each of a path's contours, in order.
+ * Which way round one closed contour goes: 1 where it is clockwise, -1 where it
+ * is anticlockwise, 0 where it covers nothing.
  *
- * @param {string} data Path data in absolute commands
- * @returns {number[][]} The numbers of each contour
- */
-function contours(data) {
-  return data
-    .split('M')
-    .filter((contour) => contour.trim() !== '')
-    .map((contour) => (contour.match(NUMBER) ?? []).map(Number))
-}
-
-/**
- * Which way round a path's outer contour goes: 1 where it is clockwise, -1 where
- * it is anticlockwise, 0 where it covers nothing.
+ * The sum runs over the contour's own points as if straight lines joined them. A
+ * curve's control points move that sum a little and its sign not at all.
  *
- * The sum runs over the contour's own numbers as if straight lines joined them.
- * A curve's control points move that sum a little and its sign not at all. The
- * widest contour is the outer one.
- *
- * @param {string} data Path data in absolute commands
+ * @param {number[]} points The numbers along the contour, in order
  * @returns {number} Which way it goes
  */
-function handedness(data) {
-  const area = (points) => {
-    const loop = [...points, points[0], points[1]]
-    let sum = 0
-    for (let at = 0; at + 3 < loop.length; at += 2) {
-      sum += loop[at] * loop[at + 3] - loop[at + 2] * loop[at + 1]
-    }
-    return sum
+function handedness(points) {
+  const loop = [...points, points[0], points[1]]
+  let sum = 0
+  for (let at = 0; at + 3 < loop.length; at += 2) {
+    sum += loop[at] * loop[at + 3] - loop[at + 2] * loop[at + 1]
   }
-
-  const areas = contours(data).map(area)
-  return Math.sign(areas.reduce((widest, one) => (Math.abs(one) > Math.abs(widest) ? one : widest), 0))
+  return Math.sign(sum)
 }
 
 /**
@@ -211,10 +193,7 @@ function handedness(data) {
  * @throws {Error} If it is drawn with a command this cannot turn about
  */
 function turned(piece) {
-  const steps = [...piece.matchAll(/([A-Z])([^A-Z]*)/g)].map(([, letter, rest]) => ({
-    letter,
-    values: (rest.match(NUMBER) ?? []).map(Number),
-  }))
+  const steps = commands(piece)
   const drawn = steps.slice(1).filter((step) => step.letter !== 'Z')
   for (const step of drawn) {
     if (SEGMENTS[step.letter] !== step.values.length) {
@@ -255,9 +234,9 @@ function wound(data) {
 
   return pieces
     .map((piece, at) => {
-      const [x, y] = (piece.match(NUMBER) ?? []).slice(0, 2).map(Number)
-      const held = paths.filter((other, which) => which !== at && other.contains(x, y)).length
-      return handedness(piece) === (held % 2 === 0 ? 1 : -1) ? piece : turned(piece)
+      const points = (piece.match(NUMBER) ?? []).map(Number)
+      const held = paths.filter((other, which) => which !== at && other.contains(points[0], points[1])).length
+      return handedness(points) === (held % 2 === 0 ? 1 : -1) ? piece : turned(piece)
     })
     .join('')
 }
@@ -316,15 +295,15 @@ export function outline(corners, bevel) {
  *
  * Written out by hand, because d3-path draws circles alone.
  *
- * @param {{x: number, y: number}} centre Middle of the ellipse
+ * @param {{x: number, y: number}} middle Middle of the ellipse
  * @param {{x: number, y: number}} radii Half length along the axis and across it
  * @param {{x: number, y: number}} axis Direction the first radius points in
  * @returns {string} Path data for one closed subpath
  */
-export function ellipse(centre, radii, axis) {
+export function ellipse(middle, radii, axis) {
   const arm = axis.mult(radii.x)
-  const from = centre.sub(arm)
-  const to = centre.add(arm)
+  const from = middle.sub(arm)
+  const to = middle.add(arm)
   const turn = (Math.atan2(axis.y, axis.x) * 180) / Math.PI
   const sweep = `A${round(radii.x)} ${round(radii.y)} ${round(turn)} 0 1`
   return compact(
@@ -344,9 +323,7 @@ export function ellipse(centre, radii, axis) {
  */
 export function inset(corners, distance) {
   const count = corners.length
-  const middle = corners
-    .reduce((total, corner) => total.add(corner), corners[0].mult(0))
-    .mult(1 / count)
+  const middle = centre(corners)
 
   const edges = corners.map((from, i) => {
     const to = corners[(i + 1) % count]

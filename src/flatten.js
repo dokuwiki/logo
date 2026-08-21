@@ -11,7 +11,6 @@
  * What comes out is the shape of the ink itself.
  */
 
-
 import { shaped } from './path.js'
 import { skia } from './skia.js'
 
@@ -33,14 +32,13 @@ const JOINS = { miter: 'Miter', round: 'Round', bevel: 'Bevel' }
 /**
  * The shape one element's stroke covers.
  *
- * @param {object} kit CanvasKit
  * @param {object} path The element's path
  * @param {Object} attrs What the element says about itself
  * @returns {object} The outline
  * @throws {Error} If the stroke says no width, ends or turns in a way SVG has no
  *   name for, or covers a shape Skia cannot work out
  */
-function covered(kit, path, attrs) {
+function covered(path, attrs) {
   const width = attrs['stroke-width']
   const cap = attrs['stroke-linecap'] ?? 'butt'
   const join = attrs['stroke-linejoin'] ?? 'miter'
@@ -49,7 +47,7 @@ function covered(kit, path, attrs) {
   if (!CAPS[cap]) throw new Error(`${attrs.id} ends its stroke ${cap}, which is no way a stroke ends`)
   if (!JOINS[join]) throw new Error(`${attrs.id} turns its corners ${join}, which is no way a stroke turns one`)
 
-  const outline = path.makeStroked({ width, cap: kit.StrokeCap[CAPS[cap]], join: kit.StrokeJoin[JOINS[join]] })
+  const outline = path.makeStroked({ width, cap: skia.StrokeCap[CAPS[cap]], join: skia.StrokeJoin[JOINS[join]] })
   if (!outline) throw new Error(`${attrs.id} is stroked in a way Skia cannot work out the shape of`)
   return outline
 }
@@ -75,22 +73,21 @@ const SQUARE = 1e-4
 /**
  * The shape one element draws, in its own measure.
  *
- * @param {object} kit CanvasKit
  * @param {{tag: string, attrs: Object}} element One element
  * @param {string} id Which element, for the message
  * @returns {object} Its path
  * @throws {Error} If it is of a kind that draws no shape, or draws path data
  *   Skia cannot read
  */
-function shapeOf(kit, { tag, attrs }, id) {
+function shapeOf({ tag, attrs }, id) {
   if (tag === 'rect') {
-    const builder = new kit.PathBuilder()
-    builder.addRRect(kit.RRectXY(kit.LTRBRect(0, 0, attrs.width, attrs.height), attrs.rx, attrs.rx))
+    const builder = new skia.PathBuilder()
+    builder.addRRect(skia.RRectXY(skia.LTRBRect(0, 0, attrs.width, attrs.height), attrs.rx, attrs.rx))
     return builder.snapshot()
   }
   if (tag !== 'path') throw new Error(`${id} is a ${tag}, which is no shape to cut with`)
 
-  const path = kit.Path.MakeFromSVGString(attrs.d)
+  const path = skia.Path.MakeFromSVGString(attrs.d)
   if (!path) throw new Error(`${id} draws path data Skia cannot read`)
   return path
 }
@@ -103,7 +100,6 @@ function shapeOf(kit, { tag, attrs }, id) {
  * transform that turns and scales evenly, so the two axes are checked to be
  * perpendicular and of one length.
  *
- * @param {object} kit CanvasKit
  * @param {object} path The shape, in the element's own measure
  * @param {Object} attrs What the element says about itself
  * @param {string} id Which element, for the message
@@ -111,7 +107,7 @@ function shapeOf(kit, { tag, attrs }, id) {
  * @throws {Error} If it is placed by anything but a matrix, or by one that
  *   scales it unevenly
  */
-function moved(kit, path, attrs, id) {
+function moved(path, attrs, id) {
   if (!attrs.transform) return path
 
   const written = MATRIX.exec(attrs.transform)
@@ -127,7 +123,7 @@ function moved(kit, path, attrs, id) {
     throw new Error(`${id} is placed by a transform that scales it unevenly, so its stroke would not follow it`)
   }
 
-  const builder = new kit.PathBuilder()
+  const builder = new skia.PathBuilder()
   builder.addPath(path)
   builder.transform(a, c, e, b, d, f, 0, 0, 1)
   return builder.snapshot()
@@ -140,25 +136,24 @@ function moved(kit, path, attrs, id) {
  * A shape holding a hole says so with a fill rule, which Skia has to be told
  * before that shape goes into an operation.
  *
- * @param {object} kit CanvasKit
  * @param {{tag: string, attrs: Object}} element One element
  * @returns {Array<{id: string, colour: string, path: object}>} The shapes
  * @throws {Error} If it draws no shape, or is placed in a way that cannot be
  *   followed
  */
-function shapesOf(kit, element) {
+function shapesOf(element) {
   const { attrs } = element
   const id = attrs.id ?? 'an element with no id'
-  const own = shapeOf(kit, element, id)
+  const own = shapeOf(element, id)
 
   const shapes = []
   if (attrs.fill && attrs.fill !== 'none') {
-    const face = moved(kit, own, attrs, id)
-    if (attrs['fill-rule'] === 'evenodd') face.setFillType(kit.FillType.EvenOdd)
+    const face = moved(own, attrs, id)
+    if (attrs['fill-rule'] === 'evenodd') face.setFillType(skia.FillType.EvenOdd)
     shapes.push({ id, colour: attrs.fill, path: face })
   }
   if (attrs.stroke && attrs.stroke !== 'none') {
-    shapes.push({ id, colour: attrs.stroke, path: moved(kit, covered(kit, own, attrs), attrs, id) })
+    shapes.push({ id, colour: attrs.stroke, path: moved(covered(own, attrs), attrs, id) })
   }
   return shapes
 }
@@ -189,8 +184,7 @@ function shapesOf(kit, element) {
  *   drawing, or if a contour cannot be turned about
  */
 export function flatten(elements, ground) {
-  const kit = skia
-  const shapes = elements.flatMap((element) => shapesOf(kit, element))
+  const shapes = elements.flatMap((element) => shapesOf(element))
   const inks = new Set(shapes.map((shape) => shape.colour).filter((colour) => colour !== ground))
   if (inks.size !== 1) {
     throw new Error(
@@ -199,11 +193,11 @@ export function flatten(elements, ground) {
   }
 
   const ink = shapes.reduce((so, shape) => {
-    const op = shape.colour === ground ? kit.PathOp.Difference : kit.PathOp.Union
-    const cut = kit.Path.MakeFromOp(so, shape.path, op)
+    const op = shape.colour === ground ? skia.PathOp.Difference : skia.PathOp.Union
+    const cut = skia.Path.MakeFromOp(so, shape.path, op)
     if (!cut) throw new Error(`${shape.id} is a shape Skia cannot work the drawing out against`)
     return cut
-  }, new kit.PathBuilder().snapshot())
+  }, new skia.PathBuilder().snapshot())
 
   if (ink.isEmpty()) throw new Error('nothing is left of the drawing: the ground takes the whole of the ink out')
 

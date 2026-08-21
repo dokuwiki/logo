@@ -4,9 +4,10 @@
 # and what each level of detail changes. Everything else about how a piece looks
 # belongs to the piece, one class per kind beside this file.
 #
-# Every part is said the same way, so four questions have one answer each:
-# "at" moves it, "size" makes it larger or smaller, "stroke.width" sets how
-# heavy its outline is, and "show" hides or shows it.
+# Every part is said the same way, so each question has one answer wherever it
+# is asked: "at" moves it, "size" says how big it is against the frame it hangs
+# in, "scale" how much larger than its own standard shape it is drawn,
+# "stroke.width" how heavy its outline is, and "show" whether it is drawn at all.
 
 # The accessible name every drawing of it carries.
 title: DokuWiki Logo
@@ -133,7 +134,7 @@ parts:
     in: canvas
     at: {x: 464.8, y: 496.7}   # where its sharpened point sits on the canvas
     turn: -40                  # which way it points, in degrees
-    size: 0.968                # how much larger than a standard pencil it is drawn
+    scale: 0.968               # how much larger than a standard pencil it is drawn
     lean: 0.42                 # how much nearer the viewer its blunt end is, so it widens
     fill: red                  # the barrel's paint; the light on its facet comes from this
     bare: paper                # the bare wood, at the point and at the blunt end
@@ -143,7 +144,7 @@ parts:
     in: canvas
     at: {x: 220.9, y: 652.4}
     turn: 24.9
-    size: 0.968
+    scale: 0.968
     lean: 0.54
     fill: green
     bare: paper
@@ -209,13 +210,13 @@ variants:
       pencil-red:
         shape: plain                   # a pared down pencil, from the shapes a pencil holds
         at: {x: 395.5, y: 568.1}
-        size: 1.28
+        scale: 1.28
         lean: 0                        # flat: a pared down pencil has no end face to place
         draws: [barrel, point, facet]  # a pencil draws barrel, facet, point and end
       pencil-green:
         shape: plain
         at: {x: 159.2, y: 625.7}
-        size: 1.28
+        scale: 1.28
         lean: 0
         draws: [barrel, point, facet]
 

@@ -3,13 +3,24 @@
  */
 
 /**
- * Trim a number to two decimals and drop any trailing zeros.
+ * How many decimals a coordinate keeps.
+ *
+ * One number for everything that writes one, because a path written as steps
+ * from one coordinate to the next is exact only where both were rounded the
+ * same.
+ *
+ * @type {number}
+ */
+export const DIGITS = 2
+
+/**
+ * Trim a number to the decimals a coordinate keeps and drop any trailing zeros.
  *
  * @param {number} value Number to format
  * @returns {string} Shortest form that still reads the same
  */
 export function round(value) {
-  return String(Number(value.toFixed(2)))
+  return String(Number(value.toFixed(DIGITS)))
 }
 
 /**
@@ -51,10 +62,20 @@ function escape(text) {
 /**
  * Format one attribute value.
  *
+ * A value that is not one would be written out as the word undefined, or as NaN,
+ * which is a file drawing nothing where a part was meant to be. A part that left
+ * something out says so here rather than in what a reader makes of the file.
+ *
  * @param {string|number} value Attribute value
+ * @param {string} name Which attribute, for the message
+ * @param {string} where Which element, for the message
  * @returns {string} The value to put between the quotes
+ * @throws {Error} If it is nothing at all, or a number that is not one
  */
-function attributeValue(value) {
+function attributeValue(value, name, where) {
+  if (value === undefined || value === null || (typeof value === 'number' && !Number.isFinite(value))) {
+    throw new Error(`${where} says its ${name} is ${value}, which is no value to write`)
+  }
   return typeof value === 'number' ? round(value) : escape(value)
 }
 
@@ -87,10 +108,13 @@ export function shorten(elements) {
  * @param {{tag: string, attrs: Object<string, string|number>}} element Element
  * @param {string} indent Leading whitespace
  * @returns {string} One line of markup
+ * @throws {Error} If an attribute says nothing at all, or a number that is not
+ *   one
  */
 export function serialiseElement(element, indent) {
+  const where = element.attrs.id ?? `a ${element.tag}`
   const attrs = Object.entries(element.attrs)
-    .map(([name, value]) => `${name}="${attributeValue(value)}"`)
+    .map(([name, value]) => `${name}="${attributeValue(value, name, where)}"`)
     .join(' ')
   return `${indent}<${element.tag} ${attrs}/>`
 }

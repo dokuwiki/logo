@@ -24,6 +24,7 @@
  * points are already on it.
  */
 
+import { OUTLINE, painting, SOLID } from './paint.js'
 import { compact, pen, shaped } from '../path.js'
 import { Point, through } from '../plane.js'
 import { skia } from '../skia.js'
@@ -34,13 +35,6 @@ import { skia } from '../skia.js'
  * @type {string[]}
  */
 const EDGES = ['top', 'right', 'bottom', 'left']
-
-/**
- * How a page can be painted.
- *
- * @type {string[]}
- */
-const PAINTINGS = ['outline', 'solid']
 
 /**
  * Overlapping stretches joined into one, in the order they come round the page,
@@ -72,6 +66,14 @@ function joined(stretches) {
  */
 export class Page {
   /**
+   * What a design can tell a page, besides where it is placed, what crosses it
+   * and whether it is drawn, which every part is told the same way.
+   *
+   * @type {string[]}
+   */
+  static takes = ['id', 'at', 'size', 'radius', 'fill', 'stroke', 'clear', 'paint']
+
+  /**
    * Place a page.
    *
    * @param {object} spec Where the page goes
@@ -92,13 +94,10 @@ export class Page {
    *   and the parts crossing it
    * @param {string} [spec.paint] Whether it is an outline or solid
    * @throws {Error} If it is painted in no way a page can be painted, or crossed
-   *   by a part that offers no outline to keep clear of
+   *   by a part that offers no outline to keep clear of, or no shape for a solid
+   *   page to take out
    */
-  constructor({ id, at, size, radius, fill, stroke, crossedBy = [], clear = 0, paint = PAINTINGS[0] }) {
-    if (!PAINTINGS.includes(paint)) {
-      throw new Error(`${id} is painted ${paint}, and a page is ${PAINTINGS.join(' or ')}`)
-    }
-
+  constructor({ id, at, size, radius, fill, stroke, crossedBy = [], clear = 0, paint = OUTLINE }) {
     /** @type {string} Element id */
     this.id = id
     /** @type {Point} Top left corner of the stroke's centre line */
@@ -118,11 +117,15 @@ export class Page {
     /** @type {number} How much space to leave around them */
     this.clear = clear
     /** @type {string} Whether it is an outline or solid */
-    this.paint = paint
+    this.paint = painting(paint, id, 'page')
 
     for (const part of this.crossedBy) {
-      if (part.bounds) continue
-      throw new Error(`${id} is crossed by ${part.id}, which offers no outline for it to keep clear of`)
+      if (!part.bounds) {
+        throw new Error(`${id} is crossed by ${part.id}, which offers no outline for it to keep clear of`)
+      }
+      if (typeof part.grown !== 'function') {
+        throw new Error(`${id} is crossed by ${part.id}, which offers no shape to be taken out of it where it is solid`)
+      }
     }
   }
 
@@ -132,7 +135,7 @@ export class Page {
    * @returns {boolean} Whether it is solid
    */
   get solid() {
-    return this.paint === 'solid'
+    return this.paint === SOLID
   }
 
   /**
@@ -142,7 +145,7 @@ export class Page {
    *
    * @returns {number} The distance
    */
-  get grown() {
+  get outset() {
     return this.solid ? this.stroke.width / 2 : 0
   }
 
@@ -152,7 +155,7 @@ export class Page {
    * @returns {Point} The corner
    */
   get corner() {
-    return new Point(this.origin.x - this.grown, this.origin.y - this.grown)
+    return new Point(this.origin.x - this.outset, this.origin.y - this.outset)
   }
 
   /**
@@ -161,7 +164,7 @@ export class Page {
    * @returns {{w: number, h: number}} The span
    */
   get span() {
-    return { w: this.width + 2 * this.grown, h: this.height + 2 * this.grown }
+    return { w: this.width + 2 * this.outset, h: this.height + 2 * this.outset }
   }
 
   /**
@@ -170,7 +173,7 @@ export class Page {
    * @returns {number} The radius
    */
   get rounding() {
-    return this.radius + this.grown
+    return this.radius + this.outset
   }
 
   /**
@@ -184,7 +187,7 @@ export class Page {
    * @returns {number} The distance
    */
   get room() {
-    return this.clear + this.stroke.width / 2 - this.grown
+    return this.clear + this.stroke.width / 2 - this.outset
   }
 
   /**

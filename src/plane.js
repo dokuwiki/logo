@@ -52,6 +52,17 @@ export function dot(direction, point) {
 }
 
 /**
+ * The middle of a set of points, which for the corners of a convex outline lies
+ * inside it.
+ *
+ * @param {Array<Point>} corners The points
+ * @returns {Point} Their average
+ */
+export function centre(corners) {
+  return corners.reduce((total, corner) => total.add(corner), corners[0].mult(0)).mult(1 / corners.length)
+}
+
+/**
  * The half planes bounding a convex outline, each facing out of it. A point lies
  * inside where dot(facing, point) is at most reach for every one of them.
  *
@@ -59,7 +70,7 @@ export function dot(direction, point) {
  * @returns {Array<{facing: Point, reach: number}>} The half planes
  */
 export function bounding(corners) {
-  const middle = corners.reduce((total, corner) => total.add(corner), corners[0].mult(0)).mult(1 / corners.length)
+  const middle = centre(corners)
   return corners.map((corner, at) => {
     const next = corners[(at + 1) % corners.length]
     const out = next.sub(corner).perp().unit()

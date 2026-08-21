@@ -14,14 +14,8 @@
  */
 
 import { Frame } from '../frame.js'
+import { OUTLINE, painting, SOLID } from './paint.js'
 import { compact, pen } from '../path.js'
-
-/**
- * How a pencil can be painted, which picks which hole the silhouette carries.
- *
- * @type {string[]}
- */
-const PAINTINGS = ['outline', 'solid']
 
 /**
  * Which way a point lies from a centre, as an angle an arc can be drawn between.
@@ -68,6 +62,14 @@ export class Pencil {
   }
 
   /**
+   * What a design can tell a pencil, besides where it is placed and whether it
+   * is drawn, which every part is told the same way.
+   *
+   * @type {string[]}
+   */
+  static takes = ['id', 'at', 'turn', 'fill', 'paint', ...Object.keys(Pencil.proportions)]
+
+  /**
    * Lay a pencil down.
    *
    * @param {object} spec Where this pencil lies
@@ -76,8 +78,6 @@ export class Pencil {
    * @param {number} spec.turn Which way it points, in degrees
    * @param {string} spec.fill What it is filled with
    * @param {string} [spec.paint] Whether the hole is the wall or the ferrule mark
-   * @param {number} [spec.size] How much larger than a standard icon pencil this
-   *   one is drawn
    * @param {number} [spec.length] Point to blunt end
    * @param {number} [spec.width] Across the barrel
    * @param {number} [spec.wall] How thick the wall looks
@@ -85,16 +85,13 @@ export class Pencil {
    * @throws {Error} If it is painted in no way a pencil can be painted, if the
    *   wall leaves no hole, or if the ferrule reaches back past the point
    */
-  constructor({ id, at, turn, fill, paint = PAINTINGS[0], size = 1, ...proportions }) {
-    if (!PAINTINGS.includes(paint)) {
-      throw new Error(`${id} is painted ${paint}, and a pencil is ${PAINTINGS.join(' or ')}`)
-    }
-    Object.assign(this, Pencil.proportions, proportions, { id, fill, paint, size })
+  constructor({ id, at, turn, fill, paint = OUTLINE, ...proportions }) {
+    Object.assign(this, Pencil.proportions, proportions, { id, fill, paint: painting(paint, id, 'pencil') })
 
-    if (2 * this.wall >= this.width) {
+    if (this.inner <= 0) {
       throw new Error(`${id} has a wall of ${this.wall} on a barrel ${this.width} across, which leaves no hole`)
     }
-    if (this.length - this.ferrule <= this.wall * Math.SQRT2 + this.half - this.wall) {
+    if (this.length - this.ferrule <= this.hollow + this.inner) {
       throw new Error(
         `${id} has a ferrule of ${this.ferrule} on a pencil ${this.length} long, ` +
           'so the hole in it would reach back past the point',
@@ -111,7 +108,7 @@ export class Pencil {
    * @returns {boolean} Whether it is solid
    */
   get solid() {
-    return this.paint === 'solid'
+    return this.paint === SOLID
   }
 
   /**
@@ -122,6 +119,28 @@ export class Pencil {
    */
   get half() {
     return this.width / 2
+  }
+
+  /**
+   * How far the hole in the silhouette stands from the axis: the barrel's half
+   * width, less the wall on that side.
+   *
+   * @returns {number} The distance
+   */
+  get inner() {
+    return this.half - this.wall
+  }
+
+  /**
+   * How far along the pencil the hollow begins.
+   *
+   * Pulling in two cuts that meet the axis at 45 degrees moves their meeting
+   * point back along the axis by the wall's own diagonal.
+   *
+   * @returns {number} The distance
+   */
+  get hollow() {
+    return this.wall * Math.SQRT2
   }
 
   /**
@@ -146,7 +165,7 @@ export class Pencil {
    * @returns {import('../plane.js').Point} The point on the canvas
    */
   at(along, across) {
-    return this.frame.at(along * this.size, across * this.size)
+    return this.frame.at(along, across)
   }
 
   /**
@@ -163,23 +182,23 @@ export class Pencil {
    * @returns {string} Path data for one closed subpath, anticlockwise
    */
   grown(room) {
-    const half = this.half * this.size
-    const length = this.length * this.size
+    const half = this.half
+    const length = this.length
     const corner = room / Math.SQRT2
     const path = pen()
 
-    const start = this.frame.at(-corner, -corner)
-    const tip = this.frame.at(0, 0)
-    const shoulder = (across) => this.frame.at(half, across * half)
-    const cap = this.frame.at(length - half, 0)
+    const start = this.at(-corner, -corner)
+    const tip = this.at(0, 0)
+    const shoulder = (across) => this.at(half, across * half)
+    const cap = this.at(length - half, 0)
     const turn = (centre, radius, from, to) =>
       path.arc(centre.x, centre.y, radius, angleFrom(centre, from), angleFrom(centre, to), true)
 
     path.moveTo(start.x, start.y)
-    turn(tip, room, start, this.frame.at(-corner, corner))
-    turn(shoulder(1), room, this.frame.at(half - corner, half + corner), this.frame.at(half, half + room))
-    turn(cap, half + room, this.frame.at(length - half, half + room), this.frame.at(length - half, -half - room))
-    turn(shoulder(-1), room, this.frame.at(half, -half - room), this.frame.at(half - corner, -half - corner))
+    turn(tip, room, start, this.at(-corner, corner))
+    turn(shoulder(1), room, this.at(half - corner, half + corner), this.at(half, half + room))
+    turn(cap, half + room, this.at(length - half, half + room), this.at(length - half, -half - room))
+    turn(shoulder(-1), room, this.at(half, -half - room), this.at(half - corner, -half - corner))
     path.closePath()
     return compact(path.toString())
   }
@@ -206,7 +225,7 @@ export class Pencil {
     path.moveTo(tip.x, tip.y)
     path.lineTo(shoulder.x, shoulder.y)
     path.lineTo(from.x, from.y)
-    path.arc(centre.x, centre.y, half * this.size, angleFrom(centre, from), angleFrom(centre, to))
+    path.arc(centre.x, centre.y, half, angleFrom(centre, from), angleFrom(centre, to))
     const back = this.at(half, half)
     path.lineTo(back.x, back.y)
     path.closePath()
@@ -217,21 +236,18 @@ export class Pencil {
    * The wall as a hole: the silhouette pulled in by the wall all round, cut off
    * flat where the ferrule begins.
    *
-   * Pulling in two cuts that meet the axis at 45 degrees moves their meeting
-   * point back along the axis by the wall's own diagonal.
-   *
    * @returns {string} Path data for one closed subpath, anticlockwise
    */
   slot() {
-    const inner = this.half - this.wall
-    const point = this.wall * Math.SQRT2
+    const inner = this.inner
+    const hollow = this.hollow
     const far = this.length - this.ferrule
     return closed([
-      this.at(point, 0),
-      this.at(point + inner, inner),
+      this.at(hollow, 0),
+      this.at(hollow + inner, inner),
       this.at(far, inner),
       this.at(far, -inner),
-      this.at(point + inner, -inner),
+      this.at(hollow + inner, -inner),
     ])
   }
 
@@ -242,7 +258,7 @@ export class Pencil {
    * @returns {string} Path data for one closed subpath, anticlockwise
    */
   mark() {
-    const reach = this.half - this.wall
+    const reach = this.inner
     const middle = this.length - this.ferrule / 2
     return closed([
       this.at(middle - reach, -reach),

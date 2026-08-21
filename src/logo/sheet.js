@@ -14,6 +14,14 @@ import { Wordmark } from './wordmark.js'
  */
 export class Sheet {
   /**
+   * What a design can tell a sheet, besides where it is placed and whether it is
+   * drawn, which every part is told the same way.
+   *
+   * @type {string[]}
+   */
+  static takes = ['id', 'at', 'turn', 'size', 'radius', 'fill', 'stroke']
+
+  /**
    * Place a sheet.
    *
    * @param {object} spec Where the sheet goes
@@ -99,13 +107,13 @@ export class Sheet {
   /**
    * A point on one of the sheet's edges.
    *
-   * @param {'left'|'right'|'top'|'bottom'} name Which edge
-   * @param {number} fraction How far along the edge, from 0 to 1
+   * @param {{edge: 'left'|'right'|'top'|'bottom', along: number}} place Which
+   *   edge, and how far along it, from 0 to 1
    * @returns {import('../plane.js').Point} The point
    */
-  onEdge(name, fraction) {
-    const edge = this.edge(name)
-    return edge.from.add(edge.along.mult(fraction * edge.length))
+  onEdge(place) {
+    const edge = this.edge(place.edge)
+    return edge.from.add(edge.along.mult(place.along * edge.length))
   }
 
   /**

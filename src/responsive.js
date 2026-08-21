@@ -19,6 +19,35 @@
 import { round } from './emit.js'
 
 /**
+ * How a size picks a level: a level applies at the size it names and below, so
+ * at a small size the levels above it apply as well and the smallest one in
+ * force wins.
+ *
+ * Two mechanisms carry that rule and have to agree about it. A file drawn to a
+ * size is rasterised from the level variantAt picks; a file left to a browser
+ * carries the query instead, and reaches the same drawing by taking away from
+ * the level above. Changing one without the other draws a file no browser would
+ * draw.
+ *
+ * @param {Array<{upTo: number|null}>} variants The levels, largest first
+ * @param {number} size Edge length in pixels
+ * @returns {object} The level in force at that size
+ */
+export function variantAt(variants, size) {
+  return variants.filter((variant) => variant.upTo === null || size <= variant.upTo).at(-1)
+}
+
+/**
+ * What a mechanism asks to carry one level's rules.
+ *
+ * @param {number} upTo The size the level applies up to
+ * @returns {string} The condition, for a media query and a container query alike
+ */
+function query(upTo) {
+  return `(max-width: ${round(upTo)}px)`
+}
+
+/**
  * Attributes a rule can override, and how each one is written as a declaration
  * value.
  *
@@ -200,11 +229,11 @@ export function stylesheet(compositions) {
     }
 
     const rules = gather(changes(state, elements, markup))
-    const query = `(max-width: ${round(level.upTo)}px)`
+    const asks = query(level.upTo)
     const inside = rules.map(({ ids, declarations }) => `  ${rule(ids.map((id) => `#${id}`).join(', '), declarations)}`)
 
-    lines.push('', `@media ${query} {`, ...inside, '}')
-    lines.push(`@container ${query} {`, ...inside, '}')
+    lines.push('', `@media ${asks} {`, ...inside, '}')
+    lines.push(`@container ${asks} {`, ...inside, '}')
     lines.push(
       ...rules.map(({ ids, declarations }) => {
         const selector = ids.flatMap((id) => level.classNames.map((name) => `.${name} #${id}`)).join(', ')

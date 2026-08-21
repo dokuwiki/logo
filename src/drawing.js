@@ -161,11 +161,11 @@ export class Drawing {
    * @param {object} spec What to compose
    * @param {URL} spec.file The design file, given as a URL so that it resolves
    *   beside the module naming it
-   * @param {Object<string, {alone?: function(object): object,
+   * @param {Object<string, {takes: string[], alone?: function(object): object,
    *   within?: function(object, object): object}>} spec.kinds The kinds of part
-   *   this design can name, and how each one is made. A part placed against the
-   *   canvas is made on its own; a part placed in another part is made from it,
-   *   so it follows wherever that part goes.
+   *   this design can name, what each one can be told, and how each one is made.
+   *   A part placed against the canvas is made on its own; a part placed in
+   *   another part is made from it, so it follows wherever that part goes.
    */
   constructor({ file, kinds }) {
     /**
@@ -228,10 +228,16 @@ export class Drawing {
    * drawing is, so each variant carries the classes it has to serve: its own and
    * every smaller one.
    *
+   * Both mechanisms that pick a level by size read the levels in the order they
+   * are given, so a design that lists them out of order draws the wrong one at
+   * every size rather than saying so.
+   *
    * @returns {Array<{name: string, class: string|undefined, upTo: number|null,
    *   classNames: string[]}>} The variants
+   * @throws {Error} If the levels of detail are not listed largest first
    */
   get variants() {
+    if (this.bySize) this.ordered()
     return this.design.variants.map((variant, at) => ({
       name: variant.name,
       class: variant.class,
@@ -243,6 +249,29 @@ export class Drawing {
             .filter(Boolean)
         : [],
     }))
+  }
+
+  /**
+   * Check that the levels of detail are listed largest first: a level that names
+   * no size stands for every size and comes first, and each level after it names
+   * a smaller size than the level before it.
+   *
+   * @returns {void}
+   * @throws {Error} If a level does not apply below the one before it
+   */
+  ordered() {
+    const reach = (level) => (level.upTo === undefined ? 'every size' : `up to ${level.upTo}`)
+    const levels = this.design.variants
+
+    for (let at = 1; at < levels.length; at++) {
+      const larger = levels[at - 1]
+      const smaller = levels[at]
+      if (smaller.upTo !== undefined && (larger.upTo === undefined || smaller.upTo < larger.upTo)) continue
+      throw new Error(
+        `${smaller.name} applies ${reach(smaller)} and comes after ${larger.name}, which applies ` +
+          `${reach(larger)}, and the levels are listed largest first`,
+      )
+    }
   }
 
   /**
@@ -357,13 +386,18 @@ export class Drawing {
    * @param {Object} spec One part, as the design says it
    * @param {Map<string, object>} made The parts already made, by id
    * @returns {object} The part
-   * @throws {Error} If it is of no known kind, cannot go where it is placed, or
-   *   gives a point in neither form
+   * @throws {Error} If it is of no known kind, is told something that kind is
+   *   not told, cannot go where it is placed, or gives a point in neither form
    */
   make(spec, made) {
     const { is, in: within, crossedBy, show, ...rest } = spec
     const kind = this.kinds[is]
     if (!kind) throw new Error(`${spec.id} is a ${is}, which is no kind of part`)
+    if (!kind.takes) throw new Error(`a ${is} says nothing of what it is told, so nothing can be told to one`)
+
+    for (const name of Object.keys(rest)) {
+      if (!kind.takes.includes(name)) throw new Error(`${spec.id} is given ${name}, which is nothing a ${is} is told`)
+    }
 
     const crossing = crossedBy ? { crossedBy: crossedBy.map((id) => made.get(id)) } : {}
 

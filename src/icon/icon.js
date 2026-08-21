@@ -16,7 +16,7 @@ import { Pencil } from './pencil.js'
 export const icon = new Drawing({
   file: new URL('icon.yaml', import.meta.url),
   kinds: {
-    page: { alone: (spec) => new Page(spec) },
-    pencil: { alone: (spec) => new Pencil(spec) },
+    page: { takes: Page.takes, alone: (spec) => new Page(spec) },
+    pencil: { takes: Pencil.takes, alone: (spec) => new Pencil(spec) },
   },
 })

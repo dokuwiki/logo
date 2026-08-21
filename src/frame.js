@@ -44,7 +44,6 @@ export class Frame {
    * The frame written as a transform, so that whatever is drawn in the frame's
    * own measure lands in place.
    *
-   *
    * @param {number} [scale] How much larger than its own measure to draw it
    * @param {number} [along] How far along the axis to start instead
    * @param {number} [across] How far across the axis to start instead

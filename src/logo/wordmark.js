@@ -8,6 +8,7 @@
 
 import { checkCoverage, loadFont, VENDORED } from '../font.js'
 import { compact, pen } from '../path.js'
+import { drawn } from '../parts.js'
 import { extent } from '../plane.js'
 
 /**
@@ -33,6 +34,14 @@ export class Wordmark {
     font: VENDORED,
     tracking: 0.054,
   }
+
+  /**
+   * What a design can tell a word mark, besides where it is placed and whether
+   * it is drawn, which every part is told the same way.
+   *
+   * @type {string[]}
+   */
+  static takes = ['id', 'text', 'at', 'size', 'fill', 'stroke', 'draws', 'fills', ...Object.keys(Wordmark.proportions)]
 
   /**
    * Write on a sheet.
@@ -91,17 +100,14 @@ export class Wordmark {
     }
 
     const parts = this.share(glyphs)
-    const drawn = this.draws ?? [...parts.keys()]
-    for (const name of drawn) {
-      if (!parts.has(name)) throw new Error(`the word mark has no part called ${name}`)
-    }
-    if (!drawn.length) return []
+    const names = drawn([...parts.keys()], this.draws, 'the word mark')
+    if (!names.length) return []
 
-    const place = this.placed(extent(drawn.flatMap((name) => parts.get(name).boxes)))
+    const place = this.placed(extent(names.flatMap((name) => parts.get(name).boxes)))
     const outline = this.stroke
       ? { stroke: this.stroke.colour, 'stroke-width': this.stroke.width, 'stroke-linejoin': 'round' }
       : {}
-    return drawn.map((name) => ({
+    return names.map((name) => ({
       tag: 'path',
       attrs: {
         id: `${this.id}-${name}`,

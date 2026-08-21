@@ -16,7 +16,7 @@ import { line } from './logo/line.js'
 import { logo } from './logo/logo.js'
 
 import { serialiseDocument, shorten } from './emit.js'
-import { stylesheet } from './responsive.js'
+import { stylesheet, variantAt } from './responsive.js'
 import { flatten } from './flatten.js'
 
 /**
@@ -56,12 +56,12 @@ const FAVICON = [16, 32, 48]
  * taking the flag off is how the cut is checked.
  *
  * @type {Array<{drawing: import('./drawing.js').Drawing, stem: string,
- *   sizes?: number[], favicon?: number[], flatten?: boolean}>}
+ *   sizes?: number[], favicon?: number[], cut?: boolean}>}
  */
 const DRAWINGS = [
   { drawing: logo, stem: 'dokuwiki-logo', sizes: SIZES, favicon: FAVICON },
-  { drawing: icon, stem: 'dokuwiki-icon', flatten: true },
-  { drawing: line, stem: 'dokuwiki-logo-line', flatten: true },
+  { drawing: icon, stem: 'dokuwiki-icon', cut: true },
+  { drawing: line, stem: 'dokuwiki-logo-line', cut: true },
 ]
 
 /**
@@ -75,18 +75,6 @@ const DRAWINGS = [
 function write(name, body, note) {
   writeFileSync(join(DIST, name), body)
   console.log(`wrote dist/${name}, ${body.length} bytes, ${note}`)
-}
-
-/**
- * The variant a size is drawn at: the smallest one that still answers at that
- * size, which is the variant the responsive file switches to there.
- *
- * @param {Array<{upTo: number|null}>} variants The variants, largest first
- * @param {number} size Edge length in pixels
- * @returns {object} The variant to draw
- */
-function variantAt(variants, size) {
-  return variants.filter((variant) => variant.upTo === null || size <= variant.upTo).at(-1)
 }
 
 /**
@@ -153,11 +141,11 @@ function flatName(stem, variant, of) {
  * @param {string} entry.stem What its files are called
  * @param {number[]} [entry.sizes] The sizes to write a PNG at, largest first
  * @param {number[]} [entry.favicon] The sizes favicon.ico carries
- * @param {boolean} [entry.flatten] Whether each variant becomes one path, its
+ * @param {boolean} [entry.cut] Whether each variant becomes one path, its
  *   ground cut out of its ink
  * @returns {Promise<void>}
  */
-async function writeDrawing({ drawing, stem, sizes, favicon, flatten: cut }) {
+async function writeDrawing({ drawing, stem, sizes, favicon, cut }) {
   const document = { size: drawing.canvas, title: drawing.title }
   const compositions = []
   for (const variant of drawing.variants) {

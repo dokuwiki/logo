@@ -4,11 +4,11 @@
 # square grid that guideline is written in. It does not adapt to size, so its
 # two variants are styles rather than levels of detail.
 #
-# Every part is said the same way the logo's parts are, so four questions have
-# one answer each: "at" moves it, "size" makes it larger or smaller,
-# "stroke.width" sets how heavy its outline is, and "show" hides or shows it.
-# How each kind looks belongs to the kind, in page.js and pencil.js beside this
-# file.
+# Every part is said the same way the logo's parts are, so each question has one
+# answer wherever it is asked: "at" moves it, "size" says how big it is against
+# the frame it hangs in, "stroke.width" how heavy its outline is, and "show"
+# whether it is drawn at all. How each kind looks belongs to the kind, in page.js
+# and pencil.js beside this file.
 
 # The accessible name every drawing of it carries.
 title: DokuWiki Icon
@@ -60,7 +60,6 @@ parts:
     in: canvas
     at: {x: 11, y: 11}          # where its point sits on the canvas
     turn: -40                   # which way it lies, in degrees
-    size: 1                     # how much larger than a standard icon pencil
     fill: ink
 
   # The pencil out through the sheet's bottom right corner, pointing up and left,
@@ -72,7 +71,6 @@ parts:
     in: canvas
     at: {x: 7, y: 15}
     turn: 30
-    size: 1
     fill: ink
 
 # The two styles. Outlined, the sheet is a line and each pencil shows its wall as

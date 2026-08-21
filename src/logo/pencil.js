@@ -13,7 +13,8 @@
 import { Frame } from '../frame.js'
 import { ellipse, inset, outline, shaped } from '../path.js'
 import { lit } from './palette.js'
-import { Point } from '../plane.js'
+import { drawn } from '../parts.js'
+import { centre, Point } from '../plane.js'
 import { skia } from '../skia.js'
 
 /**
@@ -89,6 +90,29 @@ export class Pencil {
   }
 
   /**
+   * What a design can tell a pencil, besides where it is placed and whether it
+   * is drawn, which every part is told the same way. Every proportion can be
+   * said outright, which is how a design tunes one pencil without giving it a
+   * shape of its own.
+   *
+   * @type {string[]}
+   */
+  static takes = [
+    'id',
+    'fill',
+    'bare',
+    'at',
+    'turn',
+    'lean',
+    'highlight',
+    'scale',
+    'shape',
+    'draws',
+    'keyline',
+    ...Object.keys(Pencil.proportions),
+  ]
+
+  /**
    * What a named shape changes about the standard pencil.
    *
    * @param {string} [name] Which shape, the standard pencil by default
@@ -117,7 +141,7 @@ export class Pencil {
    * @param {{colour: string, room: number}} [spec.keyline] What the pencil is
    *   drawn in where it keeps room from whatever lies behind it, and how much
    *   room that is
-   * @param {number} [spec.size] How much larger than a standard pencil this one
+   * @param {number} [spec.scale] How much larger than a standard pencil this one
    *   is drawn, which its frame carries, so a pencil of any size is the same
    *   shape
    * @param {string} [spec.shape] Which shape of pencil to draw, the standard
@@ -133,7 +157,7 @@ export class Pencil {
     turn,
     lean = 0,
     highlight = lit(fill),
-    size = 1,
+    scale = 1,
     shape,
     draws,
     keyline,
@@ -145,7 +169,7 @@ export class Pencil {
       bare,
       lean,
       highlight,
-      size,
+      scale,
       draws,
       keyline,
     })
@@ -197,17 +221,16 @@ export class Pencil {
    * @returns {string} Path data
    */
   barrel() {
-    const at = (along, across) => this.at(along, across)
     const widest = this.length - this.endTaper
     return outline(
       [
-        at(0, 0),
-        at(this.coneLength, -this.barrelWidth / 2),
-        at(widest, -this.barrelWidth / 2),
-        at(this.length, -this.endFace / 2),
-        at(this.length, this.endFace / 2),
-        at(widest, this.barrelWidth / 2),
-        at(this.coneLength, this.barrelWidth / 2),
+        this.at(0, 0),
+        this.at(this.coneLength, -this.barrelWidth / 2),
+        this.at(widest, -this.barrelWidth / 2),
+        this.at(this.length, -this.endFace / 2),
+        this.at(this.length, this.endFace / 2),
+        this.at(widest, this.barrelWidth / 2),
+        this.at(this.coneLength, this.barrelWidth / 2),
       ],
       this.bevel,
     )
@@ -239,11 +262,10 @@ export class Pencil {
    * @returns {string} Path data
    */
   facet() {
-    const at = (along, across) => this.at(along, across)
     const from = this.pointTo - this.pointChevron + this.paintRim
     const to = this.length - 2 * this.endTaper
     const edge = this.endNearFace / 2 - this.paintRim
-    return outline([at(from, -edge), at(to, -edge), at(to, edge), at(from, edge)], this.bevel)
+    return outline([this.at(from, -edge), this.at(to, -edge), this.at(to, edge), this.at(from, edge)], this.bevel)
   }
 
   /**
@@ -257,18 +279,17 @@ export class Pencil {
    * @returns {string} Path data
    */
   point() {
-    const at = (along, across) => this.at(along, across)
     const near = this.coneHalfWidth(this.pointFrom) - this.pointRim
     const far = this.coneHalfWidth(this.pointTo) - this.pointRim
     return outline(
       [
-        at(this.pointFrom, -near),
-        at(this.pointTo, -far),
-        at(this.pointTo - this.pointChevron, -far * this.facetEdge),
-        at(this.pointTo - this.pointChevron, far * this.facetEdge),
-        at(this.pointTo, far),
-        at(this.pointFrom, near),
-        at(this.pointFrom - this.pointNearChevron, 0),
+        this.at(this.pointFrom, -near),
+        this.at(this.pointTo, -far),
+        this.at(this.pointTo - this.pointChevron, -far * this.facetEdge),
+        this.at(this.pointTo - this.pointChevron, far * this.facetEdge),
+        this.at(this.pointTo, far),
+        this.at(this.pointFrom, near),
+        this.at(this.pointFrom - this.pointNearChevron, 0),
       ],
       this.pointBevel,
     )
@@ -309,12 +330,9 @@ export class Pencil {
   end() {
     const corners = inset(this.endFaceCorners(), this.paintRim)
     const wood = outline(corners, this.bevel)
-    const centre = corners
-      .reduce((total, corner) => total.add(corner), corners[0].mult(0))
-      .mult(1 / corners.length)
     const wider = this.nearness(this.length - this.endTaper * 1.5)
     const lead = ellipse(
-      centre,
+      centre(corners),
       { x: this.leadLength / 2, y: (this.leadWidth / 2) * wider },
       ALONG,
     )
@@ -334,7 +352,7 @@ export class Pencil {
   part(part, fill, data, rest = {}) {
     return {
       tag: 'path',
-      attrs: { id: `${this.id}-${part}`, fill, ...rest, transform: this.frame.matrix(this.size), d: data },
+      attrs: { id: `${this.id}-${part}`, fill, ...rest, transform: this.frame.matrix(this.scale), d: data },
     }
   }
 
@@ -378,10 +396,6 @@ export class Pencil {
       end: () => this.part('end', this.bare, this.end(), { 'fill-rule': 'evenodd' }),
     }
 
-    const drawn = this.draws ?? Object.keys(parts)
-    for (const name of drawn) {
-      if (!parts[name]) throw new Error(`a pencil has no part called ${name}`)
-    }
-    return drawn.map((name) => parts[name]())
+    return drawn(Object.keys(parts), this.draws, 'a pencil').map((name) => parts[name]())
   }
 }

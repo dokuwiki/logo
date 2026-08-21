@@ -7,6 +7,7 @@
  */
 
 import { compact, outline, pen } from '../path.js'
+import { drawn } from '../parts.js'
 import { radians } from '../plane.js'
 
 /**
@@ -19,6 +20,25 @@ export class Arrow {
    * @type {{headLength: number, headSpread: number, headBevel: number}}
    */
   static proportions = { headLength: 98, headSpread: 34.5, headBevel: 70 }
+
+  /**
+   * What a design can tell an arrow, besides where it is placed and whether it
+   * is drawn, which every part is told the same way.
+   *
+   * @type {string[]}
+   */
+  static takes = [
+    'id',
+    'from',
+    'to',
+    'swing',
+    'approach',
+    'stroke',
+    'keyline',
+    'draws',
+    'solid',
+    ...Object.keys(Arrow.proportions),
+  ]
 
   /**
    * Attach an arrow to a sheet.
@@ -65,7 +85,7 @@ export class Arrow {
   get tail() {
     const edge = this.sheet.edge(this.from.edge)
     const clear = (this.sheet.stroke?.width ?? 0) / 2
-    return this.sheet.onEdge(this.from.edge, this.from.along).add(edge.outward.mult(clear))
+    return this.sheet.onEdge(this.from).add(edge.outward.mult(clear))
   }
 
   /**
@@ -119,7 +139,7 @@ export class Arrow {
   shaftElement() {
     const { tail, tip, backwards } = this
     const outward = this.sheet.edge(this.from.edge).outward
-    const swing = this.sheet.onEdge(this.from.edge, this.from.along).add(outward.mult(this.swing))
+    const swing = this.sheet.onEdge(this.from).add(outward.mult(this.swing))
     const approach = tip.add(backwards.mult(this.approach))
 
     const path = pen()
@@ -194,10 +214,6 @@ export class Arrow {
       shaft: () => this.shaftElement(),
       head: () => this.headElement(),
     }
-    const drawn = this.draws ?? Object.keys(parts)
-    for (const name of drawn) {
-      if (!parts[name]) throw new Error(`an arrow has no part called ${name}`)
-    }
-    return drawn.flatMap((name) => parts[name]())
+    return drawn(Object.keys(parts), this.draws, 'an arrow').flatMap((name) => parts[name]())
   }
 }
