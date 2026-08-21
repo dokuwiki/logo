@@ -1,11 +1,11 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>DokuWiki logo at every size</title>
+<title>The DokuWiki logo at every size</title>
 <link rel="icon" href="../../dist/favicon.ico">
 <link rel="stylesheet" href="style.css">
 <body>
 <header>
-    <nav></nav>
+    <site-nav></site-nav>
 </header>
 
 <main>
@@ -13,18 +13,18 @@
         <h1>Every size</h1>
 
         <p>
-            The universal SVG displayed at every size using different usage methods:
+            The universal SVG at every size, once for each way of using it:
         </p>
 
         <ul>
-            <li>When used with an <code>&lt;img&gt;</code> tag, the file's media query does the adjustments</li>
-            <li>When used inline, the container query does the adjustments</li>
+            <li>When used with an <code>&lt;img&gt;</code> tag, the file's media query makes the adjustments</li>
+            <li>When used inline, the container query makes the adjustments</li>
             <li>When used inline with a class, the class enforces the adjustments</li>
         </ul>
     </section>
 
     <section>
-        <h2>large</h2>
+        <h2>Large</h2>
         <table>
             <thead>
             <tr>
@@ -38,21 +38,21 @@
             <tr>
                 <th scope="row">256px</th>
                 <td><img src="../../dist/dokuwiki-logo.svg" width="256" height="256" alt=""></td>
-                <td data-inline="256"></td>
-                <td data-inline="256" data-level=""></td>
+                <td><inline-svg src="dist/dokuwiki-logo.svg" size="256"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-logo.svg" size="256"></inline-svg></td>
             </tr>
             <tr>
                 <th scope="row">128px</th>
                 <td><img src="../../dist/dokuwiki-logo.svg" width="128" height="128" alt=""></td>
-                <td data-inline="128"></td>
-                <td data-inline="128" data-level=""></td>
+                <td><inline-svg src="dist/dokuwiki-logo.svg" size="128"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-logo.svg" size="128"></inline-svg></td>
             </tr>
             </tbody>
         </table>
     </section>
 
     <section>
-        <h2>medium</h2>
+        <h2>Medium</h2>
         <table>
             <thead>
             <tr>
@@ -66,27 +66,27 @@
             <tr>
                 <th scope="row">96px</th>
                 <td><img src="../../dist/dokuwiki-logo.svg" width="96" height="96" alt=""></td>
-                <td data-inline="96"></td>
-                <td data-inline="96" data-level="sz-md"></td>
+                <td><inline-svg src="dist/dokuwiki-logo.svg" size="96"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-logo.svg" size="96" class="sz-md"></inline-svg></td>
             </tr>
             <tr>
                 <th scope="row">64px</th>
                 <td><img src="../../dist/dokuwiki-logo.svg" width="64" height="64" alt=""></td>
-                <td data-inline="64"></td>
-                <td data-inline="64" data-level="sz-md"></td>
+                <td><inline-svg src="dist/dokuwiki-logo.svg" size="64"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-logo.svg" size="64" class="sz-md"></inline-svg></td>
             </tr>
             <tr>
                 <th scope="row">48px</th>
                 <td><img src="../../dist/dokuwiki-logo.svg" width="48" height="48" alt=""></td>
-                <td data-inline="48"></td>
-                <td data-inline="48" data-level="sz-md"></td>
+                <td><inline-svg src="dist/dokuwiki-logo.svg" size="48"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-logo.svg" size="48" class="sz-md"></inline-svg></td>
             </tr>
             </tbody>
         </table>
     </section>
 
     <section>
-        <h2>small</h2>
+        <h2>Small</h2>
         <table>
             <thead>
             <tr>
@@ -100,27 +100,27 @@
             <tr>
                 <th scope="row">40px</th>
                 <td><img src="../../dist/dokuwiki-logo.svg" width="40" height="40" alt=""></td>
-                <td data-inline="40"></td>
-                <td data-inline="40" data-level="sz-sm"></td>
+                <td><inline-svg src="dist/dokuwiki-logo.svg" size="40"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-logo.svg" size="40" class="sz-sm"></inline-svg></td>
             </tr>
             <tr>
                 <th scope="row">32px</th>
                 <td><img src="../../dist/dokuwiki-logo.svg" width="32" height="32" alt=""></td>
-                <td data-inline="32"></td>
-                <td data-inline="32" data-level="sz-sm"></td>
+                <td><inline-svg src="dist/dokuwiki-logo.svg" size="32"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-logo.svg" size="32" class="sz-sm"></inline-svg></td>
             </tr>
             <tr>
                 <th scope="row">24px</th>
                 <td><img src="../../dist/dokuwiki-logo.svg" width="24" height="24" alt=""></td>
-                <td data-inline="24"></td>
-                <td data-inline="24" data-level="sz-sm"></td>
+                <td><inline-svg src="dist/dokuwiki-logo.svg" size="24"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-logo.svg" size="24" class="sz-sm"></inline-svg></td>
             </tr>
             </tbody>
         </table>
     </section>
 
     <section>
-        <h2>extra small</h2>
+        <h2>Extra small</h2>
         <table>
             <thead>
             <tr>
@@ -134,40 +134,20 @@
             <tr>
                 <th scope="row">20px</th>
                 <td><img src="../../dist/dokuwiki-logo.svg" width="20" height="20" alt=""></td>
-                <td data-inline="20"></td>
-                <td data-inline="20" data-level="sz-xs"></td>
+                <td><inline-svg src="dist/dokuwiki-logo.svg" size="20"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-logo.svg" size="20" class="sz-xs"></inline-svg></td>
             </tr>
             <tr>
                 <th scope="row">16px</th>
                 <td><img src="../../dist/dokuwiki-logo.svg" width="16" height="16" alt=""></td>
-                <td data-inline="16"></td>
-                <td data-inline="16" data-level="sz-xs"></td>
+                <td><inline-svg src="dist/dokuwiki-logo.svg" size="16"></inline-svg></td>
+                <td><inline-svg src="dist/dokuwiki-logo.svg" size="16" class="sz-xs"></inline-svg></td>
             </tr>
             </tbody>
         </table>
     </section>
 </main>
 
-<script type="module">
-    /**
-     * Fill every slot that asks for the markup pasted into this page. A slot says
-     * the size it wants in data-inline and, where its level is to come from a
-     * class rather than from its size, that class in data-level. The drawing goes
-     * in front of what the slot already holds, so a caption stays under it.
-     *
-     * Pasting needs a script because no element loads a file as markup, and a
-     * container query or a class reaches the drawing only on a copy in this page.
-     */
-    const FILE = '../../dist/dokuwiki-logo.svg'
-    const source = await fetch(FILE).then((response) => response.text())
-    const parsed = new DOMParser().parseFromString(source, 'image/svg+xml')
-
-    for (const slot of document.querySelectorAll('[data-inline]')) {
-        const svg = document.importNode(parsed.documentElement, true)
-        svg.style.width = svg.style.height = `${slot.dataset.inline}px`
-        if (slot.dataset.level) svg.classList.add(slot.dataset.level)
-        slot.prepend(svg)
-    }
-</script>
+<script type="module" src="inline.js"></script>
 <script type="module" src="nav.js"></script>
 </body>

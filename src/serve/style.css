@@ -77,9 +77,11 @@ svg {
   outline: 1px solid #ddd;
 }
 
-/* A drawing told its level by a class has to answer for the class rules on its
-   own, so the container query is switched off inside it. */
-[data-level] svg {
+/* A class says which level to draw, so the container query is switched off
+   inside a drawing that carries one. */
+.sz-md svg,
+.sz-sm svg,
+.sz-xs svg {
   container-type: normal;
 }
 

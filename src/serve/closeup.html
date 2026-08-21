@@ -1,57 +1,40 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>DokuWiki logo up close</title>
+<title>The DokuWiki logo up close</title>
 <link rel="icon" href="../../dist/favicon.ico">
 <link rel="stylesheet" href="style.css">
 <body>
 <header>
-    <nav></nav>
+    <site-nav></site-nav>
 </header>
 
 <main>
     <section>
-        <h1>Close up</h1>
+        <h1>Close-up</h1>
 
-        <p>For debugging the different design levels up close.</p>
+        <p>For debugging the levels of detail up close.</p>
     </section>
     <section>
-        <h2>large</h2>
-        <figure data-level=""></figure>
-    </section>
-
-    <section>
-        <h2>medium</h2>
-        <figure data-level="sz-md"></figure>
+        <h2>Large</h2>
+        <figure><inline-svg src="dist/dokuwiki-logo.svg" size="1024"></inline-svg></figure>
     </section>
 
     <section>
-        <h2>small</h2>
-        <figure data-level="sz-sm"></figure>
+        <h2>Medium</h2>
+        <figure><inline-svg src="dist/dokuwiki-logo.svg" size="1024" class="sz-md"></inline-svg></figure>
     </section>
 
     <section>
-        <h2>extra small</h2>
-        <figure data-level="sz-xs"></figure>
+        <h2>Small</h2>
+        <figure><inline-svg src="dist/dokuwiki-logo.svg" size="1024" class="sz-sm"></inline-svg></figure>
+    </section>
+
+    <section>
+        <h2>Extra small</h2>
+        <figure><inline-svg src="dist/dokuwiki-logo.svg" size="1024" class="sz-xs"></inline-svg></figure>
     </section>
 </main>
 
-<script type="module">
-    /**
-     * Paste the drawing into each level's slot and tell it its level by a class.
-     * Pasting needs a script because no element loads a file as markup, and a
-     * class reaches the drawing only on a copy in this page.
-     */
-    const FILE = '../../dist/dokuwiki-logo.svg'
-    const SIZE = '1024px'
-    const source = await fetch(FILE).then((response) => response.text())
-    const parsed = new DOMParser().parseFromString(source, 'image/svg+xml')
-
-    for (const slot of document.querySelectorAll('[data-level]')) {
-        const svg = document.importNode(parsed.documentElement, true)
-        svg.style.width = svg.style.height = SIZE
-        if (slot.dataset.level) svg.classList.add(slot.dataset.level)
-        slot.append(svg)
-    }
-</script>
+<script type="module" src="inline.js"></script>
 <script type="module" src="nav.js"></script>
 </body>
