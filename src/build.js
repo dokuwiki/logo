@@ -9,6 +9,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import pngToIco from 'png-to-ico'
+import sharp from 'sharp'
 import { Resvg } from '@resvg/resvg-js'
 
 import { icon } from './icon/icon.js'
@@ -59,6 +60,13 @@ const SIZES = [256, 128, 96, 64, 48, 40, 32, 24, 20, 16]
 const FAVICON = [16, 32, 48]
 
 /**
+ * The apple touch icon's tile, at the width iOS asks for.
+ *
+ * @type {{size: number, margin: number, ground: string}}
+ */
+const TOUCH = { size: 180, margin: 10, ground: '#ffffff' }
+
+/**
  * The designs the build writes, and what each one is written as.
  *
  * A drawing says what it is; this says what comes of it. Whether a variant is
@@ -67,10 +75,11 @@ const FAVICON = [16, 32, 48]
  * taking the flag off is how the cut is checked.
  *
  * @type {Array<{drawing: import('./drawing.js').Drawing, stem: string,
- *   sizes?: number[], favicon?: number[], cut?: boolean}>}
+ *   sizes?: number[], favicon?: number[],
+ *   touch?: {size: number, margin: number, ground: string}, cut?: boolean}>}
  */
 const DRAWINGS = [
-  { drawing: logo, stem: 'dokuwiki-logo', sizes: SIZES, favicon: FAVICON },
+  { drawing: logo, stem: 'dokuwiki-logo', sizes: SIZES, favicon: FAVICON, touch: TOUCH },
   { drawing: icon, stem: 'dokuwiki-icon', cut: true },
   { drawing: line, stem: 'dokuwiki-logo-line', cut: true },
 ]
@@ -118,6 +127,24 @@ function raster(svg, size) {
 }
 
 /**
+ * Lay one variant on an opaque tile, inside a margin.
+ *
+ * The variant is drawn at the room the margin leaves it, so nothing is
+ * resampled. The tile carries no alpha channel, because the ground covers every
+ * pixel.
+ *
+ * @param {string} svg A variant's flat file
+ * @param {{size: number, margin: number, ground: string}} tile The tile, as
+ *   TOUCH says it
+ * @returns {Promise<Buffer>} A PNG
+ */
+function tiled(svg, { size, margin, ground }) {
+  const canvas = { create: { width: size, height: size, channels: 4, background: ground } }
+  const drawing = { input: raster(svg, size - 2 * margin), left: margin, top: margin }
+  return sharp(canvas).composite([drawing]).removeAlpha().png().toBuffer()
+}
+
+/**
  * The elements one variant is written with.
  *
  * A drawing whose files are one path is cut into one. Otherwise ids are cut down
@@ -155,20 +182,20 @@ function flatName(stem, variant, of) {
  * Write every file one design comes to.
  *
  * Every drawing gets a flat file per variant. A drawing whose variants are
- * levels of detail also gets the one file that carries them all and switches
- * between them as it is drawn smaller, a PNG at each size it is given, and an
- * icon.
+ * levels of detail also gets the one file that carries them all.
  *
  * @param {object} entry One design, as DRAWINGS says it
  * @param {import('./drawing.js').Drawing} entry.drawing The drawing
  * @param {string} entry.stem What its files are called
  * @param {number[]} [entry.sizes] The sizes to write a PNG at, largest first
  * @param {number[]} [entry.favicon] The sizes favicon.ico carries
+ * @param {{size: number, margin: number, ground: string}} [entry.touch] The
+ *   apple touch icon's tile
  * @param {boolean} [entry.cut] Whether each variant becomes one path, its
  *   ground cut out of its ink
  * @returns {Promise<void>}
  */
-async function writeDrawing({ drawing, stem, sizes, favicon, cut }) {
+async function writeDrawing({ drawing, stem, sizes, favicon, touch, cut }) {
   const document = { size: drawing.canvas, title: drawing.title }
   const compositions = []
   for (const variant of drawing.variants) {
@@ -192,6 +219,16 @@ async function writeDrawing({ drawing, stem, sizes, favicon, cut }) {
       flatName(stem, variant.name, compositions.length),
       svg,
       `variant ${variant.name}, ${variant.elements.length} elements`,
+    )
+  }
+
+  if (touch) {
+    const room = touch.size - 2 * touch.margin
+    const variant = variantAt(compositions, room)
+    write(
+      'apple-touch-icon.png',
+      await tiled(flat.get(variant), touch),
+      `variant ${variant.name} at ${room}px on a ${touch.size}px ${touch.ground} tile`,
     )
   }
 
