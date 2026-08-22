@@ -15,6 +15,7 @@ import { icon } from './icon/icon.js'
 import { line } from './logo/line.js'
 import { logo } from './logo/logo.js'
 
+import { graphic } from './graphics/graphics.js'
 import { serialiseDocument, shorten } from './emit.js'
 import { stylesheet, variantAt } from './responsive.js'
 import { flatten } from './flatten.js'
@@ -25,6 +26,16 @@ import { flatten } from './flatten.js'
  * @type {string}
  */
 const DIST = join(dirname(fileURLToPath(import.meta.url)), '..', 'dist')
+
+/**
+ * Where the graphics go, under dist.
+ *
+ * They sit in a directory of their own because they are not the logo: someone
+ * reaching for a logo file should not have to step over them to find one.
+ *
+ * @type {string}
+ */
+const GRAPHICS_DIR = 'graphics'
 
 /**
  * The sizes a PNG is written at, largest first.
@@ -63,6 +74,18 @@ const DRAWINGS = [
   { drawing: icon, stem: 'dokuwiki-icon', cut: true },
   { drawing: line, stem: 'dokuwiki-logo-line', cut: true },
 ]
+
+/**
+ * The graphics the build composites, each by the placement file that says it.
+ *
+ * A drawing is composed, so its entry says what is made of it. A graphic is a
+ * stack of finished pictures, so its entry says nothing more than the file to
+ * read: that file says how big the graphic is, what goes on it, and what it is
+ * written as.
+ *
+ * @type {string[]}
+ */
+const GRAPHICS = ['button.yaml', 'forum.yaml', 'translate.yaml', 'patreon.yaml']
 
 /**
  * Write one file into dist and say what went into it.
@@ -186,5 +209,11 @@ async function writeDrawing({ drawing, stem, sizes, favicon, cut }) {
   }
 }
 
-mkdirSync(DIST, { recursive: true })
+// making the graphics directory makes dist as well
+mkdirSync(join(DIST, GRAPHICS_DIR), { recursive: true })
 for (const entry of DRAWINGS) await writeDrawing(entry)
+
+for (const name of GRAPHICS) {
+  const made = await graphic(new URL(`graphics/${name}`, import.meta.url), DIST)
+  write(join(GRAPHICS_DIR, made.file), made.body, made.note)
+}

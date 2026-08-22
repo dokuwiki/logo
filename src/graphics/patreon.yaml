@@ -1,0 +1,38 @@
+# The Patreon banner: the logo printed on a sheet of crumpled paper.
+
+# What this graphic is, and where it is used.
+title: DokuWiki Patreon banner
+where: https://www.patreon.com/dokuwiki
+
+# The file the build writes, under dist/graphics/. A photograph is written as a
+# JPEG, which costs a tenth of what the same picture costs as a PNG.
+file: dokuwiki-patreon.jpg
+
+# The size Patreon asks a banner to be. The paper covers all of it, so nothing
+# shows through and the graphic needs no ground.
+size: {w: 1200, h: 600}
+
+layers:
+  # The photograph, cropped to the banner beforehand and not by this build, so
+  # what is checked in is what is drawn.
+  - id: paper
+    file: patreon-paper.jpg
+    at: {x: 0, y: 0}
+
+  # The logo at the right, as large as it is on the banner in use today, whose
+  # logo measures about 250 across, and centred where that one is centred.
+  #
+  # It is multiplied into the paper, which is how ink on paper behaves: every
+  # crease and shadow the photograph holds darkens the drawing with it, so the
+  # logo lies on the sheet rather than over it.
+  #
+  # Three quarters of the ink is laid down, so that the print sits back on the
+  # sheet a little. That is what makes a multiplied layer fainter; fading it
+  # instead darkens it, and laying it over the paper rather than into it washes
+  # its colours out and leaves it floating.
+  - id: logo
+    file: dokuwiki-logo-lg.svg
+    at: {x: 864, y: 175}
+    size: {w: 250, h: 250}
+    ink: 0.75
+    blend: multiply

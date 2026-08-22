@@ -1,0 +1,31 @@
+# The button: the small badge sites trade to say they run DokuWiki.
+
+# What this graphic is, and where it is used.
+title: DokuWiki button
+where: https://www.dokuwiki.org/lib/tpl/dokuwiki/images/button-dw.png
+
+# The file the build writes, under dist/graphics/.
+file: dokuwiki-button.png
+
+# The size the button is today and stays, which is the size these small badges
+# were traded at.
+#
+# The template covers all of it, so the graphic needs no ground.
+size: {w: 80, h: 15}
+
+layers:
+  # The border, the cell the logo sits in, the bar and the wording, as one
+  # picture. The wording is lifted pixel for pixel out of the button in use
+  # today, so no font has to be matched and nothing has to be rendered at 7px, a
+  # size antialiased type does not survive.
+  - id: bar
+    file: button-bar.png
+    at: {x: 0, y: 0}
+
+  # The logo, as tall as the 13px cell and centred across it. The cell is 23px
+  # wide, because that is what it holds today, and a square logo can only fill
+  # its height.
+  - id: logo
+    file: dokuwiki-logo-xs.svg
+    at: {x: 7, y: 1}
+    size: {w: 13, h: 13}

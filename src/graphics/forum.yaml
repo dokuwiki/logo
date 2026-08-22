@@ -1,0 +1,30 @@
+# The forum header: the logo, with the forum's own wording to its right.
+
+# What this graphic is, and where it is used.
+title: DokuWiki forum header
+where: https://forum.dokuwiki.org/
+
+# The file the build writes, under dist/graphics/.
+file: dokuwiki-forum.png
+
+# How big the finished graphic is. The header in use today is this size, and it
+# stays it: the classic logo block is 53px of ink there and the new logo is 53px
+# of ink at the same height, so nothing has to move to make room.
+#
+# There is no ground, so the graphic is transparent behind the two layers, which
+# is what a header on the forum's own colour needs.
+size: {w: 241, h: 54}
+
+layers:
+  # The logo fills the height, at the level of detail that serves 54px.
+  - id: logo
+    file: dokuwiki-logo-md.svg
+    at: {x: 0, y: 0}
+    size: {w: 54, h: 54}
+
+  # "DokuWiki" over "User Forum", cut out of the header in use today from x=66,
+  # where its first letter starts, so the type is exactly the type in use. It
+  # sits 13px from the logo's ink, the gap it has today.
+  - id: wording
+    file: forum-wording.png
+    at: {x: 66, y: 0}

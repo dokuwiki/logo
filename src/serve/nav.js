@@ -25,6 +25,7 @@ class SiteNav extends HTMLElement {
     { path: 'src/serve/closeup.html', name: 'Close-up' },
     { path: 'src/serve/icon.html', name: 'Icon' },
     { path: 'src/serve/line.html', name: 'Line art' },
+    { path: 'src/serve/graphics.html', name: 'Graphics' },
   ]
 
   /**

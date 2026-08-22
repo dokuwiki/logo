@@ -1,0 +1,31 @@
+# The translate graphic: the logo with a badge that says this is about
+# translation.
+
+# What this graphic is, and where it is used.
+title: DokuWiki translate graphic
+where: https://translate.dokuwiki.org/
+
+# The file the build writes, under dist/graphics/.
+file: dokuwiki-translate.png
+
+# The size the graphic is today and stays. It is not square, and a square logo
+# is, so the logo sits in the corner it fills and the badge takes the room that
+# is left.
+#
+# Leaving the ground out leaves the graphic transparent.
+size: {w: 128, h: 119}
+
+layers:
+  # The logo as large as the canvas allows, at the level of detail that serves
+  # this size.
+  - id: logo
+    file: dokuwiki-logo-lg.svg
+    at: {x: 12, y: 3}
+    size: {w: 116, h: 116}
+
+  # The badge over the logo's top left corner. This is the layer the order of
+  # the list exists for: the logo is not the last thing laid down.
+  - id: badge
+    file: translate-badge.svg
+    at: {x: 0, y: 0}
+    size: {w: 46, h: 46}

@@ -77,6 +77,17 @@ svg {
   outline: 1px solid #ddd;
 }
 
+/* A graphic wider than the page fills it instead, at its own proportions. */
+figure.wide {
+  display: block;
+  margin-right: 0;
+}
+
+figure.wide img {
+  width: 100%;
+  height: auto;
+}
+
 /* A class says which level to draw, so the container query is switched off
    inside a drawing that carries one. */
 .sz-md svg,
