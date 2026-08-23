@@ -174,18 +174,17 @@ variants:
       arrow-green: {stroke: {width: 32}}
 
   # The first change of pose. An arrow's loop encloses a gap of a pixel or two,
-  # so the arrows go and the pencils carry the mark. The pale paper needs an
-  # outline to be seen, which a tilted fan of three sheets turns into a tangle
-  # of lines, so the stack stands upright and compact: two sheets, cut larger
-  # than the paper's own measure, with the outline on the canvas's own edge. The
-  # pencils keep the slant and the arrangement the whole drawing gives them, red
-  # steep and above, green shallow and below it and further left, because the
-  # mark is known by that. Each is grown from the blunt end that rests on the
-  # canvas edge, both at one size. The pair can grow no further than the strip of
-  # paper between red's point and green's barrel allows, which is down to a pixel
-  # and a third at 24px. The paper's corners are rounded more than twice as hard,
-  # or the round the whole drawing keeps is a pixel at 40px and reads as a plain
-  # rectangle.
+  # so the arrows go and the pencils carry the mark. The paper keeps its lean,
+  # but a fanned stack of three sheets turns into a tangle of outlines against
+  # the pale paper, so two sheets lean together instead, cut close to the paper's
+  # own measure and set a shade in from the canvas edge, where the turned corners
+  # have room to swing. The pencils keep their slant and arrangement — red steep
+  # and above, green shallow and below it and further left — because the mark is
+  # known by that. Each grows from the blunt end resting on the canvas edge, both
+  # at one size. The pair grows no further than the strip of paper between red's
+  # point and green's barrel allows, down to a pixel and a third at 24px. The
+  # paper's corners are rounded more than twice as hard, or the round drops to a
+  # pixel at 40px and reads as a plain rectangle.
   - name: sm
     class: sz-sm
     upTo: 40
@@ -193,9 +192,9 @@ variants:
       sheet-back-far: {show: false}
       sheet-back-near: {at: {x: 38.7, y: 58.1}, turn: 0, stroke: {width: 16}}
       sheet-front:
-        at: {x: 12, y: 12}
-        turn: 0
-        size: {w: 720, h: 913}
+        at: {x: 40, y: 100}
+        turn: -5.3
+        size: {w: 690, h: 875}
         radius: 64
         stroke: {width: 24}
       wordmark: {fills: 0.76}
@@ -210,18 +209,19 @@ variants:
         at: {x: 159.2, y: 625.7}
         scale: 1.28
 
-  # This level takes sm's pose and drops the two pieces of it that stop reading
-  # at 20px. The word mark goes: its letters stand four pixels tall and their
-  # strokes are finer than one, so they close up into a smudge. The sheet behind
-  # goes too: it peeks three quarters of a pixel out at the side under an
-  # outline a third of a pixel wide, too close to the front sheet's edge to read
-  # as another sheet. The paper is cut back to its own measure and set down and
-  # right by what it lost, so its right and bottom edges lie where sm's do. Both
-  # pencils stay as sm draws them, and each hangs further off the paper for it.
+  # This level takes sm's pose and drops what stops reading at 20px. The word mark
+  # goes: its letters stand four pixels tall and their strokes are finer than one,
+  # so they close up into a smudge. The sheet behind goes too: it peeks three
+  # quarters of a pixel out at the side under an outline a third of a pixel wide,
+  # too close to the front sheet's edge to read as another sheet. The lean goes
+  # with them: at this size it no longer reads as a lean, only skewing the corners
+  # and costing the paper its size, so the page stands upright again, square to
+  # the canvas and cut back to its own measure. Both pencils stay as sm draws
+  # them, so each hangs further off the paper.
   - name: xs
     class: sz-xs
     upTo: 20
     overrides:
       sheet-back-near: {show: false}
-      sheet-front: {at: {x: 68, y: 83}, size: {w: 664, h: 842}}
+      sheet-front: {at: {x: 68, y: 83}, turn: 0, size: {w: 664, h: 842}}
       wordmark: {show: false}

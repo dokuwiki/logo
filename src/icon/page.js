@@ -14,13 +14,14 @@
  * top, down the right edge, leftwards along the bottom, up the left edge — and
  * every distance round the page is measured that way from the top left corner.
  *
- * A Material icon is not turned, so the page is square to the canvas and its
- * points are already on it.
+ * The page hangs in its own frame, so a turn carries every point with it, and
+ * the distances measured round it turn with the page.
  */
 
 import { OUTLINE, painting, SOLID } from './paint.js'
 import { compact, pen, shaped } from '../path.js'
 import { Point, through } from '../plane.js'
+import { Frame } from '../frame.js'
 import { skia } from '../skia.js'
 
 /**
@@ -64,7 +65,7 @@ export class Page {
    *
    * @type {string[]}
    */
-  static takes = ['id', 'at', 'size', 'radius', 'fill', 'stroke', 'clear', 'paint']
+  static takes = ['id', 'at', 'turn', 'size', 'radius', 'fill', 'stroke', 'clear', 'paint']
 
   /**
    * Place a page.
@@ -73,6 +74,8 @@ export class Page {
    * @param {string} spec.id Element id, used as a prefix for what it draws
    * @param {{x: number, y: number}} spec.at Top left corner of the stroke's
    *   centre line
+   * @param {number} [spec.turn] How far the page is turned about that corner, in
+   *   degrees
    * @param {{w: number, h: number}} spec.size How wide and how tall that centre
    *   line is
    * @param {number} spec.radius Radius that centre line's corners are rounded to
@@ -90,11 +93,11 @@ export class Page {
    *   by a part that offers no outline to keep clear of, or no shape for a solid
    *   page to take out
    */
-  constructor({ id, at, size, radius, fill, stroke, crossedBy = [], clear = 0, paint = OUTLINE }) {
+  constructor({ id, at, turn = 0, size, radius, fill, stroke, crossedBy = [], clear = 0, paint = OUTLINE }) {
     /** @type {string} Element id */
     this.id = id
-    /** @type {Point} Top left corner of the stroke's centre line */
-    this.origin = new Point(at.x, at.y)
+    /** @type {Frame} The page's own frame, its origin the stroke's top left corner */
+    this.frame = new Frame(at, turn)
     /** @type {number} Width of that centre line */
     this.width = size.w
     /** @type {number} Height of that centre line */
@@ -148,7 +151,7 @@ export class Page {
    * @returns {Point} The corner
    */
   get corner() {
-    return new Point(this.origin.x - this.outset, this.origin.y - this.outset)
+    return this.frame.at(-this.outset, -this.outset)
   }
 
   /**
@@ -203,8 +206,7 @@ export class Page {
    */
   at(u, v) {
     const span = this.span
-    const corner = this.corner
-    return new Point(corner.x + u * span.w, corner.y + v * span.h)
+    return this.frame.at(-this.outset + u * span.w, -this.outset + v * span.h)
   }
 
   /**

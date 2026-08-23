@@ -39,8 +39,8 @@ export class Pencil {
    * What a pencil looks like, used unless a pencil is given its own.
    *
    * The width and the wall are Material's own, measured off edit_document on its
-   * 24 grid. The blunt end's radius is the logo pencil's, as the same fraction of
-   * the width.
+   * 24 grid. The blunt end's radius and the point's are the logo pencil's, each
+   * the same fraction of the width.
    *
    * The length keeps the blunt end inside the canvas. Cut flat, that end reaches
    * into the canvas corner by its corner rather than by its middle.
@@ -48,9 +48,10 @@ export class Pencil {
    * @type {Object<string, number>}
    */
   static proportions = {
-    length: 13,
+    length: 13.5,
     width: 4.35,
     end: 0.85,
+    nose: 0.5,
     wall: 1.5,
     parting: 0.75,
   }
@@ -76,6 +77,7 @@ export class Pencil {
    * @param {number} [spec.width] Across the barrel
    * @param {number} [spec.end] Radius the two corners of the blunt end are turned
    *   on
+   * @param {number} [spec.nose] Radius the point itself is turned on
    * @param {number} [spec.wall] How thick the wall looks
    * @param {number} [spec.parting] How thick the line across the pencil is
    * @throws {Error} If it is painted in no way a pencil can be painted, if the
@@ -145,15 +147,22 @@ export class Pencil {
   /**
    * The pencil as a convex outline, for anything that must keep clear of it.
    *
-   * It is the bar the pencil is drawn in rather than the drawn shape itself. The
-   * cuts that sharpen the point and the rounds on the blunt end both fall inside
-   * that bar, so whatever is held off the bar is held off the pencil.
+   * It is the convex hull of the silhouette: the point and the two shoulders
+   * taper the sharpened end, so the tip claims only the space it fills. The
+   * rounds on the point and the blunt end fall inside the hull, their corners
+   * left square, so whatever is held off the hull is held off the pencil.
    *
    * @returns {Array<import('../plane.js').Point>} Its corners, clockwise
    */
   get bounds() {
     const half = this.half
-    return [this.at(0, -half), this.at(this.length, -half), this.at(this.length, half), this.at(0, half)]
+    return [
+      this.at(0, 0),
+      this.at(half, -half),
+      this.at(this.length, -half),
+      this.at(this.length, half),
+      this.at(half, half),
+    ]
   }
 
   /**
@@ -183,9 +192,12 @@ export class Pencil {
   }
 
   /**
-   * The barrel's silhouette: the point, the two cuts opening out to the full
-   * width, the long run, and the blunt end cut flat across with both of its
-   * corners turned on a radius.
+   * The barrel's silhouette: the point turned on its own radius, the two cuts
+   * opening out to the full width, the long run, and the blunt end cut flat
+   * across with both of its corners turned on a radius.
+   *
+   * The path starts at a shoulder, not the point, so it does not start in the
+   * middle of a round. The two shoulders are left square.
    *
    * @returns {string} Path data for one closed subpath
    */
@@ -198,11 +210,11 @@ export class Pencil {
     const one = this.at(this.length, -half)
     const two = this.at(this.length, half)
 
-    path.moveTo(tip.x, tip.y)
-    path.lineTo(near.x, near.y)
+    path.moveTo(near.x, near.y)
     path.arcTo(one.x, one.y, two.x, two.y, this.end)
     path.arcTo(two.x, two.y, back.x, back.y, this.end)
     path.lineTo(back.x, back.y)
+    path.arcTo(tip.x, tip.y, near.x, near.y, this.nose)
     path.closePath()
     return compact(path.toString())
   }

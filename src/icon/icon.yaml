@@ -36,12 +36,13 @@ parts:
   - id: sheet
     is: page
     in: canvas
-    at: {x: 3, y: 3}                   # top left corner of the stroke's centre line
-    size: {w: 14, h: 18}
-    radius: 2
+    at: {x: 3, y: 4}                   # top left corner of the stroke's centre line
+    turn: -5.3                         # degrees, matching the logo's page
+    size: {w: 14.5, h: 18}
+    radius: 1.9
     fill: ink                          # what it is filled with where it is solid
     stroke: {colour: ink, width: 2}    # and drawn in where it is an outline
-    clear: &keyline 1
+    clear: 0.75
     crossedBy: [pencil-upper, pencil-lower]
 
   # The pencil across the sheet's top right corner, pointing down and left. It
@@ -50,20 +51,20 @@ parts:
   - id: pencil-upper
     is: pencil
     in: canvas
-    at: {x: 11, y: 11}          # where its point sits on the canvas
+    at: {x: 10.5, y: 11.2}      # where its point sits on the canvas
     turn: -40                   # which way it lies, in degrees
     fill: ink
-    parting: *keyline           # the line parting its point from its barrel
+    parting: 1.25               # the line parting its point from its barrel (filled only)
 
   # The pencil out through the sheet's bottom right corner, pointing up and left,
   # at the angle the logo gives its green pencil.
   - id: pencil-lower
     is: pencil
     in: canvas
-    at: {x: 7, y: 15}
+    at: {x: 6.5, y: 14.5}
     turn: 30
     fill: ink
-    parting: *keyline
+    parting: 1.25
 
 # The two styles. Outlined, the sheet is a line and each pencil is hollow. Solid,
 # the sheet is filled and each pencil with it, then taken back out with its clear
@@ -76,6 +77,8 @@ variants:
 
   - name: filled
     overrides:
-      sheet: {paint: solid}
+      sheet:
+        paint: solid
+        clear: 1.25 # same as the pencils' parting
       pencil-upper: {paint: solid}
       pencil-lower: {paint: solid}
