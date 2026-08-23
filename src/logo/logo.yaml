@@ -173,24 +173,23 @@ variants:
       arrow-red: {stroke: {width: 32}}
       arrow-green: {stroke: {width: 32}}
 
-  # The first change of pose. An arrow's loop encloses a gap of a pixel or two,
-  # so the arrows go and the pencils carry the mark. The paper keeps its lean,
-  # but a fanned stack of three sheets turns into a tangle of outlines against
-  # the pale paper, so two sheets lean together instead, cut close to the paper's
-  # own measure and set a shade in from the canvas edge, where the turned corners
-  # have room to swing. The pencils keep their slant and arrangement — red steep
-  # and above, green shallow and below it and further left — because the mark is
-  # known by that. Each grows from the blunt end resting on the canvas edge, both
-  # at one size. The pair grows no further than the strip of paper between red's
-  # point and green's barrel allows, down to a pixel and a third at 24px. The
-  # paper's corners are rounded more than twice as hard, or the round drops to a
-  # pixel at 40px and reads as a plain rectangle.
+  # The first pose change. At this size an arrow's loop encloses a gap of a pixel
+  # or two, so the arrows go. A third sheet tangles the outlines on the pale
+  # paper, so it goes and two remain. Both are cut close to the paper's measure
+  # and set in from the canvas edge, where the turned corners have room to swing.
+  # The front paper keeps its lean and the sheet behind leans steeper, so the two
+  # fan apart. The pencils keep their slant and arrangement — red steep and above,
+  # green shallow, below it and further left — because the mark is known by that.
+  # Each grows larger from the blunt end resting on the canvas edge, no further
+  # than the strip of paper between red's point and green's barrel allows. The
+  # paper's corners are rounded more than twice as hard, or they read as square
+  # at 40px.
   - name: sm
     class: sz-sm
     upTo: 40
     overrides:
       sheet-back-far: {show: false}
-      sheet-back-near: {at: {x: 38.7, y: 58.1}, turn: 0, stroke: {width: 16}}
+      sheet-back-near: {at: {y: 80}, stroke: {width: 16}}
       sheet-front:
         at: {x: 40, y: 100}
         turn: -5.3
