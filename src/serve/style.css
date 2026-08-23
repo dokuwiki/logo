@@ -179,3 +179,27 @@ td {
   inset: 16.6667%;
   outline: 1px solid #00a0e0;
 }
+
+/* The apple touch icon */
+
+/* The squircle iOS masks a touch icon with, laid over the tile. The radius is a
+   fraction of the tile, so it holds at any size, and the box has to hold the
+   tile and nothing else for that fraction to land.
+
+   Apple's shape is a superellipse, which corner-shape draws. Where a browser
+   lacks it the same radius rounds the corners a shade harder, which sits inside
+   the mask rather than outside it. */
+.squircle {
+  position: relative;
+  display: inline-block;
+}
+
+.squircle::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border: 1px solid #e0208a;
+  border-radius: 22.37%;
+  corner-shape: squircle;
+}
