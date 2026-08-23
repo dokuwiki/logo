@@ -1,32 +1,21 @@
 /**
- * A flat pencil, shaped the way Material's own edit_document shapes one.
+ * A flat pencil.
  *
- * A straight bar with a semicircular blunt end and a point cut symmetrically
- * across the other end. What the design gives is the silhouette itself rather
- * than a centre line to be stroked, so the width it asks for is the width the
- * pencil is. The frame is worked into the path data rather than left as a
- * transform, so what it draws carries no attribute but its own shape.
+ * The design gives the silhouette itself rather than a centre line to be stroked,
+ * so the width it asks for is the width the pencil is. The frame is worked into
+ * the path data rather than left as a transform, so what it draws carries no
+ * attribute but its own shape.
  *
- * How thick the wall looks is the hole in that silhouette, and which hole it
- * carries is the whole of the difference between the two paintings.
+ * The hole in that silhouette is the whole of the difference between the two
+ * paintings, and both say where the sharpened point ends with a line across.
  *
  * Lengths run along the pencil from its point, widths across it.
  */
 
 import { Frame } from '../frame.js'
 import { OUTLINE, painting, SOLID } from './paint.js'
-import { compact, pen } from '../path.js'
-
-/**
- * Which way a point lies from a centre, as an angle an arc can be drawn between.
- *
- * @param {import('../plane.js').Point} centre Middle of the arc
- * @param {import('../plane.js').Point} point A point on it
- * @returns {number} The angle in radians
- */
-function angleFrom(centre, point) {
-  return Math.atan2(point.y - centre.y, point.x - centre.x)
-}
+import { compact, grown as pushedOut, pen, shaped } from '../path.js'
+import { skia } from '../skia.js'
 
 /**
  * A closed outline through the given corners, every corner square.
@@ -49,16 +38,21 @@ export class Pencil {
   /**
    * What a pencil looks like, used unless a pencil is given its own.
    *
-   * The width, the wall and the ferrule are Material's own, measured off
-   * edit_document on its 24 grid.
+   * The width and the wall are Material's own, measured off edit_document on its
+   * 24 grid. The blunt end's radius is the logo pencil's, as the same fraction of
+   * the width.
+   *
+   * The length is what keeps the blunt end inside the canvas. Cut flat, that end
+   * reaches into the canvas corner by its corner rather than by its middle.
    *
    * @type {Object<string, number>}
    */
   static proportions = {
-    length: 14,
+    length: 13,
     width: 4.35,
+    end: 0.85,
     wall: 1.5,
-    ferrule: 5,
+    parting: 0.75,
   }
 
   /**
@@ -77,24 +71,26 @@ export class Pencil {
    * @param {{x: number, y: number}} spec.at The point
    * @param {number} spec.turn Which way it points, in degrees
    * @param {string} spec.fill What it is filled with
-   * @param {string} [spec.paint] Whether the hole is the wall or the ferrule mark
+   * @param {string} [spec.paint] Whether the hole is the hollow or the gap
    * @param {number} [spec.length] Point to blunt end
    * @param {number} [spec.width] Across the barrel
+   * @param {number} [spec.end] Radius the two corners of the blunt end are turned
+   *   on
    * @param {number} [spec.wall] How thick the wall looks
-   * @param {number} [spec.ferrule] The solid block at the blunt end
+   * @param {number} [spec.parting] How thick the line across the pencil is
    * @throws {Error} If it is painted in no way a pencil can be painted, if the
-   *   wall leaves no hole, or if the ferrule reaches back past the point
+   *   wall leaves no hollow, or if the hollow would be closed before it opens
    */
   constructor({ id, at, turn, fill, paint = OUTLINE, ...proportions }) {
     Object.assign(this, Pencil.proportions, proportions, { id, fill, paint: painting(paint, id, 'pencil') })
 
     if (this.inner <= 0) {
-      throw new Error(`${id} has a wall of ${this.wall} on a barrel ${this.width} across, which leaves no hole`)
+      throw new Error(`${id} has a wall of ${this.wall} on a barrel ${this.width} across, which leaves no hollow`)
     }
-    if (this.length - this.ferrule <= this.hollow + this.inner) {
+    if (this.length - this.wall <= this.hollow) {
       throw new Error(
-        `${id} has a ferrule of ${this.ferrule} on a pencil ${this.length} long, ` +
-          'so the hole in it would reach back past the point',
+        `${id} has a wall of ${this.wall} on a pencil ${this.length} long, ` +
+          'so the hollow in it would be closed before it opens',
       )
     }
 
@@ -103,7 +99,7 @@ export class Pencil {
   }
 
   /**
-   * Whether the hole is the ferrule mark rather than the wall.
+   * Whether the hole is the gap rather than the hollow.
    *
    * @returns {boolean} Whether it is solid
    */
@@ -112,8 +108,11 @@ export class Pencil {
   }
 
   /**
-   * Half the barrel's width, which is how far the silhouette stands from the
-   * axis and how large a radius the blunt end is turned on.
+   * Half the barrel's width, which is how far the silhouette stands from the axis
+   * and how far back from the shoulder the point's cuts reach.
+   *
+   * The cuts stand out and reach back by that same distance, so they meet the
+   * axis at 45 degrees.
    *
    * @returns {number} The distance
    */
@@ -122,8 +121,8 @@ export class Pencil {
   }
 
   /**
-   * How far the hole in the silhouette stands from the axis: the barrel's half
-   * width, less the wall on that side.
+   * How far the hollow stands from the axis: the barrel's half width, less the
+   * wall on that side.
    *
    * @returns {number} The distance
    */
@@ -132,7 +131,7 @@ export class Pencil {
   }
 
   /**
-   * How far along the pencil the hollow begins.
+   * How far along the pencil the cuts pulled in by the wall meet the axis.
    *
    * Pulling in two cuts that meet the axis at 45 degrees moves their meeting
    * point back along the axis by the wall's own diagonal.
@@ -147,7 +146,7 @@ export class Pencil {
    * The pencil as a convex outline, for anything that has to keep clear of it.
    *
    * It is the bar the pencil is drawn in rather than the drawn shape itself. The
-   * cuts that sharpen the point and the round of the blunt end both fall inside
+   * cuts that sharpen the point and the rounds on the blunt end both fall inside
    * that bar, so whatever is held off the bar is held off the pencil.
    *
    * @returns {Array<import('../plane.js').Point>} Its corners, clockwise
@@ -175,106 +174,96 @@ export class Pencil {
    * This is what anything keeping clear of the pencil follows, so what it leaves
    * around the pencil is an even margin rather than a wedge cut past it.
    *
-   * It is listed the other way round from the pencil itself, because it is a
-   * shape to be taken out of something rather than one to be drawn.
-   *
    * @param {number} room How much space to leave
-   * @returns {string} Path data for one closed subpath, anticlockwise
+   * @returns {string} Path data
+   * @throws {Error} If Skia cannot work the shape out
    */
   grown(room) {
-    const half = this.half
-    const length = this.length
-    const corner = room / Math.SQRT2
-    const path = pen()
-
-    const start = this.at(-corner, -corner)
-    const tip = this.at(0, 0)
-    const shoulder = (across) => this.at(half, across * half)
-    const cap = this.at(length - half, 0)
-    const turn = (centre, radius, from, to) =>
-      path.arc(centre.x, centre.y, radius, angleFrom(centre, from), angleFrom(centre, to), true)
-
-    path.moveTo(start.x, start.y)
-    turn(tip, room, start, this.at(-corner, corner))
-    turn(shoulder(1), room, this.at(half - corner, half + corner), this.at(half, half + room))
-    turn(cap, half + room, this.at(length - half, half + room), this.at(length - half, -half - room))
-    turn(shoulder(-1), room, this.at(half, -half - room), this.at(half - corner, -half - corner))
-    path.closePath()
-    return compact(path.toString())
+    return pushedOut(this.silhouette(), room)
   }
 
   /**
    * The barrel's silhouette: the point, the two cuts opening out to the full
-   * width, the long run, and the semicircular blunt end.
+   * width, the long run, and the blunt end cut flat across with both of its
+   * corners turned on a radius.
    *
-   * The cuts meet the axis at 45 degrees, which is what makes the point
-   * symmetric, so they reach back from the shoulder by exactly one half width.
-   *
-   * @returns {string} Path data for one closed subpath, clockwise
+   * @returns {string} Path data for one closed subpath
    */
   silhouette() {
     const half = this.half
-    const blunt = this.length - half
-    const centre = this.at(blunt, 0)
-    const from = this.at(blunt, -half)
-    const to = this.at(blunt, half)
     const path = pen()
-
     const tip = this.at(0, 0)
-    const shoulder = this.at(half, -half)
-    path.moveTo(tip.x, tip.y)
-    path.lineTo(shoulder.x, shoulder.y)
-    path.lineTo(from.x, from.y)
-    path.arc(centre.x, centre.y, half, angleFrom(centre, from), angleFrom(centre, to))
+    const near = this.at(half, -half)
     const back = this.at(half, half)
+    const one = this.at(this.length, -half)
+    const two = this.at(this.length, half)
+
+    path.moveTo(tip.x, tip.y)
+    path.lineTo(near.x, near.y)
+    path.arcTo(one.x, one.y, two.x, two.y, this.end)
+    path.arcTo(two.x, two.y, back.x, back.y, this.end)
     path.lineTo(back.x, back.y)
     path.closePath()
     return compact(path.toString())
   }
 
   /**
-   * The wall as a hole: the silhouette pulled in by the wall all round, cut off
-   * flat where the ferrule begins.
+   * The hollow as a hole: the silhouette pulled in by the wall all round, cut off
+   * flat where it first stands its full width from the axis.
    *
-   * @returns {string} Path data for one closed subpath, anticlockwise
+   * Cut there, it leaves the sharpened end of the pencil solid, parted from the
+   * hollow by one line across.
+   *
+   * @returns {string} Path data for one closed subpath
    */
   slot() {
     const inner = this.inner
-    const hollow = this.hollow
-    const far = this.length - this.ferrule
+    const near = this.hollow + inner
+    const far = this.length - this.wall
     return closed([
-      this.at(hollow, 0),
-      this.at(hollow + inner, inner),
+      this.at(near, inner),
       this.at(far, inner),
       this.at(far, -inner),
-      this.at(hollow + inner, -inner),
+      this.at(near, -inner),
     ])
   }
 
   /**
-   * The ferrule mark as a hole: a square as wide as the wall's own hole, set
-   * square to the axis and centred in the ferrule.
+   * The parting as a hole: a gap across the full width of the pencil, where the
+   * sharpened end meets the barrel.
    *
-   * @returns {string} Path data for one closed subpath, anticlockwise
+   * It begins at the shoulder and runs toward the blunt end, so it parts off the
+   * point itself. It reaches past the barrel on both sides, so it carries edge to
+   * edge however the barrel is shaped there.
+   *
+   * @returns {string} Path data for one closed subpath
    */
-  mark() {
-    const reach = this.inner
-    const middle = this.length - this.ferrule / 2
-    return closed([
-      this.at(middle - reach, -reach),
-      this.at(middle - reach, reach),
-      this.at(middle + reach, reach),
-      this.at(middle + reach, -reach),
-    ])
+  gap() {
+    const reach = this.width
+    const from = this.half
+    const to = from + this.parting
+    return closed([this.at(from, -reach), this.at(from, reach), this.at(to, reach), this.at(to, -reach)])
   }
 
   /**
-   * The pencil as drawable elements: the silhouette with one hole in it.
+   * The pencil as drawable elements: the silhouette with its hole taken out.
+   *
+   * Skia takes the hole out here rather than the hole being laid over the
+   * silhouette wound the other way. The parting's edges lie along the barrel's
+   * own, and a boolean operation later can close up a hole that only winds
+   * against a shape it touches.
    *
    * @returns {Array<{tag: string, attrs: Object}>} One path
+   * @throws {Error} If Skia cannot take the hole out
    */
   elements() {
-    const hole = this.solid ? this.mark() : this.slot()
-    return [{ tag: 'path', attrs: { id: `${this.id}-barrel`, fill: this.fill, d: `${this.silhouette()} ${hole}` } }]
+    const hole = this.solid ? this.gap() : this.slot()
+    const shape = skia.Path.MakeFromOp(
+      skia.Path.MakeFromSVGString(this.silhouette()),
+      skia.Path.MakeFromSVGString(hole),
+      skia.PathOp.Difference,
+    )
+    if (!shape) throw new Error(`the hole in ${this.id} is a shape Skia cannot take out of it`)
+    return [{ tag: 'path', attrs: { id: `${this.id}-barrel`, fill: this.fill, d: shaped(shape) } }]
   }
 }

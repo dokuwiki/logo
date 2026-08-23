@@ -37,6 +37,9 @@ parts:
   # of them; where the breaks fall follows from where those pencils are, so
   # moving a pencil moves its break with it.
   #
+  # Solid, that clear space is the width of every white line in the drawing, so
+  # the pencils take it by name here for the line each of them is parted by.
+  #
   # Both pencils leave on the right, so both ends of the right edge are broken and
   # what is left of it stands clear of the corners rather than meeting either.
   # Drawn, it reads as the sheet's own edge; left out, the sheet reads as a
@@ -49,18 +52,19 @@ parts:
     radius: 2
     fill: ink                          # what it is filled with where it is solid
     stroke: {colour: ink, width: 2}    # and drawn in where it is an outline
-    clear: 0.75
+    clear: &keyline 1
     crossedBy: [pencil-upper, pencil-lower]
 
   # The pencil across the sheet's top right corner, pointing down and left. It
-  # lies at the angle the logo gives its red pencil, and its blunt end runs to
-  # within a unit of the canvas edge.
+  # lies at the angle the logo gives its red pencil, and its blunt end runs out
+  # into the margin around the live area.
   - id: pencil-upper
     is: pencil
     in: canvas
     at: {x: 11, y: 11}          # where its point sits on the canvas
     turn: -40                   # which way it lies, in degrees
     fill: ink
+    parting: *keyline           # the line parting its point from its barrel
 
   # The pencil out through the sheet's bottom right corner, pointing up and left,
   # at the angle the logo gives its green pencil. Lying this shallow it cannot
@@ -72,9 +76,11 @@ parts:
     at: {x: 7, y: 15}
     turn: 30
     fill: ink
+    parting: *keyline
 
-# The two styles. Outlined, the sheet is a line and each pencil shows its wall as
-# a slot. Solid, the sheet is filled and each pencil with it, and each pencil is
+# The two styles. Outlined, the sheet is a line and each pencil is hollow, which
+# leaves the lead on its point solid. Solid, the sheet is filled and each pencil
+# with it, save the line parting its point from its barrel, and each pencil is
 # taken back out of the sheet with its clear space around it, so the cut follows
 # the pencil's own shape and leaves it an even margin to lie in.
 #
