@@ -13,8 +13,7 @@ from: logo.yaml
 # The two values the drawing is painted in.
 #
 # This replaces the logo's palette rather than adding to it, so every part the
-# logo paints red or green has to be decided below instead of quietly staying
-# what it was.
+# logo paints red or green must be decided below.
 palette:
   ink: currentColor
   paper: '#ffffff'
@@ -26,11 +25,11 @@ ground: paper
 # What each part is painted, laid over the logo's parts by id.
 #
 # The outlines carry the whole drawing here, with no fill behind them to help,
-# so they are heavier than the logo's. That weight is what costs the drawing its
-# room at the canvas edge, so the three parts placed against the canvas are
-# moved 4 to the right of where the logo puts them, which is what parts them
-# from the left edge and leaves the same room either side. The rest of the
-# drawing hangs off those three and follows.
+# so they are heavier than the logo's. That weight costs the drawing its room at
+# the canvas edge, so the three parts placed against the canvas are moved 4 to
+# the right of where the logo puts them, which parts them from the left edge and
+# leaves the same room either side. The rest of the drawing hangs off those three
+# and follows.
 overrides:
   sheet-back-far: {fill: paper, stroke: {width: 25}}
   sheet-back-near: {fill: paper, stroke: {width: 25}}

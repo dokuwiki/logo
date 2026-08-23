@@ -5,7 +5,7 @@ title: DokuWiki Patreon banner
 where: https://www.patreon.com/dokuwiki
 
 # The file the build writes, under dist/graphics/. A photograph is written as a
-# JPEG, which costs a tenth of what the same picture costs as a PNG.
+# JPEG, a tenth of the same picture as a PNG.
 file: dokuwiki-patreon.jpg
 
 # The size Patreon asks a banner to be. The paper covers all of it, so nothing
@@ -26,10 +26,8 @@ layers:
   # crease and shadow the photograph holds darkens the drawing with it, so the
   # logo lies on the sheet rather than over it.
   #
-  # Three quarters of the ink is laid down, so that the print sits back on the
-  # sheet a little. That is what makes a multiplied layer fainter; fading it
-  # instead darkens it, and laying it over the paper rather than into it washes
-  # its colours out and leaves it floating.
+  # Three quarters of the ink is laid down, fading the print so it sits back on
+  # the sheet a little.
   - id: logo
     file: dokuwiki-logo-lg.svg
     at: {x: 864, y: 175}

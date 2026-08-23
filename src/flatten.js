@@ -2,13 +2,8 @@
  * A drawing's elements cut into one path.
  *
  * A drawing of one colour that carries no stylesheet can be written as a single
- * path, which is what a Material icon file is. Its parts go on saying a centre
- * line and a stroke width, the way every part in this repository does, and this
- * turns each stroke into the shape that stroke covers.
- *
- * A drawing of one ink has no second colour to cover with, so a shape painted
- * the ground is taken out of what is already there rather than laid over it.
- * What comes out is the shape of the ink itself.
+ * path, as a Material icon file is. Its parts still give a centre line and a
+ * stroke width, so each stroke is turned into the shape it covers.
  */
 
 import { shaped } from './path.js'
@@ -133,7 +128,7 @@ function moved(path, attrs, id) {
  * The shapes one element comes to on the canvas: what it fills, and the shape
  * its stroke covers, in the order they are painted.
  *
- * A shape holding a hole says so with a fill rule, which Skia has to be told
+ * A shape holding a hole says so with a fill rule, which Skia must be told
  * before that shape goes into an operation.
  *
  * @param {{tag: string, attrs: Object}} element One element
@@ -163,21 +158,18 @@ function shapesOf(element) {
  *
  * A drawing of one ink has no second colour to cover with, so a shape painted
  * the ground is taken out of what is already there rather than laid over it.
- * Walking the elements back to front, adding the ink and taking away the ground,
- * leaves the shape of the ink itself: what a press puts down, and what a page
- * recolours with one property.
+ * Walking the elements back to front, adding the ink and taking away the
+ * ground, leaves the shape of the ink itself.
  *
- * It carries no id, because there is one element and nothing selects it, and no
- * fill rule, because its contours are wound for the one SVG reads by default. A
- * file that says nothing has nothing for a reader to drop.
+ * The one element carries no id, because nothing selects it, and no fill rule,
+ * because its contours are wound for the one SVG reads by default.
  *
- * A drawing that names no ground never takes anything away, so every shape in it
- * adds.
+ * A drawing that names no ground never takes anything away, so every shape adds.
  *
  * @param {Array<{tag: string, attrs: Object}>} elements Elements of one variant,
  *   back to front
  * @param {string} [ground] The colour that takes away rather than adds, where
- *   the drawing has one to name. A drawing that covers nothing has none.
+ *   the drawing names one
  * @returns {Array<{tag: string, attrs: Object}>} The one element
  * @throws {Error} If the drawing is painted anything but one ink over its
  *   ground, if an element cannot be cut with, if nothing is left of the

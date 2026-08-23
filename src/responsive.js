@@ -4,30 +4,23 @@
  * The markup is the full drawing and the stylesheet takes away from it, so a
  * renderer that ignores the stylesheet still draws the real logo.
  *
- * A level's rules are the step from the level above it, which holds because
- * every mechanism that carries them reaches each level above the one in force:
- * a max-width that matches at one size matches at every smaller size, and a
- * level's class rules name the smaller levels' classes as well.
+ * A level's rules are the step from the level above it. This holds because every
+ * mechanism carrying them reaches each level above the one in force: a max-width
+ * that matches at one size matches at every smaller size, and a level's class
+ * rules name the smaller levels' classes too.
  *
  * Three mechanisms carry the rules, so each level's rules are written three
- * times. A media query measures the drawing where the file is its own document,
- * a container query measures it where the file is pasted into a page, and a
- * class on the root serves a host that says the size itself. The class carries
- * the most weight, so a host that says the size outright wins.
+ * times: a media query for a file that is its own document, a container query
+ * for a file pasted into a page, and a class on the root for a host that sets
+ * the size itself. The class carries the most weight, so a host that sets the
+ * size outright wins.
  */
 
 import { round } from './emit.js'
 
 /**
  * How a size picks a level: a level applies at the size it names and below, so
- * at a small size the levels above it apply as well and the smallest one in
- * force wins.
- *
- * Two mechanisms carry that rule and have to agree about it. A file drawn to a
- * size is rasterised from the level variantAt picks; a file left to a browser
- * carries the query instead, and reaches the same drawing by taking away from
- * the level above. Changing one without the other draws a file no browser would
- * draw.
+ * at a small size the levels above it apply too and the smallest in force wins.
  *
  * @param {Array<{upTo: number|null}>} variants The levels, largest first
  * @param {number} size Edge length in pixels

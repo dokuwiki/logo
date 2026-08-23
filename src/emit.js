@@ -5,9 +5,8 @@
 /**
  * How many decimals a coordinate keeps.
  *
- * One number for everything that writes one, because a path written as steps
- * from one coordinate to the next is exact only where both were rounded the
- * same.
+ * One value for everything that rounds, because a path written as steps from
+ * one coordinate to the next is exact only where both were rounded the same.
  *
  * @type {number}
  */
@@ -62,9 +61,8 @@ function escape(text) {
 /**
  * Format one attribute value.
  *
- * A value that is not one would be written out as the word undefined, or as NaN,
- * which is a file drawing nothing where a part was meant to be. A part that left
- * something out says so here rather than in what a reader makes of the file.
+ * A value that is not one would be written as the word undefined or as NaN,
+ * which draws nothing where a part was meant to be, so it is an error here.
  *
  * @param {string|number} value Attribute value
  * @param {string} name Which attribute, for the message
@@ -82,8 +80,8 @@ function attributeValue(value, name, where) {
 /**
  * Replace each element's id with the initials of the name the design gives it.
  *
- * A level writes three rules for every element it touches, so a long id is paid
- * for many times over. Initials keep the name traceable: arrow-red-shaft
+ * A level writes three rules for every element it touches, so a long id is
+ * repeated many times. Initials keep the name traceable: arrow-red-shaft
  * becomes ars.
  *
  * @param {Array<{tag: string, attrs: Object}>} elements Elements of one level

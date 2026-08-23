@@ -31,8 +31,7 @@ const DIST = join(dirname(fileURLToPath(import.meta.url)), '..', 'dist')
 /**
  * Where the graphics go, under dist.
  *
- * They sit in a directory of their own because they are not the logo: someone
- * reaching for a logo file should not have to step over them to find one.
+ * They sit apart from the logo files.
  *
  * @type {string}
  */
@@ -41,19 +40,16 @@ const GRAPHICS_DIR = 'graphics'
 /**
  * The sizes a PNG is written at, largest first.
  *
- * The logo's levels were designed against these sizes, which the compare page
- * draws.
+ * The logo's levels were designed against these sizes.
  *
  * @type {number[]}
  */
 const SIZES = [256, 128, 96, 64, 48, 40, 32, 24, 20, 16]
 
 /**
- * The sizes favicon.ico carries, smallest first: what a browser picks between
- * for a tab, a bookmark and a shortcut.
+ * The sizes favicon.ico carries, smallest first.
  *
- * Each has to be a size a PNG is drawn at, because the icon is packed from
- * those.
+ * Each must be a size a PNG is drawn at, because the icon is packed from those.
  *
  * @type {number[]}
  */
@@ -69,10 +65,8 @@ const TOUCH = { size: 180, margin: 10, ground: '#ffffff' }
 /**
  * The designs the build writes, and what each one is written as.
  *
- * A drawing says what it is; this says what comes of it. Whether a variant is
- * cut into one path is a fact about the files and not about the drawing, so it
- * is said here: the same parts can be written out one stroked element each, and
- * taking the flag off is how the cut is checked.
+ * Whether a variant is cut into one path is a fact about the files rather than
+ * the drawing, so it is set here.
  *
  * @type {Array<{drawing: import('./drawing.js').Drawing, stem: string,
  *   sizes?: number[], favicon?: number[],
@@ -85,12 +79,7 @@ const DRAWINGS = [
 ]
 
 /**
- * The graphics the build composites, each by the placement file that says it.
- *
- * A drawing is composed, so its entry says what is made of it. A graphic is a
- * stack of finished pictures, so its entry says nothing more than the file to
- * read: that file says how big the graphic is, what goes on it, and what it is
- * written as.
+ * The graphics the build composites, each named by its placement file.
  *
  * @type {string[]}
  */
@@ -112,7 +101,7 @@ function write(name, body, note) {
 /**
  * Draw one variant at one size.
  *
- * The word mark is outlines rather than text, so no font has to be found.
+ * The word mark is outlines rather than text, so no font is loaded.
  *
  * @param {string} svg A variant's flat file
  * @param {number} size Edge length in pixels
@@ -147,10 +136,9 @@ function tiled(svg, { size, margin, ground }) {
 /**
  * The elements one variant is written with.
  *
- * A drawing whose files are one path is cut into one. Otherwise ids are cut down
- * to initials where a stylesheet is written, because that is what writes an id
- * many times over, and a drawing that carries no stylesheet needs no ids at all
- * but is no worse for keeping the names its parts give their pieces.
+ * A drawing cut into one path becomes a single element. Otherwise its ids are
+ * shortened to initials where a stylesheet is written, because a stylesheet
+ * repeats each id many times.
  *
  * @param {import('./drawing.js').Drawing} drawing The drawing
  * @param {string} variant Which variant
@@ -166,8 +154,7 @@ function written(drawing, variant, cut) {
 /**
  * What one variant's flat file is called.
  *
- * A drawing of one variant has nothing to tell its files apart by, so it drops
- * the name from them.
+ * A drawing with one variant drops the variant name from its file.
  *
  * @param {string} stem What the drawing's files are called
  * @param {string} variant Which variant

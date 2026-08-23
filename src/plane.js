@@ -2,8 +2,7 @@
  * The drawing plane.
  *
  * Points and directions are the same object, a Point from
- * @mapbox/point-geometry. This module adapts it to angles written in degrees
- * and to a design written as plain data, and measures boxes on the plane.
+ * @mapbox/point-geometry, adapted here to angles in degrees.
  */
 
 import Point from '@mapbox/point-geometry'

@@ -4,8 +4,8 @@
  *   <site-nav></site-nav>
  *
  * The pages do not all sit at the same depth, so every address is worked out
- * from the project directory. The element holds a nav, since a name of its own
- * cannot be one and a reader looks for that landmark.
+ * from the project directory. The element wraps a nav, because a custom element
+ * is no landmark and a reader looks for that one.
  */
 
 /**
@@ -68,8 +68,6 @@ class SiteNav extends HTMLElement {
 
   /**
    * An address as the file it asks for, a directory read as the index it serves.
-   *
-   * A page reached as a directory is then the same page as its index.html.
    *
    * @param {string|URL} address Where a page is
    * @returns {string} The path of the file

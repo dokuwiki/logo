@@ -131,8 +131,8 @@ export class Pencil {
    * @param {number} [spec.end] Radius the two corners of the blunt end are
    *   turned on
    * @param {number} [spec.rim] How far the bare wood stands in from the
-   *   silhouette's own edge, nothing to lay its edge along the barrel's, which is
-   *   what an outlined pencil wants
+   *   silhouette's own edge, nothing to lay its edge along the barrel's, as an
+   *   outlined pencil wants
    * @param {number} [spec.woodFrom] Where the bare wood begins
    * @param {number} [spec.woodTo] Where it ends
    * @throws {Error} If there is no shape of that name, if a round it asks for
@@ -191,7 +191,7 @@ export class Pencil {
    * Check that the rounds asked for fit on the edges they are turned on.
    *
    * A round reaches back along both edges meeting at the corner it softens, so
-   * two rounds sharing an edge have to fit on it between them, or the shape
+   * two rounds sharing an edge must fit on it between them, or the shape
    * crosses itself. The blunt end's corners are square, and a square corner
    * reaches back by its own radius.
    *
@@ -310,15 +310,14 @@ export class Pencil {
    *
    * The keyline is the room the pencil keeps from whatever lies behind it, the
    * barrel pushed outward by that much. Where the pencil lies on paper it is
-   * invisible; where it lies over ink it opens an even gap. A pencil given no
-   * keyline has no part of that name to draw.
+   * invisible; where it lies over ink it opens an even gap.
    *
-   * The lead is the one part a pencil has and does not draw unless it is asked
-   * for: it is the barrel's own colour, so a solid barrel draws it already.
+   * The lead is the one part a pencil has and does not draw unless asked: it is
+   * the barrel's own colour, so a solid barrel draws it already.
    *
    * Every part carries the outline, not the barrel alone: a part painted the
    * ground cuts the barrel's outline where the two overlap, and its own outline
-   * is what puts that back.
+   * puts that back.
    *
    * @returns {Array<{tag: string, attrs: Object}>} The parts this pencil draws
    * @throws {Error} If a part being drawn is not one of a pencil's own

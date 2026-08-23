@@ -1,16 +1,9 @@
 /**
  * Reading a design file and composing what it draws.
  *
- * A design says what the picture is made of, where each piece goes, and what
- * each of its variants changes. This turns it into the parts that draw it.
- *
- * A variant says only what it changes from the variant above it. Those changes
- * are merged over the parts one variant at a time, so saying a value always
- * wins and leaving one out never puts it back.
- *
- * A design laid over another says only what it changes about it, the same way.
- * One picture is then drawn from another's parts, in the places that other
- * design puts them.
+ * A variant, and a design laid over another, say only what they change. Those
+ * changes merge over the parts one at a time: a value given wins, and a value
+ * left out is not put back.
  */
 
 import { existsSync, readFileSync } from 'node:fs'
@@ -81,10 +74,9 @@ function named(file) {
 /**
  * One design, and the design it is laid over where it names one.
  *
- * The two merge the way a variant's changes merge over a part. A palette said
- * here is the one exception: it replaces the inherited palette rather than
- * adding to it, so a part painted a colour only the design below holds is an
- * error rather than quietly the colour it was.
+ * The two merge the way a variant's changes merge over a part, except for a
+ * palette named here: it replaces the inherited palette rather than adding to
+ * it, so a part painted a colour only the design below holds is an error.
  *
  * @param {URL} file The design file
  * @param {string[]} [laid] The designs already being read, outermost first
@@ -223,14 +215,9 @@ export class Drawing {
   /**
    * The variants, largest or first named first.
    *
-   * A variant that applies up to a size applies at that size and below, so at a
-   * small size the variants above it apply as well. A class says how small the
-   * drawing is, so each variant carries the classes it has to serve: its own and
-   * every smaller one.
-   *
-   * Both mechanisms that pick a level by size read the levels in the order they
-   * are given, so a design that lists them out of order draws the wrong one at
-   * every size rather than saying so.
+   * A variant applies at the size it names and below, so a small size draws it
+   * along with every variant above it. Each variant carries the classes it has
+   * to serve: its own and every smaller one.
    *
    * @returns {Array<{name: string, class: string|undefined, upTo: number|null,
    *   classNames: string[]}>} The variants
@@ -310,9 +297,8 @@ export class Drawing {
    * Check that every part is placed in something that is there to hold it, and
    * that a part it says crosses it is one the drawing holds.
    *
-   * Crossing is checked against the design and then cut down to what this variant
-   * draws. A variant that drops a pencil heals the outline that pencil crossed,
-   * rather than also having to stop naming it.
+   * Crossing is checked against the whole design, then cut down to what this
+   * variant draws, so a variant that drops a part heals the outline it crossed.
    *
    * @param {Array<Object>} specs The parts this variant draws
    * @param {string} variant Which variant, for the message
@@ -380,8 +366,8 @@ export class Drawing {
   /**
    * Make one part, from the part it is placed in where it names one.
    *
-   * A part others are placed in has to offer a width and a height in its own
-   * measure, which is what the points inside it are fractions of.
+   * A part others are placed in must offer a width and a height in its own
+   * measure, which the points inside it are fractions of.
    *
    * @param {Object} spec One part, as the design says it
    * @param {Map<string, object>} made The parts already made, by id
@@ -417,10 +403,8 @@ export class Drawing {
   /**
    * Make every part, each after the part it is placed in.
    *
-   * The parts are listed in the order they are drawn, so a part can be placed in
-   * one listed after it, or say it is crossed by one: the sheets behind the front
-   * sheet are drawn first and made from it, and the sheet the pencils cross is
-   * drawn before them.
+   * The parts are listed in drawing order, so one can be placed in, or crossed
+   * by, a part listed after it.
    *
    * @param {Array<Object>} specs The parts, as the design says them
    * @returns {Map<string, object>} The parts, by id

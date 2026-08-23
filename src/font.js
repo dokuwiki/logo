@@ -1,9 +1,7 @@
 /**
  * Reading a font and setting text from it.
  *
- * opentype.js does the parsing and turns text into path data. This works out
- * where a font file is, reads it once, and checks it can draw what is asked of
- * it.
+ * opentype.js parses the file and turns text into path data.
  */
 
 import { existsSync, readFileSync } from 'node:fs'

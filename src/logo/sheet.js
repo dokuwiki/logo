@@ -145,7 +145,7 @@ export class Sheet {
   /**
    * An arrow coming out from behind one of this sheet's edges.
    *
-   * @param {object} spec What the arrow does, see Arrow
+   * @param {object} spec What the arrow does
    * @returns {Arrow} The arrow
    */
   arrow(spec) {
@@ -155,7 +155,7 @@ export class Sheet {
   /**
    * A word mark written across this sheet.
    *
-   * @param {object} spec What to write, see Wordmark
+   * @param {object} spec What to write
    * @returns {Wordmark} The word mark
    */
   write(spec) {

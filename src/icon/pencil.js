@@ -1,10 +1,10 @@
 /**
  * A flat pencil.
  *
- * The design gives the silhouette itself rather than a centre line to be stroked,
- * so the width it asks for is the width the pencil is. The frame is worked into
- * the path data rather than left as a transform, so what it draws carries no
- * attribute but its own shape.
+ * The design gives the silhouette itself rather than a centre line to be
+ * stroked, so the width it asks for is the width the pencil is. The frame is
+ * baked into the path data rather than left as a transform, so what it draws
+ * carries only its own shape.
  *
  * The hole in that silhouette is the whole of the difference between the two
  * paintings, and both say where the sharpened point ends with a line across.
@@ -42,8 +42,8 @@ export class Pencil {
    * 24 grid. The blunt end's radius is the logo pencil's, as the same fraction of
    * the width.
    *
-   * The length is what keeps the blunt end inside the canvas. Cut flat, that end
-   * reaches into the canvas corner by its corner rather than by its middle.
+   * The length keeps the blunt end inside the canvas. Cut flat, that end reaches
+   * into the canvas corner by its corner rather than by its middle.
    *
    * @type {Object<string, number>}
    */
@@ -143,7 +143,7 @@ export class Pencil {
   }
 
   /**
-   * The pencil as a convex outline, for anything that has to keep clear of it.
+   * The pencil as a convex outline, for anything that must keep clear of it.
    *
    * It is the bar the pencil is drawn in rather than the drawn shape itself. The
    * cuts that sharpen the point and the rounds on the blunt end both fall inside
@@ -171,8 +171,8 @@ export class Pencil {
    * The silhouette given room to spare: the same shape offset outward by that
    * much, which turns every corner of it into an arc of that radius.
    *
-   * This is what anything keeping clear of the pencil follows, so what it leaves
-   * around the pencil is an even margin rather than a wedge cut past it.
+   * Anything keeping clear of the pencil follows this, so it leaves an even
+   * margin rather than a wedge cut past the corner.
    *
    * @param {number} room How much space to leave
    * @returns {string} Path data

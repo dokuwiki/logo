@@ -1,8 +1,8 @@
 /**
  * A local coordinate frame.
  *
- * Anything drawn along its own axis works in one of these. Parts of a component
- * are placed in its frame, so the component moves and turns as a whole.
+ * A component's parts are placed in its frame, so the component moves and turns
+ * as a whole.
  */
 
 import { direction, point } from './plane.js'

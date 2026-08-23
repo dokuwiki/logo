@@ -23,8 +23,8 @@ layers:
     at: {x: 12, y: 3}
     size: {w: 116, h: 116}
 
-  # The badge over the logo's top left corner. This is the layer the order of
-  # the list exists for: the logo is not the last thing laid down.
+  # The badge over the logo's top left corner, laid down after the logo so it
+  # covers it.
   - id: badge
     file: translate-badge.svg
     at: {x: 0, y: 0}

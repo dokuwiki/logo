@@ -2,9 +2,7 @@
  * How a part of the icon is painted.
  *
  * The icon comes in two styles, and every part of it answers to the same two
- * names. Those names and the check that a part is given one of them are here, so
- * the page and the pencil cannot come to disagree about what a design may ask
- * for.
+ * names.
  */
 
 /**

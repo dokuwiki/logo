@@ -14,11 +14,11 @@ title: DokuWiki Logo
 
 # The colours the drawing is painted in.
 #
-# Hex has to be quoted, because a "#" after a space starts a comment.
+# Hex must be quoted, because a "#" after a space starts a comment.
 palette:
   # front of a sheet of paper
   paper: '#faf4dc'
-  # back of a sheet, which is what the sheets behind the front one show
+  # back of a sheet, shown by the sheets behind the front one
   paper-back: '#ece5c8'
   # the red pencil and the red arrow, light enough to hold its own against a
   # dark page, because the arrow's loop swings off the paper
@@ -42,7 +42,7 @@ canvas: 1024
 # "in" says which frame the part hangs in. "in: sheet-front" means it is placed
 # in the front sheet's own frame and follows it wherever it goes, so only the
 # front sheet and the pencils are placed against the canvas itself. An arrow and
-# a word mark have to lie on a sheet, a pencil lies on the canvas, and a sheet
+# a word mark must lie on a sheet, a pencil lies on the canvas, and a sheet
 # does either, taking the measure of the sheet it lies on.
 #
 # A point is written either way, whichever reads better for the part. "x" and
@@ -57,11 +57,7 @@ canvas: 1024
 # which say what they change by naming it.
 #
 # The whole drawing is composed a shade inside the canvas, so the outlines and
-# the pencils' ends have somewhere to go. The red arrow's loop comes closest on
-# the left and the red pencil's blunt end on the right, and where the drawing
-# sits across the canvas parts both of them from the edge. The loop reaches
-# furthest at md, where a thicker line and a thicker sheet edge together carry it
-# out past where it goes at full size.
+# the pencils' ends have somewhere to go.
 parts:
   # A sheet behind the front one, so the stack reads as more than one page. It
   # is placed in the front sheet's frame and cut to the same measure, so it
@@ -132,7 +128,7 @@ parts:
     stroke: {colour: green, width: 27}
 
   # Both pencils are one component, laid at different angles. The pencil itself is
-  # straight and even, so where each lies is all that sets the two apart.
+  # straight and even, so the two differ only in where each lies.
   - id: pencil-red
     is: pencil
     in: canvas
@@ -156,9 +152,7 @@ parts:
 # The logo's variants are levels of detail: the picture is drawn at several so
 # that it still reads when it is small, and "upTo" says the size each one is
 # picked at. A variant says only what it changes, part by part under the name
-# each one is given above, and each builds on the variant above it. Saying a
-# value always wins; leaving one out never puts it back, so a variant that wants
-# an earlier value again says it.
+# each one is given above, and each builds on the variant above it.
 variants:
   - name: lg
 

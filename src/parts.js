@@ -1,11 +1,5 @@
 /**
  * Which pieces of a component are drawn.
- *
- * A component made of named pieces can be told to draw only some of them, so a
- * variant that cannot hold a piece leaves it out rather than the piece having to
- * know about sizes. Every such component answers the same way: draw what it is
- * asked for, all of it where it is asked for nothing, and say so where a name is
- * not one of its own.
  */
 
 /**

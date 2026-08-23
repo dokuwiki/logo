@@ -1,9 +1,8 @@
 /**
  * Building path data.
  *
- * The commands come from d3-path, which rounds its coordinates as it writes
- * them. Every finished path then goes through compact, which writes the same
- * shape in fewer characters.
+ * The commands come from d3-path, which rounds coordinates as it writes them.
+ * compact then writes the same shape in fewer characters.
  */
 
 import { pathRound } from 'd3-path'
@@ -141,12 +140,12 @@ export function compact(data) {
 /**
  * The same path with every coordinate trimmed to the decimals this build keeps.
  *
- * This is for path data that came from somewhere else; what pen writes is trimmed
- * already. It has to happen before compacting, because a relative step is exact
- * only where the two coordinates behind it are already rounded.
+ * This is for path data from elsewhere; what pen writes is trimmed already. It
+ * must happen before compacting, because a relative step is exact only where the
+ * two coordinates behind it are already rounded.
  *
- * Every number in what it is given has to be a coordinate, so an elliptical arc,
- * whose radii and flags are not, has to be gone by the time it arrives.
+ * Every number it is given must be a coordinate, so an elliptical arc, whose
+ * radii and flags are not, must be gone by the time it arrives.
  *
  * @param {string} data Path data holding nothing but coordinates
  * @returns {string} The same path, rounded
@@ -244,9 +243,8 @@ function wound(data) {
 /**
  * A shape Skia worked out, as path data ready to be written.
  *
- * Everything Skia hands back arrives the same way: at full precision, and wound
- * for even odd where a boolean operation made it. This is the one way out, so no
- * shape reaches a file needing a fill rule to read right.
+ * Everything Skia hands back arrives at full precision, and wound for even odd
+ * where a boolean operation made it.
  *
  * @param {object} path The shape, as Skia has it
  * @returns {string} Path data, wound for nonzero, trimmed and shortened
@@ -261,7 +259,7 @@ export function shaped(path) {
  * How much room to leave round a shape when it is turned inside out, as a
  * multiple of the distance being worked with.
  *
- * The growing that follows reaches outward too, so the box has to stand clear of
+ * The growing that follows reaches outward too, so the box must stand clear of
  * the shape by more than the distance itself.
  *
  * @type {number}

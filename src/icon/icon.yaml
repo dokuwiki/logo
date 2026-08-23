@@ -4,11 +4,8 @@
 # square grid that guideline is written in. It does not adapt to size, so its
 # two variants are styles rather than levels of detail.
 #
-# Every part is said the same way the logo's parts are, so each question has one
-# answer wherever it is asked: "at" moves it, "size" says how big it is against
-# the frame it hangs in, "stroke.width" how heavy its outline is, and "show"
-# whether it is drawn at all. How each kind looks belongs to the kind, in page.js
-# and pencil.js beside this file.
+# Every part is said the same way the logo's parts are. How each kind looks
+# belongs to the kind, in page.js and pencil.js beside this file.
 
 # The accessible name every drawing of it carries.
 title: DokuWiki Icon
@@ -16,9 +13,9 @@ title: DokuWiki Icon
 # The colour the icon is drawn in.
 #
 # currentColor is not a colour but a promise to take one: the icon is painted in
-# the text colour of whatever it is placed in, which is how a Material icon
-# works and what lets one file serve a light surface and a dark one. The review
-# page sets that colour to the logo's own ink.
+# the text colour of whatever holds it, as a Material icon is, so one file serves
+# a light surface and a dark one. The review page sets that colour to the logo's
+# own ink.
 palette:
   ink: currentColor
 
@@ -28,22 +25,14 @@ canvas: 24
 # The parts, back to front.
 #
 # The sheet fills the 20 live area: its outline lands on Material's own keyline,
-# the 16 by 20 vertical rectangle. The pencils are what leaves the live area, and
-# both run into the margin at the blunt end. Holding them inside it as well costs
-# the sheet its shape, and a pencil overrunning the margin reads better.
+# the 16 by 20 vertical rectangle. The pencils leave the live area, both running
+# into the margin at the blunt end, which reads better than holding them inside.
 parts:
   # The sheet, its outline broken where a pencil crosses it. "crossedBy" names
-  # the parts it breaks for and "clear" says how much space to leave around each
-  # of them; where the breaks fall follows from where those pencils are, so
-  # moving a pencil moves its break with it.
+  # the parts it breaks for and "clear" how much space to leave around each.
   #
   # Solid, that clear space is the width of every white line in the drawing, so
-  # the pencils take it by name here for the line each of them is parted by.
-  #
-  # Both pencils leave on the right, so both ends of the right edge are broken and
-  # what is left of it stands clear of the corners rather than meeting either.
-  # Drawn, it reads as the sheet's own edge; left out, the sheet reads as a
-  # bracket.
+  # each pencil takes it by name here for the line it is parted by.
   - id: sheet
     is: page
     in: canvas
@@ -67,9 +56,7 @@ parts:
     parting: *keyline           # the line parting its point from its barrel
 
   # The pencil out through the sheet's bottom right corner, pointing up and left,
-  # at the angle the logo gives its green pencil. Lying this shallow it cannot
-  # cross the bottom edge instead: it would meet that edge over eighteen of the
-  # fourteen units the edge is long.
+  # at the angle the logo gives its green pencil.
   - id: pencil-lower
     is: pencil
     in: canvas
@@ -78,15 +65,12 @@ parts:
     fill: ink
     parting: *keyline
 
-# The two styles. Outlined, the sheet is a line and each pencil is hollow, which
-# leaves the lead on its point solid. Solid, the sheet is filled and each pencil
-# with it, save the line parting its point from its barrel, and each pencil is
-# taken back out of the sheet with its clear space around it, so the cut follows
-# the pencil's own shape and leaves it an even margin to lie in.
+# The two styles. Outlined, the sheet is a line and each pencil is hollow. Solid,
+# the sheet is filled and each pencil with it, then taken back out with its clear
+# space around it.
 #
-# A variant says only what it changes, and each builds on the one above it, the
-# same as the logo's levels of detail. Neither says upTo, because neither is
-# picked by size, so no stylesheet is written and each gets a file of its own.
+# Neither says upTo, because neither is picked by size, so no stylesheet is
+# written and each gets a file of its own.
 variants:
   - name: outlined
 

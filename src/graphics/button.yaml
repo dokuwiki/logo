@@ -16,8 +16,8 @@ size: {w: 80, h: 15}
 layers:
   # The border, the cell the logo sits in, the bar and the wording, as one
   # picture. The wording is lifted pixel for pixel out of the button in use
-  # today, so no font has to be matched and nothing has to be rendered at 7px, a
-  # size antialiased type does not survive.
+  # today, so no font is matched and nothing is rendered at 7px, a size
+  # antialiased type does not survive.
   - id: bar
     file: button-bar.png
     at: {x: 0, y: 0}

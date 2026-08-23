@@ -150,7 +150,7 @@ export class Arrow {
 
   /**
    * The head: two arms meeting at the tip, or the triangle between them where
-   * the head has to stand for the whole arrow.
+   * the head must stand for the whole arrow.
    *
    * A solid head carries no stroke, so its corners are cut back and bridged in
    * the path itself: a stroke that rounded them would cap the arms as well and

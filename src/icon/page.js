@@ -6,19 +6,13 @@
  * around them; where the breaks fall follows from where those parts are, so
  * moving one moves its break with it.
  *
- * Outlined, what is drawn is the runs the breaks leave: the outline stops short
- * of each crossing part and picks up again beyond it. Solid, the whole boundary
- * is filled and each crossing part is taken out of it, given the same clear
- * space, which cuts that part the slot it lies in.
- *
- * The boundary differs between the two: outlined it is the stroke's centre line,
- * solid it is the outer edge that stroke reaches, so the two paintings draw a
+ * The boundary differs between the two paintings: outlined it is the stroke's
+ * centre line, solid it is the outer edge that stroke reaches, so both draw a
  * page of the same size.
  *
  * The outline always travels the same way round the page — rightwards along the
- * top, down the right edge, leftwards along the bottom, up the left edge, and on
- * round — and every distance round the page below is measured that way from the
- * top left corner.
+ * top, down the right edge, leftwards along the bottom, up the left edge — and
+ * every distance round the page is measured that way from the top left corner.
  *
  * A Material icon is not turned, so the page is square to the canvas and its
  * points are already on it.
@@ -41,8 +35,7 @@ const EDGES = ['top', 'right', 'bottom', 'left']
  * each carrying the parts that took it out.
  *
  * Two stretches taken out by one part on either side of a corner meet exactly at
- * that corner, so joining them is what turns them into the one break that runs
- * round it.
+ * that corner, so joining them makes the one break that runs round it.
  *
  * @param {Array<{from: number, to: number, part: object}>} stretches The stretches
  * @returns {Array<{from: number, to: number, parts: object[]}>} The breaks
@@ -388,8 +381,8 @@ export class Page {
   /**
    * The corners one run passes, in the order it reaches them.
    *
-   * Each is given the corner after it as well, because that is the direction the
-   * outline leaves in, which is what fixes the arc at the corner.
+   * Each carries the corner after it too, because the direction the outline
+   * leaves in fixes the arc there.
    *
    * @param {{from: number, to: number}} run One run
    * @returns {Array<{point: Point, onward: Point}>} The corners

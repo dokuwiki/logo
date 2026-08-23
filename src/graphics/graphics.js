@@ -1,16 +1,12 @@
 /**
  * Reading a placement file and compositing the graphic it says.
  *
- * A graphic is not a drawing. It is a stack of finished pictures laid on a
- * canvas, back to front, each at a point on it: a piece of template art beside
- * the placement file, or a file this build has already written. Nothing is
- * composed here, so nothing here knows what a part or a level of detail is, and
- * a graphic can only be as right as the file it names.
+ * A graphic is a stack of finished pictures laid on a canvas, back to front,
+ * each at a point on it: a piece of template art beside the placement file, or a
+ * file this build has already written. Nothing is composed here.
  *
- * A layer covers what is under it, unless it says otherwise: how much of its ink
- * is laid down, how far it fades, and how it blends with what is under it. The
- * logo on the paper photograph is printed pale and multiplied into it, so that
- * the sheet's creases darken the logo along with the paper.
+ * A layer covers what is under it, unless it is laid down fainter, faded, or
+ * blended into what it covers.
  */
 
 import { existsSync, readFileSync } from 'node:fs'
@@ -38,9 +34,8 @@ const GIVEN = ['id', 'file', 'at', 'size', 'ink', 'opacity', 'blend']
 /**
  * How a graphic is written, by the ending its file name carries.
  *
- * The quality a JPEG is written at is the one the paper photo survives: the
- * creases stay clean and the file stays a tenth of what the same picture costs
- * as a PNG.
+ * The JPEG quality is what the paper photo survives: the creases stay clean and
+ * the file stays a tenth of the same picture as a PNG.
  *
  * @type {Object<string, function(sharp.Sharp): sharp.Sharp>}
  */
@@ -120,11 +115,9 @@ async function rasterised(svg, size) {
 /**
  * One layer with less of its ink laid down.
  *
- * Every colour is moved that far toward white, which is what a fainter print of
- * something is. A layer multiplied into a photograph is made fainter this way
- * and no other: laying the same layer down at a lower opacity darkens it
- * instead, because what a multiply makes of a part-transparent layer is not a
- * paler version of it.
+ * Every colour is moved that far toward white, a fainter print of it. A layer
+ * multiplied into a photograph is made fainter this way and no other: at a lower
+ * opacity a multiply darkens it instead of paling it.
  *
  * @param {Buffer} body The layer as pixels
  * @param {number} ink How much of its ink is laid down, from 0 to 1
@@ -161,7 +154,7 @@ function faded(body, opacity) {
 /**
  * One layer as pixels, at the size it is drawn and however pale.
  *
- * A drawing has to be given a size, because it has no size of its own to fall
+ * A drawing must be given a size, because it has no size of its own to fall
  * back on. A picture is drawn at its own size unless it is given one.
  *
  * @param {Object} layer One layer, as the placement file says it

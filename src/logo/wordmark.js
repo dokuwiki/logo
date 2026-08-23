@@ -60,7 +60,7 @@ export class Wordmark {
    * @param {number} spec.size How much of the sheet's width to fill, from 0 to 1
    * @param {string} spec.fill Ink colour
    * @param {{colour: string, width: number}} [spec.stroke] An outline on the
-   *   letters, for a mark that has to carry more weight than the font gives it
+   *   letters, for a mark that must carry more weight than the font gives it
    * @param {string[]} [spec.draws] Which parts to draw, all of them by default
    * @param {number} [spec.fills] How much of the sheet's width the parts being
    *   drawn fill, as much as the whole word mark by default
@@ -150,7 +150,7 @@ export class Wordmark {
    * what is drawn fills the width it is meant to.
    *
    * The outlines stay in the sheet's own measure, so this one value carries
-   * where the word mark sits and how much the drawn parts had to grow.
+   * where the word mark sits and how much the drawn parts grew.
    *
    * @param {{x1: number, y1: number, x2: number, y2: number}} box What is
    *   being drawn, measured across and down the sheet
