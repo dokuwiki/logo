@@ -25,14 +25,14 @@ export class Wordmark {
   /**
    * How the word mark is set, used unless it is given its own.
    *
-   * The original was drawn in Arial Bold. Liberation Sans Bold carries the same
-   * metrics.
+   * The mark is set in Nunito ExtraBold. Its terminals are rounded the way the
+   * rest of the drawing is, and its weight holds up beside the pencils.
    *
    * @type {{font: string, tracking: number}}
    */
   static proportions = {
     font: VENDORED,
-    tracking: 0.054,
+    tracking: 0.015,
   }
 
   /**

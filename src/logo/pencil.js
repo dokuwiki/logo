@@ -1,28 +1,22 @@
 /**
  * A pencil.
  *
- * Both pencils in the logo are this one component, drawn at different angles
- * and seen from different distances. The pencil itself is straight and even;
- * perspective sets the two apart. Each lies with its far end nearer the viewer
- * than its point, so it widens along its length.
+ * Both pencils in the logo are this one component, laid at different angles. It
+ * is a silhouette: one width all the way, and a radius at every corner. The
+ * blunt end's two corners take the radius the paper's own corners take, so the
+ * pencils and the sheets they lie on are rounded by one measure.
  *
- * That widening is one number, the lean, and every part is drawn through it, so
- * the whole pencil agrees about where it is in space.
+ * The bare wood at the point is an island in the barrel's paint. Where the wood
+ * is the paper's colour and the pencil lies on the paper, wood reaching the
+ * silhouette's edge reads as a hole cut through the pencil.
+ *
+ * Lengths run along the pencil from its point, widths across it.
  */
 
 import { Frame } from '../frame.js'
-import { ellipse, inset, outline, shaped } from '../path.js'
-import { lit } from './palette.js'
 import { drawn } from '../parts.js'
-import { centre, Point } from '../plane.js'
+import { compact, grown, pen, shaped, shrunk } from '../path.js'
 import { skia } from '../skia.js'
-
-/**
- * The pencil's own axis, which its parts are drawn along and across.
- *
- * @type {Point}
- */
-const ALONG = new Point(1, 0)
 
 /**
  * One pencil.
@@ -31,61 +25,41 @@ export class Pencil {
   /**
    * What a pencil looks like, used unless a pencil is given its own.
    *
-   * Lengths run along the pencil, widths across it.
-   *
    * @type {Object<string, number>}
    */
   static proportions = {
     length: 689,
-    barrelWidth: 146,
-    coneLength: 109,
-    endTaper: 45,
-    endFace: 66,
-    endNearFace: 80,
-    bevel: 7,
-    pointFrom: 50,
-    pointTo: 113,
-    pointRim: 12,
-    pointChevron: 13,
-    pointNearChevron: 5,
-    pointBevel: 4,
-    paintRim: 11,
-    leadLength: 36,
-    leadWidth: 55,
+    width: 152,
+    cone: 150,
+    nose: 18,
+    shoulder: 20,
+    end: 30,
+    rim: 20,
+    woodFrom: 70,
+    woodTo: 148,
   }
 
   /**
-   * Pencils of another shape, each pared down for a size the standard one
-   * cannot hold, by the name the design asks for it by.
+   * Pencils of another shape, each cut back for a size the standard one cannot
+   * hold, by the name the design asks for it by.
    *
-   * A plain pencil is a painted rod with a bare point on it. Its blunt end puts
-   * paint, then wood, then lead inside a couple of pixels, so no level that
-   * asks for this shape draws it. The paint stopping short of the point is then
-   * what says pencil: a bar of colour, and the point painted around an island
-   * of bare wood.
-   *
-   * So the barrel is stouter and the point longer, and the wood is set well in
-   * from the cone's edges. The wood is the paper's colour, so the paint around
-   * it draws the point's edge, and that rim measures a pixel at 40px and half of
-   * one at 16px. The wood stops short of the tip and reaches past the shoulder,
-   * so the paint runs the whole way round it.
+   * The stout pencil is for the small sizes. At 24px the rim the standard pencil
+   * gives the wood falls under a pixel and the paint round it breaks up, and the
+   * round on its blunt end's corners reads as no round at all. Both are widened
+   * here, the round to what the paper takes at that level.
    *
    * @type {Object<string, Object<string, number>>}
    */
   static shapes = {
-    plain: {
+    stout: {
       length: 600,
-      barrelWidth: 155,
-      coneLength: 150,
-      endTaper: 22,
-      endFace: 74,
-      bevel: 10,
-      pointFrom: 76,
-      pointTo: 156,
-      pointRim: 28,
-      pointChevron: 0,
-      pointNearChevron: 0,
-      pointBevel: 6,
+      width: 155,
+      cone: 150,
+      end: 50,
+      rim: 28,
+      woodFrom: 76,
+      woodTo: 156,
+      shoulder: 24,
     },
   }
 
@@ -101,14 +75,14 @@ export class Pencil {
     'id',
     'fill',
     'bare',
+    'lead',
     'at',
     'turn',
-    'lean',
-    'highlight',
     'scale',
     'shape',
     'draws',
     'keyline',
+    'stroke',
     ...Object.keys(Pencil.proportions),
   ]
 
@@ -130,213 +104,170 @@ export class Pencil {
    *
    * @param {object} spec Where this pencil lies
    * @param {string} spec.id Element id, used as a prefix for each of its parts
-   * @param {string} spec.fill Barrel colour, unlit
-   * @param {string} spec.bare Colour of the bare wood, at the point and at the end
+   * @param {string} spec.fill Barrel colour
+   * @param {string} spec.bare Colour of the bare wood at the point
+   * @param {string} [spec.lead] Colour of the lead at the very tip, the barrel's
+   *   own colour by default, as a coloured pencil's lead is
    * @param {{x: number, y: number}} spec.at The sharpened point
    * @param {number} spec.turn Which way it points, in degrees
-   * @param {number} spec.lean How much nearer the viewer its far end is, as a
-   *   fraction of the pencil's own width
-   * @param {string} [spec.highlight] Colour of the light on the facet, the
-   *   barrel's colour lit by default
    * @param {{colour: string, room: number}} [spec.keyline] What the pencil is
    *   drawn in where it keeps room from whatever lies behind it, and how much
    *   room that is
+   * @param {{colour: string, width: number}} [spec.stroke] An outline round the
+   *   barrel, for a drawing whose lines carry it
    * @param {number} [spec.scale] How much larger than a standard pencil this one
    *   is drawn, which its frame carries, so a pencil of any size is the same
    *   shape
    * @param {string} [spec.shape] Which shape of pencil to draw, the standard
    *   one by default
-   * @param {string[]} [spec.draws] Which parts to draw, all of them by default
-   * @throws {Error} If there is no shape of that name
+   * @param {string[]} [spec.draws] Which parts to draw, all but the lead by
+   *   default
+   * @param {number} [spec.length] Point to blunt end
+   * @param {number} [spec.width] Across the barrel
+   * @param {number} [spec.cone] How far back from the point the barrel begins
+   * @param {number} [spec.nose] Radius the point itself is turned on
+   * @param {number} [spec.shoulder] Radius the corners where the point meets the
+   *   barrel are turned on
+   * @param {number} [spec.end] Radius the two corners of the blunt end are
+   *   turned on
+   * @param {number} [spec.rim] How far the bare wood stands in from the
+   *   silhouette's own edge, nothing to lay its edge along the barrel's, which is
+   *   what an outlined pencil wants
+   * @param {number} [spec.woodFrom] Where the bare wood begins
+   * @param {number} [spec.woodTo] Where it ends
+   * @throws {Error} If there is no shape of that name, if a round it asks for
+   *   does not fit on the edges it is turned on, or if the rim is wider than half
+   *   the narrowest part of the barrel
    */
-  constructor({
-    id,
-    fill,
-    bare,
-    at,
-    turn,
-    lean = 0,
-    highlight = lit(fill),
-    scale = 1,
-    shape,
-    draws,
-    keyline,
-    ...proportions
-  }) {
+  constructor({ id, fill, bare, at, turn, keyline, stroke, lead = fill, scale = 1, shape, draws, ...proportions }) {
     Object.assign(this, Pencil.proportions, Pencil.shape(shape), proportions, {
       id,
       fill,
       bare,
-      lean,
-      highlight,
+      lead,
+      keyline,
+      stroke,
       scale,
       draws,
-      keyline,
     })
+    this.check()
     /** @type {Frame} The pencil's own frame, running along it then across */
     this.frame = new Frame(at, turn)
+    /** @type {object} The barrel pulled in by the rim, as Skia has it */
+    this.inner = skia.Path.MakeFromSVGString(shrunk(this.barrel(), this.rim))
   }
 
   /**
-   * How much wider the pencil looks at a given point along it, because that
-   * part of it is nearer the viewer.
+   * Half the barrel's width, which is how far the silhouette stands from the
+   * axis.
    *
-   * @param {number} along Distance from the sharpened point
-   * @returns {number} What to multiply a width there by
+   * @returns {number} The distance
    */
-  nearness(along) {
-    return 1 + (this.lean * along) / this.length
+  get half() {
+    return this.width / 2
   }
 
   /**
-   * A point on the pencil, seen from where the viewer stands, in the pencil's
-   * own measure.
+   * How far back along one of the point's two cuts the round at the point itself
+   * reaches.
    *
-   * @param {number} along Distance from the sharpened point
-   * @param {number} across Distance from the axis on the pencil itself
-   * @returns {import('../plane.js').Point} The point, along the pencil and
-   *   across it
+   * @returns {number} The distance
    */
-  at(along, across) {
-    return new Point(along, across * this.nearness(along))
+  get noseReach() {
+    return this.nose / Math.tan(Math.atan2(this.half, this.cone))
   }
 
   /**
-   * How wide the sharpened cone is at a given distance along the pencil.
+   * How far back along one of the point's two cuts the round at the shoulder
+   * reaches.
    *
-   * It opens evenly from the point to where it meets the barrel.
-   *
-   * @param {number} along Distance from the sharpened point
-   * @returns {number} Half the width there
+   * @returns {number} The distance
    */
-  coneHalfWidth(along) {
-    return (this.barrelWidth / 2) * Math.min(1, along / this.coneLength)
+  get shoulderReach() {
+    return this.shoulder / Math.tan((Math.PI - Math.atan2(this.half, this.cone)) / 2)
   }
 
   /**
-   * The barrel's outline: the sharpened point, the cone opening out to the
-   * barrel, the barrel widening toward the far end, and the chamfered end
-   * face.
+   * Check that the rounds asked for fit on the edges they are turned on.
    *
-   * @returns {string} Path data
+   * A round reaches back along both edges meeting at the corner it softens, so
+   * two rounds sharing an edge have to fit on it between them, or the shape
+   * crosses itself. The blunt end's corners are square, and a square corner
+   * reaches back by its own radius.
+   *
+   * @returns {void}
+   * @throws {Error} If a round does not fit
+   */
+  check() {
+    const cut = Math.hypot(this.cone, this.half)
+    if (this.noseReach + this.shoulderReach > cut) {
+      throw new Error(
+        `${this.id} rounds its point by ${this.nose} and its shoulders by ${this.shoulder}, which together ` +
+          `reach further than the ${Math.round(cut)} its cuts are long`,
+      )
+    }
+    if (this.shoulderReach + this.end > this.length - this.cone) {
+      throw new Error(
+        `${this.id} rounds its shoulders by ${this.shoulder} and the corners of its blunt end by ${this.end}, ` +
+          `which together reach further than the ${Math.round(this.length - this.cone)} its barrel is long`,
+      )
+    }
+    if (2 * this.end > this.width) {
+      throw new Error(
+        `${this.id} rounds both corners of its blunt end by ${this.end}, which together reach further than ` +
+          `the ${this.width} that end is wide`,
+      )
+    }
+  }
+
+  /**
+   * The barrel's outline: the point turned on its own radius, two cuts opening
+   * out to the full width, the long run, and the blunt end cut flat across with
+   * both of its corners turned on a radius of their own.
+   *
+   * @returns {string} Path data for one closed subpath
    */
   barrel() {
-    const widest = this.length - this.endTaper
-    return outline(
-      [
-        this.at(0, 0),
-        this.at(this.coneLength, -this.barrelWidth / 2),
-        this.at(widest, -this.barrelWidth / 2),
-        this.at(this.length, -this.endFace / 2),
-        this.at(this.length, this.endFace / 2),
-        this.at(widest, this.barrelWidth / 2),
-        this.at(this.coneLength, this.barrelWidth / 2),
-      ],
-      this.bevel,
-    )
+    const half = this.half
+    const path = pen()
+
+    // partway along one edge, so that no round starts where the path does
+    const start = (this.cone + this.length) / 2
+    path.moveTo(start, -half)
+    path.arcTo(this.cone, -half, 0, 0, this.shoulder)
+    path.arcTo(0, 0, this.cone, half, this.nose)
+    path.arcTo(this.cone, half, this.length, half, this.shoulder)
+    path.arcTo(this.length, half, this.length, -half, this.end)
+    path.arcTo(this.length, -half, start, -half, this.end)
+    path.closePath()
+    return compact(path.toString())
   }
 
   /**
-   * Where the facet facing the viewer ends, as a fraction of the pencil's half
-   * width.
+   * A stretch of the pencil: the barrel pulled in by the rim, cut to the two
+   * places along it that the stretch runs between.
    *
-   * The barrel is a hexagonal rod, and the facet facing the viewer is bounded
-   * by two edges running its length. Those edges are the end face's near
-   * corners seen down the pencil, so this comes from the end face's own width.
+   * Pulling the barrel in follows whatever shape it has, so a stretch is shaped
+   * by the part of the pencil it lies on and keeps the same rim wherever it runs.
    *
-   * @returns {number} Fraction of the half width, from 0 to 1
-   */
-  get facetEdge() {
-    return this.endNearFace / this.barrelWidth
-  }
-
-  /**
-   * The light along the facet that faces the viewer.
-   *
-   * The facet is pulled in by the same rim the end's wood is, so the paint
-   * shows as one rim of one width wherever the light stops: in from the facet's
-   * own edges across the pencil, and in from the wood's edge at the sharpened
-   * end. At the blunt end the light stops where the end face begins, because the
-   * wood there is already a rim in from it.
-   *
+   * @param {number} from Where the stretch begins
+   * @param {number} to Where it ends
+   * @param {string} which What this stretch is, for the message
    * @returns {string} Path data
+   * @throws {Error} If it lies off the pencil, or is a shape Skia cannot work out
    */
-  facet() {
-    const from = this.pointTo - this.pointChevron + this.paintRim
-    const to = this.length - 2 * this.endTaper
-    const edge = this.endNearFace / 2 - this.paintRim
-    return outline([this.at(from, -edge), this.at(to, -edge), this.at(to, edge), this.at(from, edge)], this.bevel)
-  }
-
-  /**
-   * The bare wood at the sharpened point: the cone again, pulled in by an even
-   * rim so it follows whatever shape the cone is given, and stopping short of
-   * both the tip and the shoulder.
-   *
-   * Where the wood meets the paint the edge steps back across the facet, which
-   * is the rod's hexagonal section showing.
-   *
-   * @returns {string} Path data
-   */
-  point() {
-    const near = this.coneHalfWidth(this.pointFrom) - this.pointRim
-    const far = this.coneHalfWidth(this.pointTo) - this.pointRim
-    return outline(
-      [
-        this.at(this.pointFrom, -near),
-        this.at(this.pointTo, -far),
-        this.at(this.pointTo - this.pointChevron, -far * this.facetEdge),
-        this.at(this.pointTo - this.pointChevron, far * this.facetEdge),
-        this.at(this.pointTo, far),
-        this.at(this.pointFrom, near),
-        this.at(this.pointFrom - this.pointNearChevron, 0),
-      ],
-      this.pointBevel,
-    )
-  }
-
-  /**
-   * The six corners of the pencil's end face, where the viewer sees it.
-   *
-   * Four of them are on the barrel's own outline; the two nearest the point
-   * are hidden under it. The bare wood at the end is pulled in from this same
-   * hexagon, so the two agree.
-   *
-   * @returns {Array<import('../plane.js').Point>} The corners
-   */
-  endFaceCorners() {
-    const widest = this.length - this.endTaper
-    const near = this.length - 2 * this.endTaper
-    return [
-      this.at(near, -this.endNearFace / 2),
-      this.at(widest, -this.barrelWidth / 2),
-      this.at(this.length, -this.endFace / 2),
-      this.at(this.length, this.endFace / 2),
-      this.at(widest, this.barrelWidth / 2),
-      this.at(near, this.endNearFace / 2),
-    ]
-  }
-
-  /**
-   * The bare wood of the blunt end, with the lead showing through it.
-   *
-   * The wood is the barrel's end face pulled in by an even rim, so a line of
-   * paint shows all round it. The lead is cut out of the wood rather than drawn,
-   * so the barrel shows through, which on a coloured pencil is the lead's own
-   * colour.
-   *
-   * @returns {string} Path data for the wood and the lead cut out of it
-   */
-  end() {
-    const corners = inset(this.endFaceCorners(), this.paintRim)
-    const wood = outline(corners, this.bevel)
-    const wider = this.nearness(this.length - this.endTaper * 1.5)
-    const lead = ellipse(
-      centre(corners),
-      { x: this.leadLength / 2, y: (this.leadWidth / 2) * wider },
-      ALONG,
-    )
-    return `${wood} ${lead}`
+  stretch(from, to, which) {
+    const reach = this.width
+    const strip = skia.Path.MakeFromSVGString(`M${from} ${-reach}H${to}V${reach}H${from}Z`)
+    const piece = strip && skia.Path.MakeFromOp(this.inner, strip, skia.PathOp.Intersect)
+    if (!piece) throw new Error(`the ${which} on ${this.id} is a shape Skia cannot work out`)
+    if (piece.isEmpty()) {
+      throw new Error(
+        `the ${which} on ${this.id} runs from ${from} to ${to}, which leaves nothing once the rim of ` +
+          `${this.rim} is taken off the pencil`,
+      )
+    }
+    return shaped(piece)
   }
 
   /**
@@ -357,30 +288,37 @@ export class Pencil {
   }
 
   /**
-   * The barrel given room to spare: the same shape offset outward by that much,
-   * which turns every corner of it into an arc of that radius.
+   * The attributes a part carrying an outline is drawn with.
    *
-   * This is what anything keeping clear of the pencil follows, so what it leaves
-   * around the pencil is an even margin rather than a wedge cut past it.
+   * A design asks for an outline in the drawing's own measure, as it does for
+   * every other outline, and the pencil is drawn in its own measure at a scale.
+   * Dividing by that scale makes the two agree.
    *
-   * @param {number} room How much space to leave, in the pencil's own measure
-   * @returns {string} Path data for one closed subpath
-   * @throws {Error} If Skia cannot work the shape out
+   * @returns {Object} The attributes, or nothing where the pencil has no outline
    */
-  grown(room) {
-    const barrel = skia.Path.MakeFromSVGString(this.barrel())
-    const band = barrel.makeStroked({ width: 2 * room, join: skia.StrokeJoin.Round })
-    const shape = band && skia.Path.MakeFromOp(barrel, band, skia.PathOp.Union)
-    if (!shape) throw new Error(`the room round ${this.id} is a shape Skia cannot work out`)
-    return shaped(shape)
+  get outline() {
+    if (!this.stroke) return {}
+    return {
+      stroke: this.stroke.colour,
+      'stroke-width': this.stroke.width / this.scale,
+      'stroke-linejoin': 'round',
+    }
   }
 
   /**
    * The pencil as drawable elements.
    *
-   * The keyline is the room the pencil keeps from whatever lies behind it. Where
-   * the pencil lies on paper it is invisible; where it lies over ink it opens an
-   * even gap. A pencil given no keyline has no piece of that name to draw.
+   * The keyline is the room the pencil keeps from whatever lies behind it, the
+   * barrel pushed outward by that much. Where the pencil lies on paper it is
+   * invisible; where it lies over ink it opens an even gap. A pencil given no
+   * keyline has no part of that name to draw.
+   *
+   * The lead is the one part a pencil has and does not draw unless it is asked
+   * for: it is the barrel's own colour, so a solid barrel draws it already.
+   *
+   * Every part carries the outline, not the barrel alone: a part painted the
+   * ground cuts the barrel's outline where the two overlap, and its own outline
+   * is what puts that back.
    *
    * @returns {Array<{tag: string, attrs: Object}>} The parts this pencil draws
    * @throws {Error} If a part being drawn is not one of a pencil's own
@@ -388,14 +326,14 @@ export class Pencil {
   elements() {
     const parts = {
       ...(this.keyline
-        ? { keyline: () => this.part('keyline', this.keyline.colour, this.grown(this.keyline.room)) }
+        ? { keyline: () => this.part('keyline', this.keyline.colour, grown(this.barrel(), this.keyline.room)) }
         : {}),
-      barrel: () => this.part('barrel', this.fill, this.barrel()),
-      facet: () => this.part('facet', this.highlight, this.facet()),
-      point: () => this.part('point', this.bare, this.point()),
-      end: () => this.part('end', this.bare, this.end(), { 'fill-rule': 'evenodd' }),
+      barrel: () => this.part('barrel', this.fill, this.barrel(), this.outline),
+      lead: () => this.part('lead', this.lead, this.stretch(0, this.woodFrom, 'lead'), this.outline),
+      point: () => this.part('point', this.bare, this.stretch(this.woodFrom, this.woodTo, 'bare wood'), this.outline),
     }
 
-    return drawn(Object.keys(parts), this.draws, 'a pencil').map((name) => parts[name]())
+    const own = Object.keys(parts)
+    return drawn(own, this.draws ?? own.filter((name) => name !== 'lead'), 'a pencil').map((name) => parts[name]())
   }
 }

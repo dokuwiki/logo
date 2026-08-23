@@ -258,6 +258,81 @@ export function shaped(path) {
 }
 
 /**
+ * How much room to leave round a shape when it is turned inside out, as a
+ * multiple of the distance being worked with.
+ *
+ * The growing that follows reaches outward too, so the box has to stand clear of
+ * the shape by more than the distance itself.
+ *
+ * @type {number}
+ */
+const ROOM = 4
+
+/**
+ * One shape pushed outward by an even distance, in Skia's own terms rather than
+ * path data.
+ *
+ * @param {object} path The shape, as Skia has it
+ * @param {number} distance How far out to push it
+ * @returns {object} The pushed out shape
+ * @throws {Error} If Skia cannot work the shape out
+ */
+function pushed(path, distance) {
+  const band = path.makeStroked({ width: 2 * distance, join: skia.StrokeJoin.Round, cap: skia.StrokeCap.Round })
+  const out = band && skia.Path.MakeFromOp(path, band, skia.PathOp.Union)
+  if (!out) throw new Error(`a shape pushed out by ${distance} is one Skia cannot work out`)
+  return out
+}
+
+/**
+ * A shape pushed outward by an even distance all round, every corner that sticks
+ * out turned into an arc of that radius.
+ *
+ * @param {string} data Path data for the shape
+ * @param {number} distance How far out to push it
+ * @returns {string} Path data for the pushed out shape
+ * @throws {Error} If the shape is not one Skia can work out
+ */
+export function grown(data, distance) {
+  if (distance <= 0) return data
+  const shape = skia.Path.MakeFromSVGString(data)
+  if (!shape) throw new Error('a shape being pushed out is not one Skia can read')
+  return shaped(pushed(shape, distance))
+}
+
+/**
+ * A shape pulled inward by an even distance all round.
+ *
+ * Skia grows a shape but does not shrink one. So the shape is taken out of a box
+ * around it, that hole is grown instead, and the grown hole is taken out of the
+ * box again.
+ *
+ * @param {string} data Path data for the shape
+ * @param {number} distance How far in to pull it
+ * @returns {string} Path data for the pulled in shape
+ * @throws {Error} If the shape is not one Skia can work out, or if the distance
+ *   is wider than half the narrowest part of it, so that nothing is left
+ */
+export function shrunk(data, distance) {
+  if (distance <= 0) return data
+  const shape = skia.Path.MakeFromSVGString(data)
+  if (!shape) throw new Error('a shape being pulled in is not one Skia can read')
+
+  const [left, top, right, bottom] = shape.getBounds()
+  const room = ROOM * distance
+  const box = `M${left - room} ${top - room}H${right + room}V${bottom + room}H${left - room}Z`
+  const outer = skia.Path.MakeFromSVGString(box)
+  const hole = skia.Path.MakeFromOp(outer, shape, skia.PathOp.Difference)
+  const wider = hole && pushed(hole, distance)
+  const out = wider && skia.Path.MakeFromOp(outer, wider, skia.PathOp.Difference)
+  if (!out) throw new Error(`a shape pulled in by ${distance} is one Skia cannot work out`)
+  if (out.isEmpty()) {
+    throw new Error(`a shape pulled in by ${distance} is thinner than twice that somewhere, so nothing is left of it`)
+  }
+  return shaped(out)
+}
+
+/**
  * Draw a closed outline through the given corners, softening each one.
  *
  * A corner is cut off the same distance along both its sides and bridged with

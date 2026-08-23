@@ -300,7 +300,7 @@ export class Drawing {
       ...spec,
       ...(spec.fill ? { fill: colour(spec.fill) } : {}),
       ...(spec.bare ? { bare: colour(spec.bare) } : {}),
-      ...(spec.highlight ? { highlight: colour(spec.highlight) } : {}),
+      ...(spec.lead ? { lead: colour(spec.lead) } : {}),
       ...(spec.stroke ? { stroke: { ...spec.stroke, colour: colour(spec.stroke.colour) } } : {}),
       ...(spec.keyline ? { keyline: { ...spec.keyline, colour: colour(spec.keyline.colour) } } : {}),
     }

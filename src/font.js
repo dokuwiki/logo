@@ -25,7 +25,7 @@ const loaded = new Map()
  *
  * @type {string}
  */
-export const VENDORED = join(dirname(fileURLToPath(import.meta.url)), '..', 'fonts', 'LiberationSans-Bold.ttf')
+export const VENDORED = join(dirname(fileURLToPath(import.meta.url)), '..', 'fonts', 'Nunito-ExtraBold.ttf')
 
 /**
  * Read a font file.

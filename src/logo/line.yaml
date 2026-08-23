@@ -28,7 +28,7 @@ ground: paper
 # The outlines carry the whole drawing here, with no fill behind them to help,
 # so they are heavier than the logo's. That weight is what costs the drawing its
 # room at the canvas edge, so the three parts placed against the canvas are
-# moved 11 to the right of where the logo puts them, which is what parts them
+# moved 4 to the right of where the logo puts them, which is what parts them
 # from the left edge and leaves the same room either side. The rest of the
 # drawing hangs off those three and follows.
 overrides:
@@ -49,29 +49,47 @@ overrides:
     stroke: {colour: ink, width: 35}
     keyline: {colour: paper, room: 12}
 
-  # A barrel is ink, and the wood and the light on the facet are not, so the ink
-  # round each piece of wood is a line and carries the weight the sheets'
-  # outlines carry. The rims set those two lines: pointRim the one round the
-  # wood at the sharpened point, paintRim the one round the wood in the end
-  # face. Each is a trade, because the wood shrinks by as much as its rim gains,
-  # and paintRim sets how wide the light on the facet is as well.
+  # A pencil is drawn the way the sheets are: paper inside an outline, so it
+  # carries a line rather than a mass of ink. The lead is drawn because the barrel
+  # is hollow, and it is the only ink the pencil holds.
   #
-  # The keyline is the room the pencil keeps from the ink behind it, which is
-  # the same room the icon's page keeps from the pencils crossing it.
+  # The wood's rim is nothing, so its edge lies along the barrel's and the two
+  # draw one line. It adds the two lines that are its own: the cut where the lead
+  # ends, and the cut where the wood gives way to the paint. The wood begins
+  # earlier than the logo starts it, because here it shows as the gap between
+  # those two lines rather than as a pale wedge, and a gap needs more room to
+  # read.
+  #
+  # The pencils are shorter here than the logo draws them, for the same reason the
+  # three parts above are moved right: the outline stands half its width outside
+  # the silhouette all round, and a blunt end cut flat reaches into the canvas
+  # corner by its corner rather than by its middle.
+  #
+  # The keyline is the room the pencil keeps from the ink behind it. It is
+  # measured from the barrel itself, so it carries half the outline as well as
+  # the gap.
   pencil-red:
     at: {x: 475.8}
-    fill: ink
-    highlight: paper
-    pointRim: 20
-    paintRim: 17
-    keyline: {colour: paper, room: 12}
+    fill: paper
+    bare: paper
+    lead: ink
+    stroke: {colour: ink, width: 30}
+    keyline: {colour: paper, room: 27}
+    rim: 0
+    woodFrom: 52
+    length: 660
+    draws: [keyline, barrel, lead, point]
   pencil-green:
     at: {x: 231.9}
-    fill: ink
-    highlight: paper
-    pointRim: 20
-    paintRim: 17
-    keyline: {colour: paper, room: 12}
+    fill: paper
+    bare: paper
+    lead: ink
+    stroke: {colour: ink, width: 30}
+    keyline: {colour: paper, room: 27}
+    rim: 0
+    woodFrom: 52
+    length: 660
+    draws: [keyline, barrel, lead, point]
 
 # One variant: line art does not adapt to size.
 variants:
