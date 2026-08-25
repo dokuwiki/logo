@@ -1,0 +1,19 @@
+# The button: the small badge sites trade to say they run DokuWiki.
+
+# What this graphic is, and where it is used.
+title: DokuWiki 88x31 button
+
+# The file the build writes, under dist/graphics/.
+file: dokuwiki-88x31.png
+
+size: {w: 88, h: 31}
+
+layers:
+  - id: back
+    file: 88x31-now.png
+    at: {x: 0, y: 0}
+
+  - id: logo
+    file: dokuwiki-logo-sm.svg
+    at: {x: 2, y: 4}
+    size: {w: 24, h: 24}
