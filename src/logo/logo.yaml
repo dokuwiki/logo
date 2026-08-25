@@ -62,15 +62,7 @@ parts:
   # A sheet behind the front one, so the stack reads as more than one page. It
   # is placed in the front sheet's frame and cut to the same measure, so it
   # follows the paper wherever the paper goes.
-  - id: sheet-back-far
-    is: sheet
-    in: sheet-front
-    at: {x: -126.3, y: 59.7}          # from the front sheet's corner, across and down
-    turn: -5.2                        # degrees, on top of the front sheet's own turn
-    fill: paper-back                  # a sheet seen from behind shows its darker side
-    stroke: {colour: ink, width: 8}   # its edge, or pale paper on pale paper is not seen
-
-  - id: sheet-back-near
+  - id: sheet-back
     is: sheet
     in: sheet-front
     at: {x: -1.7, y: 122.8}
@@ -84,7 +76,7 @@ parts:
   - id: sheet-front
     is: sheet
     in: canvas
-    at: {x: 139, y: 78.6}              # where its top left corner sits on the canvas
+    at: {x: 120, y: 78.6}              # where its top left corner sits on the canvas
     turn: -5.3                         # degrees, clockwise, about that same corner
     size: {w: 664, h: 842}             # how wide and how tall the paper is, before turning
     radius: 29                         # the radius its corners are rounded to
@@ -114,7 +106,7 @@ parts:
     in: sheet-front
     from: {edge: left, along: 0.34}    # which edge the tail leaves, and how far down it
     to: {u: 0.38, v: 0.531}           # where the head points, on the paper
-    swing: 260                         # how far the loop reaches out past that edge
+    swing: 200                         # how far the loop reaches out past that edge
     approach: 430                      # how long and straight the run into the head is
     stroke: {colour: red, width: 27}   # an arrow is all stroke, so this is its line weight
 
@@ -165,8 +157,7 @@ variants:
     class: sz-md
     upTo: 96
     overrides:
-      sheet-back-far: {stroke: {width: 14}}
-      sheet-back-near: {stroke: {width: 14}}
+      sheet-back: {stroke: {width: 14}}
       sheet-front: {stroke: {width: 20}}
       # fills: what the letters left over grow to, of the paper's width
       wordmark: {draws: [letters], fills: 0.7}
@@ -188,8 +179,7 @@ variants:
     class: sz-sm
     upTo: 40
     overrides:
-      sheet-back-far: {show: false}
-      sheet-back-near: {at: {y: 80}, stroke: {width: 16}}
+      sheet-back: {at: {y: 80}, stroke: {width: 16}}
       sheet-front:
         at: {x: 40, y: 100}
         turn: -5.3
@@ -221,6 +211,6 @@ variants:
     class: sz-xs
     upTo: 20
     overrides:
-      sheet-back-near: {show: false}
+      sheet-back: {show: false}
       sheet-front: {at: {x: 68, y: 83}, turn: 0, size: {w: 664, h: 842}}
       wordmark: {show: false}

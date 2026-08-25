@@ -31,9 +31,8 @@ ground: paper
 # leaves the same room either side. The rest of the drawing hangs off those three
 # and follows.
 overrides:
-  sheet-back-far: {fill: paper, stroke: {width: 25}}
-  sheet-back-near: {fill: paper, stroke: {width: 25}}
-  sheet-front: {at: {x: 143}, stroke: {width: 30}}
+  sheet-back: {fill: paper, stroke: {width: 25}}
+  sheet-front: {stroke: {width: 30}}
 
   # The font has one weight, so the letters carry an outline of their own to
   # stand up to the heavier lines round them.

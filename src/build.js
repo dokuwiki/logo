@@ -83,7 +83,7 @@ const DRAWINGS = [
  *
  * @type {string[]}
  */
-const GRAPHICS = ['button.yaml', 'forum.yaml', 'translate.yaml', 'patreon.yaml']
+const GRAPHICS = ['button.yaml', 'forum.yaml', 'translate.yaml', 'patreon.yaml', '88x31.yaml']
 
 /**
  * Write one file into dist and say what went into it.
