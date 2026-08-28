@@ -19,7 +19,7 @@
  */
 
 import { OUTLINE, painting, SOLID } from './paint.js'
-import { Rectangle } from '../logo/rectangle.js'
+import { Rectangle } from '../rectangle.js'
 import { compact, pen, shaped } from '../path.js'
 import { Point, through } from '../plane.js'
 import { Frame } from '../frame.js'

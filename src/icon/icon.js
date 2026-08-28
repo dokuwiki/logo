@@ -5,7 +5,7 @@
 import { Drawing } from '../drawing.js'
 import { Page } from './page.js'
 import { Pencil } from './pencil.js'
-import { Rectangle } from '../logo/rectangle.js'
+import { Rectangle } from '../rectangle.js'
 
 /**
  * The icon, as icon.yaml composes it.

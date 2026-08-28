@@ -49,7 +49,7 @@ export class Wordmark {
    * The text is placed and sized in fractions of the sheet, so it follows the
    * sheet wherever the sheet goes.
    *
-   * @param {import('./rectangle.js').Rectangle} sheet Sheet to write on
+   * @param {import('../rectangle.js').Rectangle} sheet Sheet to write on
    * @param {object} spec What to write and where
    * @param {string} spec.id Element id, used as a prefix for the parts
    * @param {Array<{name: string, text: string}>} spec.text The word mark in
@@ -68,7 +68,7 @@ export class Wordmark {
    * @param {number} [spec.tracking] Extra space between letters, as a fraction of the type size
    */
   constructor(sheet, spec) {
-    /** @type {import('./rectangle.js').Rectangle} Sheet to write on */
+    /** @type {import('../rectangle.js').Rectangle} Sheet to write on */
     this.sheet = sheet
     Object.assign(this, Wordmark.proportions, spec)
   }

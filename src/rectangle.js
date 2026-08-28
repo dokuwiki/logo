@@ -1,13 +1,11 @@
 /**
  * A rounded rectangle.
  *
- * A rectangle knows where its own edges and corners are, and the things that lie
- * on it are made from it, so they follow wherever it goes.
+ * A rectangle knows where its own edges and corners are, and offers them in its
+ * own measure, so a part made from one follows it wherever it goes.
  */
 
-import { Frame } from '../frame.js'
-import { Arrow } from './arrow.js'
-import { Wordmark } from './wordmark.js'
+import { Frame } from './frame.js'
 
 /**
  * One rounded rectangle, placed by its top left corner and turned about it.
@@ -118,12 +116,13 @@ export class Rectangle {
 
   /**
    * Another rectangle laid in this one's frame, so it follows wherever this one
-   * goes. It is cut to this rectangle's own measure unless it is given one.
+   * goes. It is cut to this rectangle's own measure unless it is given one. It
+   * is drawn where the design lists it, before this one or after.
    *
    * @param {object} spec Where it goes
    * @param {string} spec.id Element id
-   * @param {{x: number, y: number}} spec.at How far it sits to the right and
-   *   down, in this rectangle's frame
+   * @param {{x: number, y: number}} spec.at Its top left corner, in this
+   *   rectangle's frame
    * @param {number} spec.turn How much further it is turned, in degrees
    * @param {string} spec.fill Fill colour
    * @param {{w: number, h: number}} [spec.size] Width and height before turning
@@ -131,7 +130,7 @@ export class Rectangle {
    * @param {{colour: string, width: number}} [spec.stroke] Outline
    * @returns {Rectangle} The rectangle laid in this one
    */
-  behind(spec) {
+  rectangle(spec) {
     return new Rectangle({
       ...spec,
       at: this.frame.at(spec.at.x, spec.at.y),
@@ -139,26 +138,6 @@ export class Rectangle {
       size: spec.size ?? { w: this.width, h: this.height },
       radius: spec.radius ?? this.radius,
     })
-  }
-
-  /**
-   * An arrow coming out from behind one of this rectangle's edges.
-   *
-   * @param {object} spec What the arrow does
-   * @returns {Arrow} The arrow
-   */
-  arrow(spec) {
-    return new Arrow(this, spec)
-  }
-
-  /**
-   * A word mark written across this rectangle.
-   *
-   * @param {object} spec What to write
-   * @returns {Wordmark} The word mark
-   */
-  write(spec) {
-    return new Wordmark(this, spec)
   }
 
   /**

@@ -5,8 +5,8 @@
 # two variants are styles rather than levels of detail.
 #
 # Every part is said the same way the logo's parts are. How each kind looks
-# belongs to the kind, in page.js and pencil.js beside this file, and in the
-# logo's rectangle.js for the lines of writing.
+# belongs to the kind, in page.js and pencil.js beside this file, and in
+# rectangle.js above them for the lines of writing.
 
 # The accessible name every drawing of it carries.
 title: DokuWiki Icon

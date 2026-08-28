@@ -43,7 +43,7 @@ export class Arrow {
   /**
    * Attach an arrow to a sheet.
    *
-   * @param {import('./rectangle.js').Rectangle} sheet Sheet the arrow comes out from
+   * @param {import('../rectangle.js').Rectangle} sheet Sheet the arrow comes out from
    * @param {object} spec What this arrow does
    * @param {string} spec.id Element id
    * @param {{edge: 'left'|'right', along: number}} spec.from Which edge the tail
@@ -68,7 +68,7 @@ export class Arrow {
    *   than two strokes
    */
   constructor(sheet, spec) {
-    /** @type {import('./rectangle.js').Rectangle} Sheet the arrow comes out from */
+    /** @type {import('../rectangle.js').Rectangle} Sheet the arrow comes out from */
     this.sheet = sheet
     Object.assign(this, Arrow.proportions, spec)
   }

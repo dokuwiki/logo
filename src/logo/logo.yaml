@@ -42,8 +42,8 @@ canvas: 1024
 #
 # "is" says what kind of part it is, and so what draws it and what else it can
 # be told: a rounded rectangle, a pencil, an arrow, or a word mark. How each kind
-# looks belongs to the kind, in rectangle.js, pencil.js, arrow.js and wordmark.js
-# beside this file. The sheets of paper and the lines of writing are all
+# looks belongs to the kind, in pencil.js, arrow.js and wordmark.js beside this
+# file, and in rectangle.js above them, which the icon draws from too. The sheets of paper and the lines of writing are all
 # rectangles; what each one is in the picture is its id.
 #
 # "in" says which frame the part hangs in. "in: sheet-front" means it is placed

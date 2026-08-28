@@ -5,7 +5,7 @@
 import { Arrow } from './arrow.js'
 import { Drawing } from '../drawing.js'
 import { Pencil } from './pencil.js'
-import { Rectangle } from './rectangle.js'
+import { Rectangle } from '../rectangle.js'
 import { Wordmark } from './wordmark.js'
 
 /**
@@ -21,11 +21,11 @@ export const kinds = {
   rectangle: {
     takes: Rectangle.takes,
     alone: (spec) => new Rectangle(spec),
-    within: (parent, spec) => parent.behind(spec),
+    within: (parent, spec) => parent.rectangle(spec),
   },
   pencil: { takes: Pencil.takes, alone: (spec) => new Pencil(spec) },
-  arrow: { takes: Arrow.takes, within: (parent, spec) => parent.arrow(spec) },
-  wordmark: { takes: Wordmark.takes, within: (parent, spec) => parent.write(spec) },
+  arrow: { takes: Arrow.takes, within: (parent, spec) => new Arrow(parent, spec) },
+  wordmark: { takes: Wordmark.takes, within: (parent, spec) => new Wordmark(parent, spec) },
 }
 
 /**
