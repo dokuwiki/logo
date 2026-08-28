@@ -22,6 +22,7 @@ class SiteNav extends HTMLElement {
     { path: 'index.html', name: 'Files' },
     { path: 'src/serve/sizes.html', name: 'Sizes' },
     { path: 'src/serve/compare.html', name: 'Compare to classic' },
+    { path: 'src/serve/vision.html', name: 'Colour vision' },
     { path: 'src/serve/closeup.html', name: 'Close-up' },
     { path: 'src/serve/icon.html', name: 'Icon' },
     { path: 'src/serve/line.html', name: 'Line art' },

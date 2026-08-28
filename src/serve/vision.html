@@ -1,0 +1,91 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>The DokuWiki logo seen with colour blindness</title>
+<link rel="icon" href="../../dist/favicon.ico">
+<link rel="stylesheet" href="style.css">
+<body>
+<header>
+    <site-nav></site-nav>
+</header>
+
+<svg class="filters" aria-hidden="true">
+    <filter id="deuteranopia" color-interpolation-filters="linearRGB">
+        <feColorMatrix type="matrix" values="
+             0.367322  0.860646 -0.227968 0 0
+             0.280085  0.672501  0.047413 0 0
+            -0.011820  0.042940  0.968881 0 0
+             0         0         0        1 0"/>
+    </filter>
+    <filter id="protanopia" color-interpolation-filters="linearRGB">
+        <feColorMatrix type="matrix" values="
+             0.152286  1.052583 -0.204868 0 0
+             0.114503  0.786281  0.099216 0 0
+            -0.003882 -0.048116  1.051998 0 0
+             0         0         0        1 0"/>
+    </filter>
+    <filter id="tritanopia" color-interpolation-filters="linearRGB">
+        <feColorMatrix type="matrix" values="
+             1.255528 -0.076749 -0.178779 0 0
+            -0.078411  0.930809  0.147602 0 0
+             0.004733  0.691367  0.303900 0 0
+             0         0         0        1 0"/>
+    </filter>
+</svg>
+
+<main>
+    <section>
+        <h1>Seen with colour blindness</h1>
+
+        <p>
+            The two pencils are told apart by color. Red and green are problematic with different kinds of colour
+            blindness. The common forms of colour blindness are simulated below. The goal is to have the two
+            pencils read as at least slightly different colors/shades in all cases.
+        </p>
+    </section>
+
+    <section class="paper">
+        <h2>On white background</h2>
+        <table>
+            <thead>
+            <tr>
+                <th scope="col">normal sight</th>
+                <th scope="col">deuteranopia</th>
+                <th scope="col">protanopia</th>
+                <th scope="col">tritanopia</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><img src="../../dist/dokuwiki-logo.svg" width="192" height="192" alt=""></td>
+                <td><img class="deuteranopia" src="../../dist/dokuwiki-logo.svg" width="192" height="192" alt=""></td>
+                <td><img class="protanopia" src="../../dist/dokuwiki-logo.svg" width="192" height="192" alt=""></td>
+                <td><img class="tritanopia" src="../../dist/dokuwiki-logo.svg" width="192" height="192" alt=""></td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="paper dark">
+        <h2>On black background</h2>
+        <table>
+            <thead>
+            <tr>
+                <th scope="col">normal sight</th>
+                <th scope="col">deuteranopia</th>
+                <th scope="col">protanopia</th>
+                <th scope="col">tritanopia</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><img src="../../dist/dokuwiki-logo.svg" width="192" height="192" alt=""></td>
+                <td><img class="deuteranopia" src="../../dist/dokuwiki-logo.svg" width="192" height="192" alt=""></td>
+                <td><img class="protanopia" src="../../dist/dokuwiki-logo.svg" width="192" height="192" alt=""></td>
+                <td><img class="tritanopia" src="../../dist/dokuwiki-logo.svg" width="192" height="192" alt=""></td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+<script type="module" src="nav.js"></script>
+</body>
