@@ -19,6 +19,7 @@
  */
 
 import { OUTLINE, painting, SOLID } from './paint.js'
+import { Rectangle } from '../logo/rectangle.js'
 import { compact, pen, shaped } from '../path.js'
 import { Point, through } from '../plane.js'
 import { Frame } from '../frame.js'
@@ -445,6 +446,23 @@ export class Page {
     )
     if (cut.isEmpty()) throw new Error(`nothing is left of ${this.id}: what crosses it takes the whole of it out`)
     return shaped(cut)
+  }
+
+  /**
+   * A rectangle laid in the page's own frame, so it follows wherever the page
+   * goes and is said in the page's own measure rather than the canvas's.
+   *
+   * @param {object} spec Where it goes
+   * @param {{x: number, y: number}} spec.at Its top left corner, in this frame
+   * @param {number} spec.turn How much further it is turned, in degrees
+   * @returns {Rectangle} The rectangle
+   */
+  rectangle(spec) {
+    return new Rectangle({
+      ...spec,
+      at: this.frame.at(spec.at.x, spec.at.y),
+      turn: this.frame.angle + spec.turn,
+    })
   }
 
   /**

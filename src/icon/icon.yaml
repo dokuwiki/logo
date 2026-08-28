@@ -5,19 +5,28 @@
 # two variants are styles rather than levels of detail.
 #
 # Every part is said the same way the logo's parts are. How each kind looks
-# belongs to the kind, in page.js and pencil.js beside this file.
+# belongs to the kind, in page.js and pencil.js beside this file, and in the
+# logo's rectangle.js for the lines of writing.
 
 # The accessible name every drawing of it carries.
 title: DokuWiki Icon
 
-# The colour the icon is drawn in.
+# The colours the icon is drawn in.
 #
 # currentColor is not a colour but a promise to take one: the icon is painted in
 # the text colour of whatever holds it, as a Material icon is, so one file serves
 # a light surface and a dark one. The review page sets that colour to the logo's
 # own ink.
+#
+# The paper is never painted. It marks what a part takes out of the ink rather
+# than adds to it, which is how a line of writing is a hole in a solid page.
 palette:
   ink: currentColor
+  paper: '#ffffff'
+
+# The colour that takes away rather than adds, once the drawing is cut into one
+# shape.
+ground: paper
 
 # Edge length of the square canvas, which is the Material grid.
 canvas: 24
@@ -45,6 +54,30 @@ parts:
     clear: 0.75
     crossedBy: [pencil-upper, pencil-lower]
 
+  # The writing on the page, so the smallest drawing of the mark does not read as
+  # an empty sheet. Two lines, the second one short, laid along the page and
+  # keeping the same distance from the outline above them as from each other.
+  #
+  # They are placed in the page's own frame and follow it wherever it goes, so
+  # they are measured across the page and down it rather than across the canvas.
+  - id: writing-1
+    is: rectangle
+    in: sheet
+    at: {x: 2, y: 2.4}          # where the line's left end starts, on the page
+    turn: 0                     # turned with the page and no further
+    size: {w: 6, h: 1.6}        # how long the line is, and how thick
+    radius: 0.8                 # half its thickness, so its ends are round
+    fill: ink
+
+  - id: writing-2
+    is: rectangle
+    in: sheet
+    at: {x: 2, y: 5.4}
+    turn: 0
+    size: {w: 4.6, h: 1.6}
+    radius: 0.8
+    fill: ink
+
   # The pencil across the sheet's top right corner, pointing down and left. It
   # lies at the angle the logo gives its red pencil, and its blunt end runs out
   # into the margin around the live area.
@@ -66,9 +99,10 @@ parts:
     fill: ink
     parting: 1.25
 
-# The two styles. Outlined, the sheet is a line and each pencil is hollow. Solid,
-# the sheet is filled and each pencil with it, then taken back out with its clear
-# space around it.
+# The two styles. Outlined, the sheet is a line, each pencil is hollow and each
+# line of writing is ink. Solid, the sheet is filled and each pencil with it, then
+# taken back out with its clear space around it, and each line of writing is cut
+# out of the page.
 #
 # Neither says upTo, because neither is picked by size, so no stylesheet is
 # written and each gets a file of its own.
@@ -82,3 +116,10 @@ variants:
         clear: 1.25 # same as the pencils' parting
       pencil-upper: {paint: solid}
       pencil-lower: {paint: solid}
+
+      # A hole rather than ink, the page around it being solid. The first line
+      # reaches further than it does outlined, far enough into the clear space
+      # round the pencil that its round end is swallowed and the two read as one
+      # opening. The second line ends in the open, so it keeps its own length.
+      writing-1: {fill: paper, size: {w: 6.8}}
+      writing-2: {fill: paper}
