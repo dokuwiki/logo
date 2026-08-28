@@ -17,19 +17,23 @@ title: DokuWiki Logo
 # The colours the drawing is painted in.
 #
 # Hex must be quoted, because a "#" after a space starts a comment.
+#
+# The inks are Material Design tones, chosen by weight rather than by tone
+# number: each hue's ramp runs at its own lightness, so the same number in two
+# hues is not the same weight. These three weigh the same, within two points of
+# lightness.
 palette:
   # front of a sheet of paper
-  paper: '#faf4dc'
+  paper: '#fdf8e6'
   # back of a sheet, shown by the sheets behind the front one
-  paper-back: '#ece5c8'
-  # the red pencil and the red arrow, light enough to hold its own against a
-  # dark page, because the arrow's loop swings off the paper
-  red: '#a62d2a'
-  # the green pencil and the green arrow, dark enough to carry the same weight
-  # as the red beside it
-  green: '#326633'
+  paper-back: '#efe7c6'
+  # the red pencil and the red arrow
+  red: '#d32f2f'
+  # the green pencil and the green arrow. A tone darker than the red, so the two
+  # weigh the same and still part for a reader who cannot tell red from green.
+  green: '#2e7d32'
   # writing on the paper, and the paper's own outline
-  ink: '#4a6174'
+  ink: '#546e7a'
 
 # Edge length of the square canvas.
 canvas: 1024
