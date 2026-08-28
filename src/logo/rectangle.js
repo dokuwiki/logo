@@ -1,8 +1,8 @@
 /**
- * A sheet of paper.
+ * A rounded rectangle.
  *
- * A sheet knows where its own edges and corners are, and the things that lie on
- * it are made from it, so they follow wherever the sheet goes.
+ * A rectangle knows where its own edges and corners are, and the things that lie
+ * on it are made from it, so they follow wherever it goes.
  */
 
 import { Frame } from '../frame.js'
@@ -10,34 +10,34 @@ import { Arrow } from './arrow.js'
 import { Wordmark } from './wordmark.js'
 
 /**
- * One sheet of paper, placed by its top left corner and turned about it.
+ * One rounded rectangle, placed by its top left corner and turned about it.
  */
-export class Sheet {
+export class Rectangle {
   /**
-   * What a design can tell a sheet, besides where it is placed and whether it is
-   * drawn, which every part is told the same way.
+   * What a design can tell a rectangle, besides where it is placed and whether
+   * it is drawn, which every part is told the same way.
    *
    * @type {string[]}
    */
   static takes = ['id', 'at', 'turn', 'size', 'radius', 'fill', 'stroke']
 
   /**
-   * Place a sheet.
+   * Place a rectangle.
    *
-   * @param {object} spec Where the sheet goes
+   * @param {object} spec Where the rectangle goes
    * @param {string} spec.id Element id
    * @param {{x: number, y: number}} spec.at Top left corner
-   * @param {number} spec.turn How far the sheet is turned, in degrees
+   * @param {number} spec.turn How far it is turned, in degrees
    * @param {{w: number, h: number}} spec.size Width and height before turning
    * @param {number} spec.radius Corner radius
-   * @param {string} spec.fill Paper colour
-   * @param {{colour: string, width: number}} [spec.stroke] Outline, for a sheet
+   * @param {string} spec.fill Fill colour
+   * @param {{colour: string, width: number}} [spec.stroke] Outline, for a shape
    *   that needs its edge shown against a pale surface
    */
   constructor({ id, at, turn, size, radius, fill, stroke }) {
     /** @type {string} Element id */
     this.id = id
-    /** @type {number} How far the sheet is turned, in degrees */
+    /** @type {number} How far it is turned, in degrees */
     this.turn = turn
     /** @type {number} Width before turning */
     this.width = size.w
@@ -45,16 +45,16 @@ export class Sheet {
     this.height = size.h
     /** @type {number} Corner radius */
     this.radius = radius
-    /** @type {string} Paper colour */
+    /** @type {string} Fill colour */
     this.fill = fill
     /** @type {{colour: string, width: number}|undefined} Outline */
     this.stroke = stroke
-    /** @type {Frame} The sheet's own frame, running across then down */
+    /** @type {Frame} Its own frame, running across then down */
     this.frame = new Frame(at, turn)
   }
 
   /**
-   * Unit direction across the sheet.
+   * Unit direction across the rectangle.
    *
    * @returns {import('../plane.js').Point} Direction
    */
@@ -63,7 +63,7 @@ export class Sheet {
   }
 
   /**
-   * Unit direction down the sheet.
+   * Unit direction down the rectangle.
    *
    * @returns {import('../plane.js').Point} Direction
    */
@@ -72,7 +72,7 @@ export class Sheet {
   }
 
   /**
-   * A point on the sheet, given as fractions of its width and height.
+   * A point on the rectangle, given as fractions of its width and height.
    *
    * @param {number} u Fraction across, 0 at the left edge and 1 at the right
    * @param {number} v Fraction down, 0 at the top edge and 1 at the bottom
@@ -83,14 +83,14 @@ export class Sheet {
   }
 
   /**
-   * One of the sheet's four edges.
+   * One of the rectangle's four edges.
    *
    * @param {'left'|'right'|'top'|'bottom'} name Which edge
    * @returns {{from: import('../plane.js').Point,
    *   along: import('../plane.js').Point,
    *   outward: import('../plane.js').Point, length: number}} Where the edge
-   *   starts, the direction along it, the direction out of the sheet, and how
-   *   long it is
+   *   starts, the direction along it, the direction out of the rectangle, and
+   *   how long it is
    */
   edge(name) {
     const sides = {
@@ -105,7 +105,7 @@ export class Sheet {
   }
 
   /**
-   * A point on one of the sheet's edges.
+   * A point on one of the rectangle's edges.
    *
    * @param {{edge: 'left'|'right'|'top'|'bottom', along: number}} place Which
    *   edge, and how far along it, from 0 to 1
@@ -117,23 +117,22 @@ export class Sheet {
   }
 
   /**
-   * Another sheet tucked behind this one, offset and turned in this sheet's
-   * frame so it follows wherever this sheet goes. It is cut to this sheet's own
-   * measure unless it is given one.
+   * Another rectangle laid in this one's frame, so it follows wherever this one
+   * goes. It is cut to this rectangle's own measure unless it is given one.
    *
-   * @param {object} spec Where it peeks out
+   * @param {object} spec Where it goes
    * @param {string} spec.id Element id
    * @param {{x: number, y: number}} spec.at How far it sits to the right and
-   *   down, in this sheet's frame
+   *   down, in this rectangle's frame
    * @param {number} spec.turn How much further it is turned, in degrees
-   * @param {string} spec.fill Paper colour
+   * @param {string} spec.fill Fill colour
    * @param {{w: number, h: number}} [spec.size] Width and height before turning
    * @param {number} [spec.radius] Corner radius
    * @param {{colour: string, width: number}} [spec.stroke] Outline
-   * @returns {Sheet} The sheet behind
+   * @returns {Rectangle} The rectangle laid in this one
    */
   behind(spec) {
-    return new Sheet({
+    return new Rectangle({
       ...spec,
       at: this.frame.at(spec.at.x, spec.at.y),
       turn: this.turn + spec.turn,
@@ -143,7 +142,7 @@ export class Sheet {
   }
 
   /**
-   * An arrow coming out from behind one of this sheet's edges.
+   * An arrow coming out from behind one of this rectangle's edges.
    *
    * @param {object} spec What the arrow does
    * @returns {Arrow} The arrow
@@ -153,7 +152,7 @@ export class Sheet {
   }
 
   /**
-   * A word mark written across this sheet.
+   * A word mark written across this rectangle.
    *
    * @param {object} spec What to write
    * @returns {Wordmark} The word mark
@@ -163,10 +162,10 @@ export class Sheet {
   }
 
   /**
-   * The sheet as drawable elements.
+   * The rectangle as drawable elements.
    *
    * The rect is drawn at the frame's origin and placed by the frame itself, so
-   * one attribute carries where the sheet is and how far it is turned.
+   * one attribute carries where it is and how far it is turned.
    *
    * @returns {Array<{tag: string, attrs: Object}>} One rect
    */

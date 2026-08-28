@@ -5,22 +5,22 @@
 import { Arrow } from './arrow.js'
 import { Drawing } from '../drawing.js'
 import { Pencil } from './pencil.js'
-import { Sheet } from './sheet.js'
+import { Rectangle } from './rectangle.js'
 import { Wordmark } from './wordmark.js'
 
 /**
  * The kinds of part the logo is drawn from.
  *
- * An arrow and a word mark are made from the sheet they lie on, so they follow
- * it wherever it goes.
+ * An arrow and a word mark are made from the rectangle they lie on, so they
+ * follow it wherever it goes.
  *
  * @type {Object<string, {takes: string[], alone?: function(object): object,
  *   within?: function(object, object): object}>}
  */
 export const kinds = {
-  sheet: {
-    takes: Sheet.takes,
-    alone: (spec) => new Sheet(spec),
+  rectangle: {
+    takes: Rectangle.takes,
+    alone: (spec) => new Rectangle(spec),
     within: (parent, spec) => parent.behind(spec),
   },
   pencil: { takes: Pencil.takes, alone: (spec) => new Pencil(spec) },

@@ -35,15 +35,16 @@ canvas: 1024
 # The parts, back to front.
 #
 # "is" says what kind of part it is, and so what draws it and what else it can
-# be told: a sheet of paper, a pencil, an arrow, or a word mark. How each kind
-# looks belongs to the kind, in sheet.js, pencil.js, arrow.js and wordmark.js
-# beside this file.
+# be told: a rounded rectangle, a pencil, an arrow, or a word mark. How each kind
+# looks belongs to the kind, in rectangle.js, pencil.js, arrow.js and wordmark.js
+# beside this file. The sheets of paper are rectangles; what each one is in the
+# picture is its id.
 #
 # "in" says which frame the part hangs in. "in: sheet-front" means it is placed
 # in the front sheet's own frame and follows it wherever it goes, so only the
 # front sheet and the pencils are placed against the canvas itself. An arrow and
-# a word mark must lie on a sheet, a pencil lies on the canvas, and a sheet
-# does either, taking the measure of the sheet it lies on.
+# a word mark must lie on a rectangle, a pencil lies on the canvas, and a
+# rectangle does either, taking the measure of the one it lies on.
 #
 # A point is written either way, whichever reads better for the part. "x" and
 # "y" are a distance across the frame and down it, in the frame's own measure.
@@ -63,7 +64,7 @@ parts:
   # is placed in the front sheet's frame and cut to the same measure, so it
   # follows the paper wherever the paper goes.
   - id: sheet-back
-    is: sheet
+    is: rectangle
     in: sheet-front
     at: {x: -1.7, y: 122.8}
     turn: -9.7
@@ -74,7 +75,7 @@ parts:
   # space it is drawn in, because an outline sits half outside the edge it
   # follows and needs the room.
   - id: sheet-front
-    is: sheet
+    is: rectangle
     in: canvas
     at: {x: 120, y: 78.6}              # where its top left corner sits on the canvas
     turn: -5.3                         # degrees, clockwise, about that same corner
