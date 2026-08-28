@@ -335,11 +335,13 @@ export class Drawing {
    * The design's own changes come first, so a variant's changes win over them.
    *
    * @param {string} variant Which variant
+   * @param {Set<string>} [held] Parts to keep even where this variant does not
+   *   draw them
    * @returns {Array<Object>} What each part is given
    * @throws {Error} If there is no such variant, if a change names a part the
    *   design does not hold, or if a part has nothing to be placed in
    */
-  composed(variant) {
+  composed(variant, held = new Set()) {
     const found = this.design.variants.findIndex((candidate) => candidate.name === variant)
     if (found < 0) throw new Error(`no such variant: ${variant}`)
 
@@ -357,7 +359,7 @@ export class Drawing {
 
     const specs = this.design.parts
       .map((part) => changes.reduce((spec, change) => (change[spec.id] ? merged(spec, change[spec.id]) : spec), part))
-      .filter((spec) => spec.show !== false)
+      .filter((spec) => spec.show !== false || held.has(spec.id))
       .map((spec) => this.painted(spec))
 
     return this.placeable(specs, variant)
@@ -430,15 +432,38 @@ export class Drawing {
   }
 
   /**
+   * The parts a smaller level draws that the largest one does not.
+   *
+   * The one responsive file holds what the largest level draws, so a part
+   * brought in further down has to be written into it as well.
+   *
+   * @returns {Set<string>} Their ids
+   */
+  get held() {
+    const [largest, ...smaller] = this.design.variants
+    const drawn = new Set(this.composed(largest.name).map((spec) => spec.id))
+    const later = smaller.flatMap((variant) => this.composed(variant.name).map((spec) => spec.id))
+    return new Set(later.filter((id) => !drawn.has(id)))
+  }
+
+  /**
    * Build every element of one variant, back to front.
    *
+   * A held part is written where this variant puts it, so it keeps its place in
+   * the drawing order.
+   *
    * @param {string} [variant] Which variant to draw, the first by default
+   * @param {Set<string>} [held] Parts to carry along without drawing them
    * @returns {Array<{tag: string, attrs: Object}>} Elements
    * @throws {Error} If there is no such variant
    */
-  elements(variant = this.design.variants[0].name) {
-    const specs = this.composed(variant)
+  elements(variant = this.design.variants[0].name, held = new Set()) {
+    const specs = this.composed(variant, held)
     const made = this.built(specs)
-    return specs.flatMap((spec) => made.get(spec.id).elements())
+    return specs.flatMap((spec) => {
+      const elements = made.get(spec.id).elements()
+      if (spec.show !== false) return elements
+      return elements.map((element) => ({ ...element, attrs: { ...element.attrs, display: 'none' } }))
+    })
   }
 }

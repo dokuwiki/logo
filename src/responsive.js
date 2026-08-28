@@ -2,7 +2,9 @@
  * Turning the levels of detail into a stylesheet.
  *
  * The markup is the full drawing and the stylesheet takes away from it, so a
- * renderer that ignores the stylesheet still draws the real logo.
+ * renderer that ignores the stylesheet still draws the real logo. A part only a
+ * smaller level draws is in the markup as well, hidden, because a rule can only
+ * reach what is already there.
  *
  * A level's rules are the step from the level above it. This holds because every
  * mechanism carrying them reaches each level above the one in force: a max-width
@@ -121,8 +123,8 @@ function putBack(attrs, id, name) {
 /**
  * The step from one level to the next.
  *
- * An element a larger level dropped can come back, because the markup holds it
- * either way and showing it again is one declaration.
+ * An element a larger level dropped can come back, and one no level above drew
+ * can come in, because the markup holds it either way.
  *
  * @param {Map<string, {attrs: Object, shown: boolean}>} state How each element
  *   stands, which this updates
@@ -144,7 +146,7 @@ function changes(state, level, markup) {
     } else {
       if (!was.shown) declarations.set('display', UNSET.display)
       for (const name of new Set([...Object.keys(was.attrs), ...Object.keys(smaller)])) {
-        if (name === 'id') continue
+        if (name === 'id' || name === 'display') continue
         if (written(was.attrs[name] ?? '') === written(smaller[name] ?? '')) continue
         if (!PROPERTIES[name]) throw new Error(`${id} changes ${name}, which is no CSS property`)
         const value = smaller[name] === undefined
@@ -205,20 +207,22 @@ function gather(rules) {
  *
  * @param {Array<{name: string, upTo: number|null, classNames: string[], elements: Array}>} compositions
  *   The levels, largest first, each with its elements
+ * @param {Array<{tag: string, attrs: Object}>} carried The elements the file
+ *   holds: the largest level's, and the parts only a smaller level draws
  * @returns {string[]} Lines of CSS, unindented
- * @throws {Error} If a level draws an element the markup does not hold
+ * @throws {Error} If a level draws an element the file does not hold
  */
-export function stylesheet(compositions) {
-  const [whole, ...smaller] = compositions
-  const markup = byId(whole.elements)
+export function stylesheet(compositions, carried) {
+  const smaller = compositions.slice(1)
+  const markup = byId(carried)
 
   const lines = ['svg { container-type: size }']
 
-  const state = new Map([...markup].map(([id, attrs]) => [id, { attrs, shown: true }]))
+  const state = new Map([...markup].map(([id, attrs]) => [id, { attrs, shown: attrs.display !== 'none' }]))
   for (const level of smaller) {
     const elements = byId(level.elements)
     for (const id of elements.keys()) {
-      if (!markup.has(id)) throw new Error(`${id} is drawn only at a smaller level, so the markup cannot hold it`)
+      if (!markup.has(id)) throw new Error(`${id} is drawn at a smaller level, which the file does not carry`)
     }
 
     const rules = gather(changes(state, elements, markup))

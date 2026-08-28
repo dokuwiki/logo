@@ -143,10 +143,11 @@ function tiled(svg, { size, margin, ground }) {
  * @param {import('./drawing.js').Drawing} drawing The drawing
  * @param {string} variant Which variant
  * @param {boolean} [cut] Whether its elements become one path
+ * @param {Set<string>} [held] Parts to carry along without drawing them
  * @returns {Array<{tag: string, attrs: Object}>} The elements
  */
-function written(drawing, variant, cut) {
-  const elements = drawing.elements(variant)
+function written(drawing, variant, cut, held) {
+  const elements = drawing.elements(variant, held)
   if (cut) return flatten(elements, drawing.ground)
   return drawing.bySize ? shorten(elements) : elements
 }
@@ -190,11 +191,11 @@ async function writeDrawing({ drawing, stem, sizes, favicon, touch, cut }) {
   }
 
   if (drawing.bySize) {
-    const whole = compositions[0]
+    const carried = written(drawing, compositions[0].name, cut, drawing.held)
     write(
       `${stem}.svg`,
-      serialiseDocument({ ...document, style: stylesheet(compositions), elements: whole.elements }),
-      `${whole.elements.length} elements, variants ${compositions.map((variant) => variant.name).join(', ')}`,
+      serialiseDocument({ ...document, style: stylesheet(compositions, carried), elements: carried }),
+      `${carried.length} elements, variants ${compositions.map((variant) => variant.name).join(', ')}`,
     )
   }
 

@@ -8,6 +8,8 @@
 # is asked: "at" moves it, "size" says how big it is against the frame it hangs
 # in, "scale" how much larger than its own standard shape it is drawn,
 # "stroke.width" how heavy its outline is, and "show" whether it is drawn at all.
+# A part turned off here is written into the one responsive file all the same,
+# where a level below turns it on.
 
 # The accessible name every drawing of it carries.
 title: DokuWiki Logo
@@ -37,8 +39,8 @@ canvas: 1024
 # "is" says what kind of part it is, and so what draws it and what else it can
 # be told: a rounded rectangle, a pencil, an arrow, or a word mark. How each kind
 # looks belongs to the kind, in rectangle.js, pencil.js, arrow.js and wordmark.js
-# beside this file. The sheets of paper are rectangles; what each one is in the
-# picture is its id.
+# beside this file. The sheets of paper and the lines of writing are all
+# rectangles; what each one is in the picture is its id.
 #
 # "in" says which frame the part hangs in. "in: sheet-front" means it is placed
 # in the front sheet's own frame and follows it wherever it goes, so only the
@@ -99,6 +101,28 @@ parts:
       - {name: brackets, text: '[['}
       - {name: letters, text: DW}
       - {name: brackets, text: ']]'}
+
+  # The writing on the page, for the size where the word mark's letters no longer
+  # read.
+  - id: writing-1
+    is: rectangle
+    in: sheet-front
+    show: false
+    at: {x: 80, y: 80}         # where the line's left end starts, on the paper
+    turn: 0                    # turned with the paper and no further
+    size: {w: 504, h: 92}      # how long the line is, and how thick
+    radius: 46                 # half its thickness, so its ends are round
+    fill: ink
+
+  - id: writing-2
+    is: rectangle
+    in: sheet-front
+    show: false
+    at: {x: 80, y: 226}
+    turn: 0
+    size: {w: 504, h: 92}
+    radius: 46
+    fill: ink
 
   # An arrow looping out from behind the paper and back onto it. Its tail is cut
   # flat against the paper's edge, so it reads as coming out from behind.
@@ -201,9 +225,11 @@ variants:
 
   # This level takes sm's pose and drops what stops reading at 20px. The word mark
   # goes: its letters stand four pixels tall and their strokes are finer than one,
-  # so they close up into a smudge. The sheet behind goes too: it peeks three
-  # quarters of a pixel out at the side under an outline a third of a pixel wide,
-  # too close to the front sheet's edge to read as another sheet. The lean goes
+  # so they close up into a smudge. The two lines of writing come in where it
+  # stood, because a page with nothing on it says the opposite of what a wiki is.
+  # The sheet behind goes too: it peeks three quarters of a pixel out at the side
+  # under an outline a third of a pixel wide, too close to the front sheet's edge
+  # to read as another sheet. The lean goes
   # with them: at this size it no longer reads as a lean, only skewing the corners
   # and costing the paper its size, so the page stands upright again, square to
   # the canvas and cut back to its own measure. Both pencils stay as sm draws
@@ -215,3 +241,5 @@ variants:
       sheet-back: {show: false}
       sheet-front: {at: {x: 68, y: 83}, turn: 0, size: {w: 664, h: 842}}
       wordmark: {show: false}
+      writing-1: {show: true}
+      writing-2: {show: true}
