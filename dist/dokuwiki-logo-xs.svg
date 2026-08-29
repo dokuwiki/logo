@@ -4,8 +4,7 @@
      role="img">
   <title>DokuWiki Logo</title>
   <rect id="sf" width="664" height="842" rx="64" transform="matrix(1, 0, 0, 1, 68, 83)" fill="#fdf8e6" stroke="#546e7a" stroke-width="24"/>
-  <rect id="w1" width="504" height="92" rx="46" transform="matrix(1, 0, 0, 1, 148, 163)" fill="#546e7a"/>
-  <rect id="w2" width="504" height="92" rx="46" transform="matrix(1, 0, 0, 1, 148, 309)" fill="#546e7a"/>
+  <rect id="w" width="504" height="138" rx="46" transform="matrix(1, 0, 0, 1, 148, 163)" fill="#90a4ae"/>
   <path id="prb" fill="#d32f2f" transform="matrix(0.98054, -0.82277, 0.82277, 0.98054, 395.5, 568.1)" d="M375-77.5l-219.17,0A24,24,0,0,0,144.82-74.82L30.95-15.99A18,18,0,0,0,30.95,15.99L144.82,74.82A24,24,0,0,0,155.83,77.5L550,77.5A50,50,0,0,0,600,27.5l0-55A50,50,0,0,0,550-77.5Z"/>
   <path id="prp" fill="#fdf8e6" transform="matrix(0.98054, -0.82277, 0.82277, 0.98054, 395.5, 568.1)" d="M76,7.75l0-15.5l80-41.33l0,98.16L76,7.75Z"/>
   <path id="pgb" fill="#2e7d32" transform="matrix(1.16102, 0.53893, -0.53893, 1.16102, 159.2, 625.7)" d="M375-77.5l-219.17,0A24,24,0,0,0,144.82-74.82L30.95-15.99A18,18,0,0,0,30.95,15.99L144.82,74.82A24,24,0,0,0,155.83,77.5L550,77.5A50,50,0,0,0,600,27.5l0-55A50,50,0,0,0,550-77.5Z"/>
