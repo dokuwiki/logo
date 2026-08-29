@@ -60,7 +60,7 @@ parts:
     in: sheet
     at: {x: 2, y: 2.4}          # where the line's left end starts, on the page
     turn: 0                     # turned with the page and no further
-    size: {w: 6, h: 2.4}        # how long the line is, and how thick
+    size: {w: 8.6, h: 2.4}      # how long the line is, and how thick
     radius: 0.8                 # the radius its ends are rounded to
     fill: ink
 
