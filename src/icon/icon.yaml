@@ -6,7 +6,7 @@
 #
 # Every part is said the same way the logo's parts are. How each kind looks
 # belongs to the kind, in page.js and pencil.js beside this file, and in
-# rectangle.js above them for the lines of writing.
+# rectangle.js above them for the line of writing.
 
 # The accessible name every drawing of it carries.
 title: DokuWiki Icon
@@ -54,28 +54,14 @@ parts:
     clear: 0.75
     crossedBy: [pencil-upper, pencil-lower]
 
-  # The writing on the page, so the smallest drawing of the mark does not read as
-  # an empty sheet. Two lines, the second one short, laid along the page and
-  # keeping the same distance from the outline above them as from each other.
-  #
-  # They are placed in the page's own frame and follow it wherever it goes, so
-  # they are measured across the page and down it rather than across the canvas.
-  - id: writing-1
+  # The writing on the page, so it does not read as an empty sheet.
+  - id: writing
     is: rectangle
     in: sheet
     at: {x: 2, y: 2.4}          # where the line's left end starts, on the page
     turn: 0                     # turned with the page and no further
-    size: {w: 6, h: 1.6}        # how long the line is, and how thick
-    radius: 0.8                 # half its thickness, so its ends are round
-    fill: ink
-
-  - id: writing-2
-    is: rectangle
-    in: sheet
-    at: {x: 2, y: 5.4}
-    turn: 0
-    size: {w: 4.6, h: 1.6}
-    radius: 0.8
+    size: {w: 6, h: 2.4}        # how long the line is, and how thick
+    radius: 0.8                 # the radius its ends are rounded to
     fill: ink
 
   # The pencil across the sheet's top right corner, pointing down and left. It
@@ -99,9 +85,9 @@ parts:
     fill: ink
     parting: 1.25
 
-# The two styles. Outlined, the sheet is a line, each pencil is hollow and each
+# The two styles. Outlined, the sheet is a line, each pencil is hollow and the
 # line of writing is ink. Solid, the sheet is filled and each pencil with it, then
-# taken back out with its clear space around it, and each line of writing is cut
+# taken back out with its clear space around it, and the line of writing is cut
 # out of the page.
 #
 # Neither says upTo, because neither is picked by size, so no stylesheet is
@@ -117,9 +103,7 @@ variants:
       pencil-upper: {paint: solid}
       pencil-lower: {paint: solid}
 
-      # A hole rather than ink, the page around it being solid. The first line
-      # reaches further than it does outlined, far enough into the clear space
-      # round the pencil that its round end is swallowed and the two read as one
-      # opening. The second line ends in the open, so it keeps its own length.
-      writing-1: {fill: paper, size: {w: 6.8}}
-      writing-2: {fill: paper}
+      # A hole rather than ink, the page around it being solid. It reaches into
+      # the clear space round the pencil, far enough that its round end is
+      # swallowed and the two read as one opening.
+      writing: {fill: paper, size: {w: 6.8}}
