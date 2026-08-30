@@ -18,7 +18,7 @@ import { logo } from './logo/logo.js'
 
 import { graphic } from './graphics/graphics.js'
 import { serialiseDocument, shorten } from './emit.js'
-import { stylesheet, variantAt } from './responsive.js'
+import { byShape, stylesheet, variantAt } from './responsive.js'
 import { flatten } from './flatten.js'
 
 /**
@@ -191,11 +191,11 @@ async function writeDrawing({ drawing, stem, sizes, favicon, touch, cut }) {
   }
 
   if (drawing.bySize) {
-    const carried = written(drawing, compositions[0].name, cut, drawing.held)
+    const file = byShape(compositions, written(drawing, compositions[0].name, cut, drawing.held))
     write(
       `${stem}.svg`,
-      serialiseDocument({ ...document, style: stylesheet(compositions, carried), elements: carried }),
-      `${carried.length} elements, variants ${compositions.map((variant) => variant.name).join(', ')}`,
+      serialiseDocument({ ...document, style: stylesheet(file.compositions, file.carried), elements: file.carried }),
+      `${file.carried.length} elements, variants ${compositions.map((variant) => variant.name).join(', ')}`,
     )
   }
 

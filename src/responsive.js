@@ -11,6 +11,10 @@
  * that matches at one size matches at every smaller size, and a level's class
  * rules name the smaller levels' classes too.
  *
+ * The d property is not in every renderer, so a rule cannot carry a path's
+ * shape. Each shape a part is drawn in is an element of its own, and a level
+ * swaps one for another the way it takes any part away and puts another in.
+ *
  * Three mechanisms carry the rules, so each level's rules are written three
  * times: a media query for a file that is its own document, a container query
  * for a file pasted into a page, and a class on the root for a host that sets
@@ -53,7 +57,6 @@ function query(upTo) {
  * @type {Object<string, function(string|number): string>}
  */
 const PROPERTIES = {
-  d: (value) => `path("${written(value)}")`,
   display: written,
   fill: written,
   height: (value) => `${written(value)}px`,
@@ -74,6 +77,13 @@ const UNSET = {
   display: 'inline',
   transform: 'none',
 }
+
+/**
+ * The attribute that holds a path's shape.
+ *
+ * @type {string}
+ */
+const SHAPE = 'd'
 
 /**
  * Write a value the way the markup writes it, so a level is compared against
@@ -200,6 +210,49 @@ function gather(rules) {
     else groups.set(said, { ids: [id], declarations })
   }
   return [...groups.values()]
+}
+
+/**
+ * The levels and the elements the file carries, with every shape of a part
+ * written as an element of its own.
+ *
+ * The first shape of a part keeps the part's id. Each further shape goes into
+ * the file beside the shape before it, hidden, under an id naming the level that
+ * brings it in. A level names whichever shape it draws.
+ *
+ * @param {Array<{name: string, elements: Array<{tag: string, attrs: Object}>}>}
+ *   compositions The levels, largest first, each with its elements
+ * @param {Array<{tag: string, attrs: Object}>} carried The elements the file
+ *   holds: the largest level's, and the parts only a smaller level draws
+ * @returns {{compositions: Array, carried: Array}} The levels, each element
+ *   named for the shape it draws, and the elements the file holds
+ */
+export function byShape(compositions, carried) {
+  const file = [...carried]
+  const shapes = new Map()
+  for (const { attrs } of carried) {
+    if (attrs[SHAPE] !== undefined) shapes.set(attrs.id, new Map([[attrs[SHAPE], attrs.id]]))
+  }
+
+  const levels = compositions.map((level) => ({
+    ...level,
+    elements: level.elements.map((element) => {
+      const { id, [SHAPE]: shape } = element.attrs
+      const drawn = shapes.get(id)
+      if (shape === undefined || !drawn) return element
+
+      if (!drawn.has(shape)) {
+        const own = `${id}-${level.name}`
+        const beside = [...drawn.values()].at(-1)
+        const at = file.findIndex((one) => one.attrs.id === beside)
+        file.splice(at + 1, 0, { ...element, attrs: { ...element.attrs, id: own, display: 'none' } })
+        drawn.set(shape, own)
+      }
+      return { ...element, attrs: { ...element.attrs, id: drawn.get(shape) } }
+    }),
+  }))
+
+  return { compositions: levels, carried: file }
 }
 
 /**
